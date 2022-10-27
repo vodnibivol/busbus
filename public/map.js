@@ -1,21 +1,102 @@
+class Buses {
+  constructor(routeNo) {
+    this.routeNo = routeNo;
+    this.buses = [];
+  }
+
+  async update() {
+    // update buses data
+    const r = await fetch(`/api/getBusData/${this.routeNo}`);
+    const j = await r.json();
+
+    this.buses.forEach((b) => b.removeMarker());
+    this.buses = [];
+
+    for (let busData of j.data) {
+      const bus = new Bus(busData);
+      this.buses.push(bus);
+    }
+
+    this.draw();
+  }
+
+  draw() {
+    this.buses.forEach((b) => b.draw());
+  }
+
+  getBus(busName) {
+    return this.buses.find((b) => b.data.bus_name === busName);
+  }
+}
+
+class Bus {
+  constructor(data) {
+    this.data = null;
+    this.marker = null;
+
+    this.update(data);
+  }
+
+  get age() {
+    return Math.round((new Date() - this.updatedAt) / 1000);
+  }
+
+  update(data) {
+    this.data = data;
+
+    this.updatedAt = new Date(data.bus_timestamp);
+    this.fetchedAt = new Date();
+
+    this.id = data.bus_name;
+    this.latlon = [data.latitude, data.longitude];
+  }
+
+  updateTs() {
+    const popupContent = `<b>[ ${this.data.route_number} ]</b> - ${this.data.destination}<br>${this.age}s ago`;
+    this.marker.bindPopup(popupContent);
+  }
+
+  draw() {
+    // draw
+    this.marker = L.marker(this.latlon, { icon: Icons.bus });
+    const popupContent = `<b>[ ${this.data.route_number} ]</b> - ${this.data.destination}<br>${this.age}s ago`;
+    this.marker.bindPopup(popupContent);
+    this.marker.addTo(map);
+
+    this.marker.on('click', this.updateTs.bind(this));
+  }
+
+  removeMarker() {
+    if (this.marker) map.removeLayer(this.marker);
+  }
+}
+
+// global map
+const map = L.map('map').setView([46.0558, 14.5412], 11); // .setView([46.0558, 14.5412], 14);
+
 const Main = (async function () {
-  // vars
-  const BUS_DATA = {}; // MARKERS >> routeIds >> busIds
-  const map = L.map('map').setView([46.0558, 14.5412], 11); // .setView([46.0558, 14.5412], 14);
-
-  let DEVICE_LOCATION;
-  let nearbyStations;
-  let nearbyRoutes = [];
-
   // init
-  initMap();
+  init();
   getDeviceLoc();
 
   // f(x)
+  function init() {
+    initMap();
+
+    // get bus line
+    const params = new URLSearchParams(location.search);
+    const routeNo = params.get('line');
+
+    const BUSES = new Buses(routeNo);
+    BUSES.update(); // update and draw
+
+    setInterval(() => {
+      BUSES.update();
+    }, 5000);
+  }
+
   function initMap() {
     const mapConfig = {
-      attribution:
-        'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
       maxZoom: 18,
       minZoom: 12,
       id: 'mapbox/streets-v11',
@@ -37,135 +118,22 @@ const Main = (async function () {
     map.on('locationerror', (e) => console.error(e));
   }
 
-  // draw location and move view
-
-  function onLocationFound(e) {
-    DEVICE_LOCATION = [e.latitude, e.longitude];
-    console.log(DEVICE_LOCATION);
-
-    let yourLocation = L.circle(DEVICE_LOCATION, { radius: e.accuracy }).addTo(map);
-    yourLocation.bindPopup(`your location:<br><b>${DEVICE_LOCATION.join()}</b>`); // .openPopup();
+  async function onLocationFound(e) {
+    // draw location circle
+    const DEVICE_LOCATION = [e.latitude, e.longitude];
     map.setView(DEVICE_LOCATION, 15);
 
+    L.circle(DEVICE_LOCATION, { radius: e.accuracy }).addTo(map);
     L.circle(DEVICE_LOCATION, { radius: 500, color: 'lightblue' }).addTo(map);
-    // proceed
-    drawNearbyStations();
-  }
 
-  // get nearby stations (r=500) and draw them on map
+    // draw nearby stations
+    const r = await fetch(`/api/getNearbyStations?lat=${e.latitude}&lon=${e.longitude}&d=500`);
+    const stations = await r.json();
 
-  async function getNearbyStations([lat, lon], distance) {
-    let url = `/api/getNearbyStations?lat=${lat}&lon=${lon}`;
-    if (distance) url += `&d=${distance}`;
-
-    let r = await fetch(url);
-    let j = await r.json();
-    return j;
-  }
-
-  async function drawNearbyStations() {
-    nearbyStations = await getNearbyStations(DEVICE_LOCATION, 500);
-
-    for (let station of nearbyStations) {
-      // console.log(station);
+    for (let station of stations) {
       let stationMarker = L.marker(station.latlon, { icon: Icons.station }).addTo(map);
       stationMarker.bindPopup(`<b>${station.name}</b><br>id: ${station.id}`);
     }
-
-    // proceed
-    const params = new URLSearchParams(location.search);
-    const route = params.get('line');
-    nearbyRoutes = [route];
-    console.log(nearbyRoutes)
-    drawBusLocations();
-  }
-
-  async function getBusLocations(lineNo) {
-    let r = await fetch(`/api/getBusData/${lineNo}`);
-    let j = await r.json();
-
-    if (!j.success) return null;
-
-    // filter buses to only close ones
-    let buses = j.data;
-
-    const MAX_DISTANCE = 1500; // m
-    let nearbyBuses = buses.filter((bus) => {
-      let { latitude, longitude } = bus;
-      return haversineDistance([latitude, longitude], DEVICE_LOCATION) < MAX_DISTANCE;
-    });
-    console.log(buses);
-    // console.log(nearbyBuses);
-
-    return buses;
-  }
-
-  async function drawBusLocations() {
-    for (let routeNo of nearbyRoutes) {
-      let busLocations = await getBusLocations(routeNo);
-      // console.log(busLocations);
-
-      if (!busLocations || !busLocations.length) continue;
-
-      for (let bus of busLocations) {
-        let routeId = bus.route_id; // "trip_id"?
-        let busId = bus.bus_unit_id;
-        let busUpdateTimestamp = bus.bus_timestamp;
-
-        let timeDiff = Math.floor((new Date() - new Date(busUpdateTimestamp)) / 1000);
-        // let popupContent = `LINIJA ${bus.route_number}<br>${bus.route_name}<br>${timeDiff}s ago`;
-        let popupContent = `<b>[ ${bus.route_number} ]</b> - ${bus.destination}<br>${timeDiff}s ago`;
-
-        // create route object for storing data and markers
-        if (!BUS_DATA[routeId]) BUS_DATA[routeId] = {};
-
-        let busMarker;
-        let busExists = !!BUS_DATA[routeId][busId];
-
-        if (busExists) {
-          busMarker = moveMarker(BUS_DATA[routeId][busId].marker, [bus.latitude, bus.longitude]);
-          busMarker.setPopupContent(popupContent);
-        } else {
-          busMarker = L.marker([bus.latitude, bus.longitude], { icon: Icons.bus });
-          busMarker.bindPopup(popupContent);
-          busMarker.addTo(map);
-        }
-
-        BUS_DATA[routeId][busId] = { marker: busMarker, data: bus };
-      }
-    }
-
-    // proceed
-    if (!updateInterval) {
-      updateMarkersInterval();
-    }
-  }
-
-  let updateInterval;
-
-  // updateBusMarkers() - 2s && updateLocation()
-
-  function updateMarkersInterval() {
-    console.log('interval');
-    updateInterval = setInterval(drawBusLocations, 5000);
-  }
-
-  // ^^^ data updates asynchronously (stored in variables), function update is called periodically on vars
-
-  function moveMarker(marker, latlon) {
-    let newLoc = new L.LatLng(...latlon);
-    marker.setLatLng(newLoc);
-    return marker;
-  }
-
-  function haversineDistance([lat1, lon1], [lat2, lon2]) {
-    const R = 6371e3;
-    const p1 = (lat1 * Math.PI) / 180;
-    const p2 = (lat2 * Math.PI) / 180;
-    const deltaLon = lon2 - lon1;
-    const deltaLambda = (deltaLon * Math.PI) / 180;
-    const d = Math.acos(Math.sin(p1) * Math.sin(p2) + Math.cos(p1) * Math.cos(p2) * Math.cos(deltaLambda)) * R;
-    return d;
   }
 })();
 
@@ -180,4 +148,14 @@ const Icons = {
   }),
 };
 
-// map.distance
+// --- utils
+
+function haversineDistance([lat1, lon1], [lat2, lon2]) {
+  const R = 6371e3;
+  const p1 = (lat1 * Math.PI) / 180;
+  const p2 = (lat2 * Math.PI) / 180;
+  const deltaLon = lon2 - lon1;
+  const deltaLambda = (deltaLon * Math.PI) / 180;
+  const d = Math.acos(Math.sin(p1) * Math.sin(p2) + Math.cos(p1) * Math.cos(p2) * Math.cos(deltaLambda)) * R;
+  return d;
+}
