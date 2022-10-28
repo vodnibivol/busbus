@@ -1,3 +1,22 @@
+/**
+ * load buses data
+ *
+ * for each bus in data:
+ *
+ * if bus exists:
+ *    update data with its data
+ * else:
+ *    create new bus with data
+ *
+ * for each bus in buses:
+ * if (bus.age > MAX_AGE) remove();
+ * else bus.draw():
+ *    if (marker)
+ *      move (use data)
+ *    else:
+ *      new marker
+ */
+
 class Buses {
   constructor(routeNo) {
     this.routeNo = routeNo;
@@ -58,10 +77,16 @@ class Bus {
 
   draw() {
     // draw
-    this.marker = L.marker(this.latlon, { icon: Icons.bus });
+    this.marker = L.marker(this.latlon, {
+      icon: Icons.bus,
+      rotationAngle: this.data.cardinal_direction - 90,
+      rotationOrigin: 'center',
+    });
     const popupContent = `<b>[ ${this.data.route_number} ]</b> - ${this.data.destination}<br>${this.age}s ago`;
     this.marker.bindPopup(popupContent);
     this.marker.addTo(map);
+
+    console.log(this.marker._icon.style.transform);
 
     this.marker.on('click', this.updateTs.bind(this));
   }
@@ -72,7 +97,10 @@ class Bus {
 }
 
 // global map
-const map = L.map('map').setView([46.0558, 14.5412], 11); // .setView([46.0558, 14.5412], 14);
+const map = L.map('map', {
+  zoomControl: false,
+  attributionControl: false,
+}).setView([46.0558, 14.5412], 12); // .setView([46.0558, 14.5412], 14);
 
 const Main = (async function () {
   // init
@@ -139,11 +167,11 @@ const Main = (async function () {
 
 const Icons = {
   bus: L.icon({
-    iconUrl: '/public/img/bus.png',
-    iconSize: [32, 32],
+    iconUrl: '/public/img/bus2.png',
+    iconSize: [48, 48],
   }),
   station: L.icon({
-    iconUrl: '/public/img/bus_station.png',
+    iconUrl: '/public/img/stop2.png',
     iconSize: [32, 32],
   }),
 };
