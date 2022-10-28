@@ -14,13 +14,13 @@ app.set('view engine', 'ejs');
 
 const STATIONS = JSON.parse(fs.readFileSync(path.resolve('db', 'stations.json')));
 
-// --- routes
+// --- ROUTES
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.render('form');
 });
 
-app.get('/map', (req, res) => {
+app.get('/map', (_, res) => {
   res.render('map');
 });
 
@@ -28,32 +28,28 @@ app.get('/map', (req, res) => {
 
 app.get('/api/getBusData/:routeNo', async (req, res) => {
   const url = `https://bus-ljubljana.eu/app/busDetails?n=${req.params.routeNo}`;
-  let data = await getJson(url);
-  res.json(data);
+  const busData = await getJSON(url);
+  res.json(busData);
 });
 
 app.get('/api/getNearbyStations', (req, res) => {
-  let { lat, lon, d } = req.query; // d: distance // TODO: "radius" / "distance"
-  let data = getNearbyStations([lat, lon], d);
-  res.json(data);
+  const { lat, lon, d } = req.query; // d: maxDistance
+  const nearby = STATIONS.filter((s) => haversineDistance(s.latlon, [lat, lon]) < d);
+  res.json(nearby);
 });
 
 app.get('/api/getStationData/:stationId', async (req, res) => {
-  let url = `https://www.lpp.si/lpp/ajax/1/${req.params.stationId}`;
-  let data = await getJson(url);
-  res.json(data);
+  const url = `https://www.lpp.si/lpp/ajax/1/${req.params.stationId}`;
+  const stationData = await getJSON(url);
+  res.json(stationData);
 });
 
 // --- f(x)
 
-async function getJson(url) {
-  let r = await fetch(url);
-  let j = await r.json();
+async function getJSON(url) {
+  const r = await fetch(url);
+  const j = await r.json();
   return j;
-}
-
-function getNearbyStations(latlon, maxDistance = 500) {
-  return STATIONS.filter((s) => haversineDistance(s.latlon, latlon) < maxDistance);
 }
 
 function haversineDistance([lat1, lon1], [lat2, lon2]) {
