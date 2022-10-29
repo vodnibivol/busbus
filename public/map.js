@@ -2,37 +2,31 @@ class Buses {
   constructor(routeNo) {
     this.routeNo = routeNo;
     this.buses = [];
+    this.dstore = new Store('BUSBUS_' + routeNo);
   }
 
   async update() {
     await this.updateData();
-    this.clean();
     this.draw();
   }
 
   async updateData() {
     // update buses data
-    const r = await fetch(`/api/getBusData/${this.routeNo}`);
-    const j = await r.json();
+    let data = this.dstore.get('busdata');
 
-    for (let busData of j.data) {
+    if (!data) {
+      const r = await fetch(`/api/getBusData/${this.routeNo}`);
+      const j = await r.json();
+      data = j.data;
+      this.dstore.set('busdata', data, this.dstore.SECOND * 4.5);
+    }
+
+    for (let busData of data) {
       const id = busData.bus_unit_id;
 
       let bus = this.buses.find((b) => b.id === id);
       if (bus) bus.update(busData);
       else this.buses.push(new Bus(id, busData));
-    }
-  }
-
-  clean() {
-    // remove old buses
-    const MAX_AGE = 120; // 2 minutes
-
-    for (let i = this.buses.length - 1; i; --i) {
-      if (this.buses[i].age > MAX_AGE) {
-        map.removeLayer(this.buses[i].marker);
-        this.buses.pop();
-      }
     }
   }
 
@@ -66,27 +60,26 @@ class Bus {
   update(data) {
     // update (only data)
     this.data = data;
-    console.log(this.data);
     this.latlon = [data.latitude, data.longitude];
   }
 
   draw() {
-    if (this.marker) {
-      this.marker.setLatLng(new L.LatLng(...this.latlon));
-      this.marker.setRotationAngle(this.data.cardinal_direction - 90);
-      this.marker.bindPopup(this.popupContent);
-      return;
+    if (!this.marker) {
+      // first time
+      this.marker = L.marker(this.latlon, {
+        icon: Icons.bus,
+        rotationOrigin: 'center',
+      });
+
+      this.marker.addTo(map);
+      this.marker.on('click', () => this.marker.bindPopup(this.popupContent));
     }
 
-    this.marker = L.marker(this.latlon, {
-      icon: Icons.bus,
-      rotationAngle: this.data.cardinal_direction - 90,
-      rotationOrigin: 'center',
-    });
-
+    this.marker.setLatLng(new L.LatLng(...this.latlon));
+    this.marker.setRotationAngle(this.data.cardinal_direction - 90);
     this.marker.bindPopup(this.popupContent);
-    this.marker.addTo(map);
-    this.marker.on('click', () => this.marker.bindPopup(this.popupContent));
+
+    if (this.age > 60) this.marker._icon.style.opacity = '0.5';
   }
 
   removeMarker() {
@@ -115,7 +108,7 @@ const Main = (async function () {
 
     setInterval(() => {
       BUSES.update();
-    }, 5000);
+    }, 2500);
   }
 
   function initMap() {
@@ -126,11 +119,14 @@ const Main = (async function () {
       tileSize: 512,
       zoomOffset: -1,
       accessToken: 'pk.eyJ1Ijoidm9kbmliaXZvbCIsImEiOiJjbDBrb2ZhNTIwb2YxM2ltOXVmMG5qbW05In0.eH6IYRJquEFQgNTXGcyBmA',
-      attribution: '<a href="/">Home</a>',
+      attribution: 'vodnibivol | <a href="/">Home</a>',
     };
     const tileLayer = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}{r}?access_token={accessToken}';
 
     L.tileLayer(tileLayer, mapConfig).addTo(map);
+
+    // attribution
+    document.querySelector('.leaflet-control-attribution').innerHTML = mapConfig.attribution;
   }
 })();
 
