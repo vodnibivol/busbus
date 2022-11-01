@@ -1,12 +1,26 @@
 class Buses {
-  constructor(routeNo) {
-    this.routeNo = routeNo;
+  constructor(routes) {
+    this.routes = routes;
     this.buses = [];
-    this.dstore = new Store('BUSBUS_' + routeNo);
+    this.trips = [];
+
+    this.dstore = new Store('BUSBUS');
+
+    this.i = 0;
+    // this.routes = [1, 2, 9, 11, 25, 19, 27, 6];
+    // this.routes = [2, '11b'];
+    console.log(this.routes);
+  }
+
+  updateTrips() {
+    this.trips = [...new Set(this.buses.map((b) => b.data.trip_id))]; //.sort();
+    this.buses.forEach((b) => (b.data.direction = this.trips.indexOf(b.data.trip_id)));
   }
 
   async update() {
+    this.routeNo = this.routes[this.i++ % this.routes.length];
     await this.updateData();
+    this.updateTrips();
     this.draw();
   }
 
@@ -18,7 +32,7 @@ class Buses {
       const r = await fetch(`/api/getBusData/${this.routeNo}`);
       const j = await r.json();
       data = j.data;
-      this.dstore.set('busdata', data, this.dstore.SECOND * 4.5);
+      this.dstore.set('busdata' + this.routeNo, data, this.dstore.SECOND * 5);
     }
 
     for (let busData of data) {
@@ -79,7 +93,8 @@ class Bus {
     this.marker.setRotationAngle(this.data.cardinal_direction - 90);
     this.marker.bindPopup(this.popupContent);
 
-    if (this.age > 60) this.marker._icon.style.opacity = '0.5';
+    this.marker._icon.style.opacity = this.age > 60 ? '0.5' : '1';
+    this.marker._icon.style.filter = 'hue-rotate(' + this.data.direction * 280 + 'deg)';
   }
 
   removeMarker() {
@@ -101,14 +116,15 @@ const Main = (async function () {
 
     // get bus line
     const params = new URLSearchParams(location.search);
-    const routeNo = params.get('line');
+    const r = params.get('line') || '';
+    const routes = r.split(',').map((i) => i.trim());
 
-    const BUSES = new Buses(routeNo);
+    const BUSES = new Buses(routes);
     BUSES.update();
 
     setInterval(() => {
       BUSES.update();
-    }, 2500);
+    }, 1000);
   }
 
   function initMap() {
