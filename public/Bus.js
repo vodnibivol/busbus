@@ -4,8 +4,6 @@ class Buses {
     this.buses = [];
     this.trips = [];
 
-    this.dstore = new Store('BUSBUS');
-
     this.i = 0;
     // this.routes = [1, 2, 9, 11, 25, 19, 27, 6];
     // this.routes = [2, '11b'];
@@ -26,19 +24,14 @@ class Buses {
 
   async updateData() {
     // update buses data
-    let data = null; // this.dstore.get('busdata');
+    const r = await fetch(`/api/getBusData/${this.routeNo}`);
+    const j = await r.json();
 
-    if (!data) {
-      const r = await fetch(`/api/getBusData/${this.routeNo}`);
-      const j = await r.json();
-      data = j.data;
-      this.dstore.set('busdata' + this.routeNo, data, this.dstore.SECOND * 5);
-    }
-
-    for (let busData of data) {
+    for (let busData of j.data) {
       const id = busData.bus_unit_id;
 
       let bus = this.buses.find((b) => b.id === id);
+
       if (bus) bus.update(busData);
       else this.buses.push(new Bus(id, busData));
     }
@@ -96,7 +89,7 @@ class Bus {
       // --- events
       this.marker.on('click', () => this.marker.bindPopup(this.popupContent));
       this.marker.on('popupopen', () => lines.show(this.data.trip_id));
-      this.marker.on('popupclose', () =>lines.hide(this.data.trip_id));
+      this.marker.on('popupclose', () => lines.hide(this.data.trip_id));
     }
 
     this.marker.setLatLng(new L.LatLng(...this.latlon));
