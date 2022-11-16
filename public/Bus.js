@@ -26,7 +26,7 @@ class Buses {
 
   async updateData() {
     // update buses data
-    let data = this.dstore.get('busdata');
+    let data = null; // this.dstore.get('busdata');
 
     if (!data) {
       const r = await fetch(`/api/getBusData/${this.routeNo}`);
