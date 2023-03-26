@@ -8,7 +8,9 @@ const dstore = new Store();
 
 const app = express();
 
-app.listen(3000, () => console.log('listening on port : 3000'));
+const PORT = process.env.PORT || 2200;
+
+app.listen(PORT, () => console.log('::' + PORT));
 app.use('/public', express.static('public'));
 app.set('view engine', 'ejs');
 
