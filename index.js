@@ -56,6 +56,22 @@ app.get('/api/getBusData/:routeNo', async (req, res) => {
   res.json(data);
 });
 
+app.get("/api/getRoute/:routeNo", async (req, res) => {
+  const routeNos = req.params.routeNo.split(','); // ["2", "9"]
+  const routeF = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', 'routes.json')));
+
+  let routeFiles = routeF.filter((fn) => {
+    return routeNos.some((no) => fn.filename.startsWith(no + '_'));
+  });
+
+  routeFiles = routeFiles.map((f) => {
+    const coords = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', f.filename)));
+    return { ...f, coordinates: coords };
+  });
+
+  res.json(routeFiles);
+})
+
 // --- f(x)
 
 async function getJSON(url) {
