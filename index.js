@@ -2,6 +2,7 @@ import express from 'express';
 import fetch from 'node-fetch';
 import path from 'path';
 import fs from 'fs';
+import cors from 'cors';
 
 import Store from './js/Store_node.js';
 const dstore = new Store();
@@ -13,6 +14,7 @@ const PORT = process.env.PORT || 2200;
 app.listen(PORT, () => console.log('::' + PORT));
 app.use('/public', express.static('public'));
 app.set('view engine', 'ejs');
+app.use(cors());
 
 // --- ROUTES
 
