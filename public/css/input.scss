@@ -55,7 +55,6 @@ button {
 
   .postaja {
     padding: 3px;
-    // margin-right: 6px;
     min-width: 15px;
     text-align: center;
 
@@ -111,6 +110,7 @@ button {
 // ---
 
 #busek {
+  z-index: -1;
   position: absolute;
   bottom: -7px;
   left: -50px;
@@ -123,4 +123,8 @@ button {
   } to {
     transform: translate3d(calc(100vw + 50px), 0, 0);
   }
+}
+
+[x-cloak] {
+  display: none;
 }

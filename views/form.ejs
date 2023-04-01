@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="/static/css/input.css" />
   </head>
   <body class="flex-center">
-    <div id="main" x-data="Input">
+    <div id="main" x-data="Input" x-cloak>
       <div class="section" id="input">
         <input
           type="text"
@@ -31,8 +31,7 @@
         </template>
       </div>
 
-      <div class="section" id="linije" x-show="loading||routes.length">
-        <span id="loadingText" x-show="loading">nalaganje ..</span>
+      <div class="section" id="linije" x-show="routes.length">
         <template x-for="r in routes">
           <div class="linija" x-show="!loading">
             <div class="stevilka" x-text="r[0].key" @click="showMap(r[0].key)"></div>
@@ -44,6 +43,9 @@
           </div>
         </template>
       </div>
+
+      <span x-cloak id="loadingText" x-show="loading">nalaganje ..</span>
+      <span x-cloak id="emptyText" x-show="station.name && !loading && !routes.length">ni rezultatov.</span>
     </div>
 
     <img src="/static/img/bus.png" alt="" id="busek" />
@@ -55,10 +57,10 @@
       function izletek() {
         $('#busek').style.animation = '';
         setTimeout(() => ($('#busek').style.animation = `izletek ${window.innerWidth / 50}s linear`), 100);
-        $('#busek').onanimationend = () => setTimeout(izletek, random(10_000, 30_000));
+        $('#busek').onanimationend = () => setTimeout(izletek, random(100_000, 300_000));
       }
 
-      setTimeout(izletek, random(20_000, 30_000));
+      setTimeout(izletek, random(100_000, 300_000));
     </script>
 
     <script src="/static/js/stations.js"></script>
