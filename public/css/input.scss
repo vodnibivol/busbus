@@ -32,12 +32,6 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-
-  &::before {
-    content: "";
-    height: 3px;
-    background: lightgray;
-  }
 }
 
 #input {
@@ -111,5 +105,22 @@ button {
       cursor: pointer;
       user-select: none;
     }
+  }
+}
+
+// ---
+
+#busek {
+  position: absolute;
+  bottom: -7px;
+  left: -50px;
+  width: 35px;
+}
+
+@keyframes izletek {
+  from {
+    transform: translate3d(0, 0, 0);
+  } to {
+    transform: translate3d(calc(100vw + 50px), 0, 0);
   }
 }

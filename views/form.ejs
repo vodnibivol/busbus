@@ -34,7 +34,7 @@
       <div class="section" id="linije" x-show="loading||routes.length">
         <span id="loadingText" x-show="loading">nalaganje ..</span>
         <template x-for="r in routes">
-          <div class="linija" x-show="!loading" >
+          <div class="linija" x-show="!loading">
             <div class="stevilka" x-text="r[0].key" @click="showMap(r[0].key)"></div>
             <span
               class="prihodi"
@@ -45,6 +45,19 @@
         </template>
       </div>
     </div>
+
+    <img src="/static/img/bus.png" alt="" id="busek" />
+
+    <script>
+      const $ = (sel) => document.querySelector(sel);
+
+      function izletek() {
+        $('#busek').style.animation = '';
+        setTimeout(() => ($('#busek').style.animation = `izletek ${window.innerWidth / 50}s linear`), 100);
+      }
+
+      setInterval(izletek, 20 * 1000);
+    </script>
 
     <script src="/static/js/stations.js"></script>
     <script src="/static/js/Input.js"></script>
