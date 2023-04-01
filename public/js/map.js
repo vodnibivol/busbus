@@ -3,6 +3,17 @@ let map;
 let buses;
 let lines;
 
+const Icons = {
+  bus: L.icon({
+    iconUrl: '/static/img/bus_arrow.png',
+    iconSize: [48, 48],
+  }),
+  station: L.icon({
+    iconUrl: '/static/img/station.png',
+    iconSize: [32, 32],
+  }),
+};
+
 const Main = (async function () {
   // init
   init();
@@ -16,7 +27,7 @@ const Main = (async function () {
 
     // get bus line
     const params = new URLSearchParams(location.search);
-    const r = params.get('line') || '';
+    const r = params.get('route') || '';
     const routes = r.split(',').map((i) => i.trim());
 
     buses = new Buses(routes);
@@ -28,6 +39,22 @@ const Main = (async function () {
 
     // lines
     lines = new Lines(routes);
+
+    // zoom on location
+    const stopId = params.get('stop');
+    if (stopId) {
+      const stop = stops.find((s) => s.id == stopId);
+      const stopMarker = L.marker(stop.latlon, {
+        icon: Icons.station,
+      });
+
+      // stopMarker.bindPopup(stop.name);
+      stopMarker.addTo(map);
+
+      stopMarker.addEventListener('click', () => {
+        map.setView(stop.latlon, 15);
+      });
+    }
   }
 
   function initMap() {
@@ -48,14 +75,3 @@ const Main = (async function () {
     document.querySelector('.leaflet-control-attribution').innerHTML = mapConfig.attribution;
   }
 })();
-
-const Icons = {
-  bus: L.icon({
-    iconUrl: '/public/img/bus_arrow.png',
-    iconSize: [48, 48],
-  }),
-  station: L.icon({
-    iconUrl: '/public/img/station.png',
-    iconSize: [32, 32],
-  }),
-};

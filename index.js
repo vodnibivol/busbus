@@ -12,18 +12,20 @@ const app = express();
 const PORT = process.env.PORT || 2200;
 
 app.listen(PORT, () => console.log('::' + PORT));
-app.use('/public', express.static('public'));
+app.use('/static', express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cors());
 
 // --- ROUTES
 
-app.get('/', (_, res) => {
+app.get('/', async (_, res) => {
   res.render('form');
 });
 
 app.get('/map', (req, res) => {
-  const routeNos = req.query.line.split(','); // ["2", "9"]
+  const routeNos = req.query.route.split(','); // ["2", "9"]
+  const stopId = req.query.stop;
+
   const routeF = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', 'routes.json')));
 
   let routeFiles = routeF.filter((fn) => {
@@ -47,7 +49,7 @@ app.get('/api/getBusData/:routeNo', async (req, res) => {
   let data = dstore.get(url);
   if (!data) {
     // console.log('fetch');
-    data = await getJSON(url);
+    data = await ffetch(url);
     dstore.set(url, data, dstore.SECOND * 4.5);
   } else {
     // console.log('dstore');
@@ -56,7 +58,7 @@ app.get('/api/getBusData/:routeNo', async (req, res) => {
   res.json(data);
 });
 
-app.get("/api/getRoute/:routeNo", async (req, res) => {
+app.get('/api/getRoute/:routeNo', async (req, res) => {
   const routeNos = req.params.routeNo.split(','); // ["2", "9"]
   const routeF = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', 'routes.json')));
 
@@ -70,11 +72,20 @@ app.get("/api/getRoute/:routeNo", async (req, res) => {
   });
 
   res.json(routeFiles);
-})
+});
+
+app.get('/api/getRouteData/:routeNo', async (req, res) => {
+  res.end('success');
+});
+
+app.get('/api/getStopData/:stopId', async (req, res) => {
+  const fres = await ffetch('https://www.lpp.si/lpp/ajax/1/' + req.params.stopId);
+  res.json(fres);
+});
 
 // --- f(x)
 
-async function getJSON(url) {
+async function ffetch(url) {
   const r = await fetch(url);
   const j = await r.json();
   return j;

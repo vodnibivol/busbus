@@ -2,44 +2,52 @@
 <html lang="en">
   <head>
     <%- include('./partials/head'); %>
-    <style>
-      * {
-        font-family: Menlo, Consolas, monospace;
-        font-size: 11px;
-      }
-
-      html,
-      body {
-        width: 100%;
-        height: 100%;
-      }
-
-      input,
-      button {
-        border: 2px solid black;
-        padding: 3px 5px;
-        outline: none;
-      }
-
-      input {
-        width: 100px;
-      }
-
-      button {
-        background: lightgreen;
-      }
-    </style>
+    <link rel="stylesheet" href="/static/css/input.css" />
   </head>
   <body class="flex-center">
-    <div class="main">
-      <form action="/map">
-        <input type="text" name="line" placeholder="linija" autocomplete="off" />
-        <button type="submit">ok</button>
-      </form>
+    <div id="main" x-data="Input">
+      <div class="section" id="input">
+        <input
+          type="text"
+          name="postaja"
+          placeholder="postaja"
+          autocomplete="off"
+          list="postaja"
+          x-model="input"
+          @input="onInput"
+        />
+        <!-- <button type="submit">ok</button> -->
+      </div>
+
+      <div class="section" id="postaje" x-show="filteredPostaje.length">
+        <template x-for="p in filteredPostaje">
+          <div
+            class="postaja"
+            x-text="p.name + (p.center?' (C)':' (N)')"
+            :data-id="p.ref_id"
+            @click="select(p.ref_id)"
+            :class="{selected: station.ref_id===p.ref_id}"
+          ></div>
+        </template>
+      </div>
+
+      <div class="section" id="linije" x-show="loading||routes.length">
+        <span id="loadingText" x-show="loading">nalaganje ..</span>
+        <template x-for="r in routes">
+          <div class="linija" x-show="!loading" >
+            <div class="stevilka" x-text="r[0].key" @click="showMap(r[0].key)"></div>
+            <span
+              class="prihodi"
+              x-text="r.map(i=> (eta?i.minutes+' min':i.time)).join(' | ')"
+              @click="eta=!eta"
+            ></span>
+          </div>
+        </template>
+      </div>
     </div>
 
-    <script>
-      window.onload = () => document.querySelector('input').select();
-    </script>
+    <script src="/static/js/stations.js"></script>
+    <script src="/static/js/Input.js"></script>
+    <script src="https://unpkg.com/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
   </body>
 </html>
