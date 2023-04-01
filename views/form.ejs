@@ -50,13 +50,15 @@
 
     <script>
       const $ = (sel) => document.querySelector(sel);
+      const random = (min, max) => min + Math.random() * (max - min);
 
       function izletek() {
         $('#busek').style.animation = '';
-        setTimeout(() => ($('#busek').style.animation = `izletek ${window.innerWidth / 50}s linear`), 100);
+        setTimeout(() => ($('#busek').style.animation = `izletek ${window.innerWidth / 100}s linear`), 100);
+        $('#busek').onanimationend = () => setTimeout(izletek, random(10_000, 30_000));
       }
 
-      setInterval(izletek, 20 * 1000);
+      setTimeout(izletek, random(10_000, 30_000));
     </script>
 
     <script src="/static/js/stations.js"></script>
