@@ -40,7 +40,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  box-shadow: 5px 5px 0 #00000033;
+  // box-shadow: 5px 5px 0 #00000033;
 }
 
 // --- SECTIONS
@@ -77,7 +77,6 @@ button {
 #zgodovina {
   display: flex;
   flex-wrap: wrap;
-
   gap: 6px;
 
   .postaja {
