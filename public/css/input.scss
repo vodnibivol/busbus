@@ -1,6 +1,9 @@
 * {
   font-family: Menlo, Consolas, monospace;
   font-size: 11px;
+  font-weight: bold;
+  box-sizing: border-box;
+  user-select: none;
 }
 
 html,
@@ -23,52 +26,94 @@ button {
 
 #main {
   margin-top: 25vh;
+  padding-bottom: 10rem !important;
+}
+
+.block {
   background: #eee;
-  // padding-bottom: 15rem !important; // TODO: tako mora bit, samo da je brez vsebine #main
-  
-  border: 2px solid black;
-  padding: 1rem;
-  
+
+  width: 250px;
+
+  border: 2px solid;
+  padding: 1.25rem;
+
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  box-shadow: 5px 5px 0 #00000033;
 }
+
+// --- SECTIONS
 
 #input {
+  position: relative;
+
   input {
-    width: 200px;
+    width: 100%;
   }
 
-  button {
-    // background: lightgreen;
+  div.reset {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 22px;
     cursor: pointer;
-    background: #bbb;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    // background: #00000011;
+
+    // &:hover {
+    //   background: #00000022;
+    // }
   }
 }
 
-#postaje {
+#postaje,
+#zgodovina {
   display: flex;
   flex-wrap: wrap;
-  max-width: 200px;
 
   gap: 6px;
 
   .postaja {
-    padding: 3px;
+    // padding: 3px;
     min-width: 15px;
     text-align: center;
 
-    background: #bbb;
+    border-radius: 50px;
+    padding: 3px 7px;
+
     border: 2px solid black;
 
     cursor: pointer;
 
-    &.selected {
-      background: lightcoral !important;
-    }
+    background: #ccc;
 
     &:hover {
-      background: lightblue;
+      background: darken(#ccc, 5);
+    }
+
+    &.selected {
+      background: lightcoral;
+
+      &:hover {
+        background: darken(lightcoral, 5);
+      }
+    }
+  }
+}
+
+#zgodovina {
+  .postaja {
+    background: lightblue;
+
+    &:hover {
+      background: darken(lightblue, 5);
     }
   }
 }
@@ -76,18 +121,19 @@ button {
 #linije {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 
   .linija {
     display: flex;
+    align-items: center;
     gap: 6px;
 
     .stevilka {
       padding: 3px;
-      min-width: 20px;
+      min-width: 30px; // 30 px "19I"
       text-align: center;
 
-      background: lightgreen;
+      background: lightgoldenrodyellow;
       border: 2px solid black;
 
       cursor: pointer;
@@ -100,7 +146,7 @@ button {
     .prihodi {
       background: white;
       border: 2px solid black;
-      padding: 3px;
+      padding: 3px 5px;
       cursor: pointer;
       user-select: none;
     }
@@ -111,20 +157,21 @@ button {
 
 #busek {
   z-index: -1;
-  position: absolute;
+  position: fixed;
   bottom: -7px;
   left: -50px;
-  width: 35px;
+  width: 30px;
 }
 
 @keyframes izletek {
   from {
     transform: translate3d(0, 0, 0);
-  } to {
+  }
+  to {
     transform: translate3d(calc(100vw + 50px), 0, 0);
   }
 }
 
 [x-cloak] {
-  display: none;
+  display: none !important;
 }
