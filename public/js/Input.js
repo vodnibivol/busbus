@@ -9,12 +9,12 @@ const Input = () => ({
   stopHistory: Alpine.$persist([]),
 
   async init() {
-    document.querySelector('input').select();
-
     this.stations = [
       ...stations.to.map((s) => ({ ...s, center: 1 })),
       ...stations.from.map((s) => ({ ...s, center: 0 })),
     ];
+    
+    $('input').select();
   },
 
   stopColor(stopId) {

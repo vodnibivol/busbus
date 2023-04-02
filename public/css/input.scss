@@ -3,7 +3,6 @@
   font-size: 11px;
   font-weight: bold;
   box-sizing: border-box;
-  user-select: none;
 }
 
 html,
@@ -22,6 +21,8 @@ button {
   border: 2px solid black;
   padding: 3px 5px;
   outline: none;
+  border-radius: 0;
+  appearance: none;
 }
 
 #main {
@@ -79,6 +80,8 @@ button {
   flex-wrap: wrap;
   gap: 6px;
 
+  user-select: none;
+
   .postaja {
     // padding: 3px;
     min-width: 15px;
@@ -122,6 +125,8 @@ button {
   flex-direction: column;
   gap: 10px;
 
+  user-select: none;
+
   .linija {
     display: flex;
     align-items: center;
@@ -160,6 +165,7 @@ button {
   bottom: -7px;
   left: -50px;
   width: 30px;
+  pointer-events: none;
 }
 
 @keyframes izletek {
