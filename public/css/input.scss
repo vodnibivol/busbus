@@ -114,15 +114,15 @@ button {
   }
 }
 
-#zgodovina {
-  .postaja {
-    background: lightblue;
+// #zgodovina {
+//   .postaja {
+//     background: lightblue;
 
-    &:hover {
-      background: darken(lightblue, 5);
-    }
-  }
-}
+//     &:hover {
+//       background: darken(lightblue, 5);
+//     }
+//   }
+// }
 
 #linije {
   display: flex;
@@ -147,7 +147,7 @@ button {
       cursor: pointer;
 
       &:hover {
-        background: lightblue;
+        background: darken(#ffe4b3, 5);
       }
     }
 

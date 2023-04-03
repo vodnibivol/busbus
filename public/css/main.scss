@@ -12,8 +12,11 @@ body {
 }
 
 #map {
-  height: 100%;
-  width: 100%;
+  height: 80%;
+  width: 80%;
+  border: 2px solid;
+  box-shadow: 7px 7px 0 #ddd;
+  outline: none;
 }
 
 a.home {

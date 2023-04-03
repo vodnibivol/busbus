@@ -74,8 +74,10 @@ app.get('/api/getRoute/:routeNo', async (req, res) => {
   res.json(routeFiles);
 });
 
-app.get('/api/getRouteData/:routeNo', async (req, res) => {
-  res.end('success');
+app.get('/api/getTripData/:tripId', async (req, res) => {
+  // 87566148-D49D-4365-A5C0-78743355F01C
+  const fres = await ffetch('https://www.lpp.si/lpp/ajax/2/' + req.params.tripId);
+  res.json(fres);
 });
 
 app.get('/api/getStopData/:stopId', async (req, res) => {

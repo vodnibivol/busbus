@@ -11,6 +11,7 @@ const Icons = {
   station: L.icon({
     iconUrl: '/static/img/station.png',
     iconSize: [32, 32],
+    iconAnchor: [16, 32],
   }),
 };
 
@@ -46,10 +47,12 @@ const Main = (async function () {
       const stop = stops.find((s) => s.id == stopId);
       const stopMarker = L.marker(stop.latlon, {
         icon: Icons.station,
+        zIndexOffset: -1000,
       });
 
       // stopMarker.bindPopup(stop.name);
       stopMarker.addTo(map);
+      map.setView(stop.latlon, 14);
 
       stopMarker.addEventListener('click', () => {
         map.setView(stop.latlon, 15);

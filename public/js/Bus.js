@@ -27,6 +27,8 @@ class Buses {
     const r = await fetch(`/api/getBusData/${this.routeNo}`);
     const j = await r.json();
 
+    console.log(j);
+
     for (let busData of j.data) {
       const id = busData.bus_unit_id;
 

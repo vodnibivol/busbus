@@ -37,7 +37,7 @@
             <div
               class="postaja"
               x-text="stopName"
-              @click="input=stopName"
+              @click="onInput()||(input=stopName)"
               :class="{selected: input === stopName}"
             ></div>
           </template>
@@ -62,8 +62,9 @@
               <div class="stevilka" x-text="r[0].key" @click="showMap(r[0].key)"></div>
               <span
                 class="prihodi"
-                x-text="r.map(i=> (eta?i.minutes+' min':i.time)).slice(0, 3).join(', ')"
+                x-text="r.map(i=> (eta?i.minutes+' min':i.time)).slice(0,3).join(', ')"
                 @click="eta=!eta"
+                :style="{textDecoration: dataAge > 20 && 'line-through'}"
               ></span>
             </div>
           </template>

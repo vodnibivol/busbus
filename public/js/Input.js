@@ -6,6 +6,9 @@ const Input = () => ({
   loading: false,
   eta: true,
 
+  dataAge: 0, // seconds
+  ageTimer: null,
+
   stopHistory: Alpine.$persist([]),
 
   async init() {
@@ -15,10 +18,13 @@ const Input = () => ({
   },
 
   get filteredHistory() {
+    const count = arrayCount(this.stopHistory);
     const arr = [];
     for (let id of this.stopHistory) {
+      if (count[id] < 3) continue;
       let s = this.stops.find((s) => s.ref_id === id);
-      if (s && !arr.find((a) => a.name === s.name)) arr.push(s);
+      const alreadyInArr = arr.find((a) => a.name === s.name);
+      if (s && !alreadyInArr) arr.push(s);
     }
     return arr;
   },
@@ -60,17 +66,18 @@ const Input = () => ({
     this.loading = true;
 
     this.selectedStop = this.filteredStopOptions.find((s) => s.ref_id === stopId);
-
-    setTimeout(() => {
-      this.input = this.selectedStop.name; // FIXME: zakaj mora bit ta delay?
-      this.stopHistory.unshift(this.selectedStop.ref_id);
-    }, 10);
+    this.stopHistory.unshift(this.selectedStop.ref_id);
 
     const res = await fetch('/api/getStopData/' + stopId);
     const data = await res.json();
 
     this.routes = data.sort((route1, route2) => parseInt(route1[0].key) - parseInt(route2[0].key));
     this.loading = false;
+
+    // clear and restart timer
+    clearInterval(this.ageTimer);
+    this.dataAge = 0;
+    this.ageTimer = setInterval(() => ++this.dataAge, 1000);
   },
 
   onInput() {
@@ -86,6 +93,15 @@ const Input = () => ({
   },
 
   showMap(routeNo) {
-    location.href = `/map?stop=${this.selectedStop.ref_id}&route=${routeNo}`;
+    location.href = `/map?stop=${this.selectedStop.ref_id}&route=${routeNo}&center=${this.selectedStop.center}`;
   },
 });
+
+// helper functions
+
+function arrayCount(arr) {
+  return arr.reduce((acc, cur) => {
+    acc[cur] = (acc[cur] || 0) + 1;
+    return acc;
+  }, {});
+}

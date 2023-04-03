@@ -25,7 +25,7 @@ class Line {
     this.coordinates = coordinates;
 
     this.polyline = L.polyline(coordinates, {
-      color: 'indianred',
+      color: 'royalblue', // cornflowerblue, dodgerblue, royalblue
       opacity: 0.5,
       lineCap: 'round',
       lineJoin: 'round',
