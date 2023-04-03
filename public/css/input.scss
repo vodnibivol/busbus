@@ -41,7 +41,9 @@ button {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  // box-shadow: 5px 5px 0 #00000033;
+
+  border-radius: 10px;
+  // box-shadow: 5px 5px 0 #00000033; // BUG: safari rendering glitch
 }
 
 // --- SECTIONS
@@ -96,6 +98,8 @@ button {
 
     background: #ccc;
 
+    // text-transform: uppercase;
+
     &:hover {
       background: darken(#ccc, 5);
     }
@@ -137,7 +141,7 @@ button {
       min-width: 30px; // 30 px "19I"
       text-align: center;
 
-      background: lightgoldenrodyellow;
+      background: #ffe4b3;
       border: 2px solid black;
 
       cursor: pointer;

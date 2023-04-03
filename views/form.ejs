@@ -21,27 +21,36 @@
         </div>
 
         <!-- NEDAVNA ISKANJA SECTION -->
-        <div class="section" id="zgodovina" x-show="!input&&stopHistory.length" x-cloak>
-          <template x-for="stop in stopHistory">
+        <div class="section" id="zgodovina" x-show="!input&&filteredHistory.length" x-cloak>
+          <template x-for="stop in filteredHistory">
             <div
               class="postaja"
               x-text="stop.name"
-              :data-id="stop.ref_id"
-              @click="input = stop.name"
+              @click="input=stop.name"
             ></div>
           </template>
         </div>
 
-        <!-- POSTAJE SEARCH SECTION -->
+        <!-- ISKANJE FILTER SECTION -->
         <div class="section" id="postaje" x-show="stopSearch.length" x-cloak>
-          <template x-for="stop in stopSearch">
+          <template x-for="stopName in stopSearch">
             <div
               class="postaja"
-              x-text="stop.name+(stop.center?' (C)':' (N)')"
-              :data-id="stop.ref_id"
-              @click="select(stop.ref_id)"
-              :class="{selected: station.ref_id===stop.ref_id}"
-              :style="{babbckground: stopColor(stop.ref_id)}"
+              x-text="stopName"
+              @click="input=stopName"
+              :class="{selected: input === stopName}"
+            ></div>
+          </template>
+        </div>
+
+        <!-- POSTAJE MOŽNOSTI SECTION -->
+        <div class="section" id="postaje" x-show="filteredStopOptions.length" x-cloak>
+          <template x-for="option in filteredStopOptions">
+            <div
+              class="postaja"
+              x-text="option.text"
+              @click="select(option.ref_id)"
+              :class="{selected: selectedStop.ref_id===option.ref_id}"
             ></div>
           </template>
         </div>
@@ -61,7 +70,7 @@
         </div>
 
         <span x-cloak id="loadingText" x-show="loading">nalaganje ..</span>
-        <span x-cloak id="emptyText" x-show="station.name && !loading && !routes.length">ni rezultatov.</span>
+        <span x-cloak id="emptyText" x-show="selectedStop.name && !loading && !routes.length">ni rezultatov.</span>
       </div>
     </div>
 

@@ -1,7 +1,7 @@
 const Input = () => ({
   input: '',
-  station: {},
-  stations: [],
+  selectedStop: {},
+  stops: [],
   routes: [],
   loading: false,
   eta: true,
@@ -9,25 +9,47 @@ const Input = () => ({
   stopHistory: Alpine.$persist([]),
 
   async init() {
-    this.stations = [
-      ...stations.to.map((s) => ({ ...s, center: 1 })),
-      ...stations.from.map((s) => ({ ...s, center: 0 })),
-    ];
-    
+    this.stops = [...stations.to.map((s) => ({ ...s, center: 1 })), ...stations.from.map((s) => ({ ...s, center: 0 }))];
+
     $('input').select();
   },
 
-  stopColor(stopId) {
-    const perc = this.stations.findIndex((s) => s.ref_id === stopId) / this.stations.length;
-    const hue = perc * 360;
-    return `hsl(${hue}, 80%, 90%)`;
+  get filteredHistory() {
+    const arr = [];
+    for (let id of this.stopHistory) {
+      let s = this.stops.find((s) => s.ref_id === id);
+      if (s && !arr.find((a) => a.name === s.name)) arr.push(s);
+    }
+    return arr;
   },
 
   get stopSearch() {
-    if (this.input.length < 3) return [];
-    return this.stations
-      .filter((s) => new RegExp(this.input, 'i').test(s.name))
-      .sort((a, b) => a.name.localeCompare(b.name));
+    if (this.input.length < 3) {
+      return [];
+    } else {
+      // seznam IMEN postaj (brez C/N), dedupliciran
+      const arr = [];
+      for (let stop of this.stops) {
+        if (new RegExp(this.input, 'i').test(stop.name) && !arr.includes(stop.name)) arr.push(stop.name); // TODO
+      }
+      return arr.sort((a, b) => a.localeCompare(b));
+    }
+  },
+
+  get filteredStopOptions() {
+    return this.stops
+      .filter((s) => s.name === this.input)
+      .map((val, ind, arr) => ({
+        ...val,
+        // text: `${ind+1}) ` + (val.center ? 'V CENTER' : 'IZ CENTRA'),
+        text: (function () {
+          // check in filteredStops if there are >1 with same text output ("V CENTER" / "IZ CENTRA")
+          const sameDirOptions = arr.filter((o) => o.center === val.center);
+          const sym = String.fromCharCode(65 + sameDirOptions.findIndex((o) => o.ref_id === val.ref_id));
+          const indexText = sameDirOptions.length > 1 ? ` (${sym})` : '';
+          return val.center ? 'V CENTER' + indexText : 'IZ CENTRA' + indexText;
+        })(),
+      }));
   },
 
   removeStop(stopId) {
@@ -37,15 +59,11 @@ const Input = () => ({
   async select(stopId) {
     this.loading = true;
 
-    this.station = this.stations.find((s) => s.ref_id === stopId);
+    this.selectedStop = this.filteredStopOptions.find((s) => s.ref_id === stopId);
 
     setTimeout(() => {
-      this.input = this.station.name; // FIXME: zakaj mora bit ta delay?
-
-      // ADD TO HISTORY
-      this.stopHistory = this.stopHistory.filter(({ name }) => name !== this.station.name);
-      this.stopHistory.unshift(this.station);
-      this.stopHistory = this.stopHistory.slice(0, 4);
+      this.input = this.selectedStop.name; // FIXME: zakaj mora bit ta delay?
+      this.stopHistory.unshift(this.selectedStop.ref_id);
     }, 10);
 
     const res = await fetch('/api/getStopData/' + stopId);
@@ -57,17 +75,17 @@ const Input = () => ({
 
   onInput() {
     this.routes = [];
-    this.station = {};
+    this.selectedStop = {};
   },
 
   resetInput() {
     this.routes = [];
-    this.station = {};
+    this.selectedStop = {};
     this.input = '';
     $('#input input').select();
   },
 
   showMap(routeNo) {
-    location.href = `/map?stop=${this.station.ref_id}&route=${routeNo}`;
+    location.href = `/map?stop=${this.selectedStop.ref_id}&route=${routeNo}`;
   },
 });
