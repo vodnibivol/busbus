@@ -7,7 +7,9 @@ const Input = () => ({
   eta: true,
 
   dataAge: 0, // seconds
+  maxAge: 20, // seconds
   ageTimer: null,
+  autoRefresh: true,
 
   stopHistory: Alpine.$persist([]),
 
@@ -20,8 +22,8 @@ const Input = () => ({
   get filteredHistory() {
     const count = arrayCount(this.stopHistory);
     const arr = [];
-    for (let id of this.stopHistory) {
-      if (count[id] < 3) continue;
+    for (let id of this.stopHistory.slice(0, 10)) {
+      if (count[id] < 2) continue;
       let s = this.stops.find((s) => s.ref_id === id);
       const alreadyInArr = arr.find((a) => a.name === s.name);
       if (s && !alreadyInArr) arr.push(s);
@@ -77,7 +79,9 @@ const Input = () => ({
     // clear and restart timer
     clearInterval(this.ageTimer);
     this.dataAge = 0;
-    this.ageTimer = setInterval(() => ++this.dataAge, 1000);
+    this.ageTimer = setInterval(() => {
+      if (++this.dataAge >= this.maxAge && this.autoRefresh) this.select(stopId);
+    }, 1000);
   },
 
   onInput() {

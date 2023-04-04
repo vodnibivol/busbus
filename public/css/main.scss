@@ -5,6 +5,10 @@ body {
   padding: 0;
 }
 
+::selection {
+  background: lightblue;
+}
+
 .flex-center {
   display: flex;
   justify-content: center;
@@ -33,4 +37,32 @@ a.home {
   text-decoration: none;
   font-size: 13px;
   opacity: 0.9;
+}
+
+.live-dot {
+  box-sizing: border-box;
+  z-index: 1000;
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  width: 12px;
+  height: 12px;
+  background: gray;
+  border: 2px solid black;
+  border-radius: 50%;
+  opacity: 0.9;
+  cursor: pointer;
+  
+  &.live {
+    animation: blink 1.5s ease-in infinite alternate;
+  }
+}
+
+@keyframes blink {
+  from {
+    background: rgb(253, 52, 52);
+  }
+  to {
+    background: rgb(150, 52, 52);
+  }
 }

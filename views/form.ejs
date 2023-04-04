@@ -6,28 +6,19 @@
   </head>
   <body class="flex-center">
     <div id="main" x-data="Input">
+      <div class="live-dot" :class="{live:autoRefresh}" @click="autoRefresh=!autoRefresh"></div>
+
       <div class="block">
         <!-- INPUT SECTION -->
         <div class="section" id="input">
-          <input
-            type="text"
-            name="postaja"
-            placeholder="postaja"
-            autocomplete="off"
-            x-model="input"
-            @input="onInput"
-          />
+          <input type="text" name="postaja" placeholder="postaja" autocomplete="off" x-model="input" @input="onInput" />
           <div class="reset" @click="resetInput" x-show="!!input">x</div>
         </div>
 
         <!-- NEDAVNA ISKANJA SECTION -->
         <div class="section" id="zgodovina" x-show="!input&&filteredHistory.length" x-cloak>
           <template x-for="stop in filteredHistory">
-            <div
-              class="postaja"
-              x-text="stop.name"
-              @click="input=stop.name"
-            ></div>
+            <div class="postaja" x-text="stop.name" @click="input=stop.name"></div>
           </template>
         </div>
 
@@ -50,21 +41,21 @@
               class="postaja"
               x-text="option.text"
               @click="select(option.ref_id)"
-              :class="{selected: selectedStop.ref_id===option.ref_id}"
+              :class="{selected: selectedStop.ref_id === option.ref_id}"
             ></div>
           </template>
         </div>
 
         <!-- LINIJE SECTION -->
-        <div class="section" id="linije" x-show="routes.length" x-cloak>
+        <div class="section" id="linije" x-show="!loading && routes.length" x-cloak>
           <template x-for="r in routes">
-            <div class="linija" x-show="!loading">
+            <div class="linija">
               <div class="stevilka" x-text="r[0].key" @click="showMap(r[0].key)"></div>
               <span
                 class="prihodi"
-                x-text="r.map(i=> (eta?i.minutes+' min':i.time)).slice(0,3).join(', ')"
+                x-text="r.map(i=>(eta?i.minutes+' min':i.time)).slice(0,3).join(', ')"
                 @click="eta=!eta"
-                :style="{textDecoration: dataAge > 20 && 'line-through'}"
+                :style="{textDecoration: dataAge >= maxAge && 'line-through'}"
               ></span>
             </div>
           </template>

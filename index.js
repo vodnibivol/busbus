@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 import fs from 'fs';
 import cors from 'cors';
+import compression from 'compression';
 
 import Store from './js/Store_node.js';
 const dstore = new Store();
@@ -12,83 +13,83 @@ const app = express();
 const PORT = process.env.PORT || 2200;
 
 app.listen(PORT, () => console.log('::' + PORT));
+
+app.use(compression());
 app.use('/static', express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cors());
 
-// --- ROUTES
+// --- DATA
 
-app.get('/', async (_, res) => {
+const linije_s_postajalisci = JSON.parse(fs.readFileSync(path.resolve('db', 'linije_s_postajalisci.json')));
+const postajalisca_koordinate = JSON.parse(fs.readFileSync(path.resolve('db', 'postajalisca_koordinate.json')));
+const postajalisca_s_smerjo = JSON.parse(fs.readFileSync(path.resolve('db', 'postajalisca_s_smerjo.json')));
+
+// --- ROUTER
+
+app.get('/', (req, res) => {
   res.render('form');
 });
 
 app.get('/map', (req, res) => {
   const routeNos = req.query.route.split(','); // ["2", "9"]
-  const stopId = req.query.stop;
+
+  const stopId = req.query.stop; // TODO: ugotovi, kateri ID linije je to
+  const line = linije_s_postajalisci.find((l) => l.stops.find((s) => s.ref_id == stopId));
 
   const routeF = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', 'routes.json')));
 
-  let routeFiles = routeF.filter((fn) => {
-    return routeNos.some((no) => fn.filename.startsWith(no + '_'));
-  });
+  let routeFiles = routeF
+    .filter((fn) => {
+      return routeNos.some((no) => fn.filename.startsWith(no + '_'));
+    })
+    .map((f) => {
+      const coords = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', f.filename)));
+      return { ...f, coordinates: coords };
+    });
 
-  routeFiles = routeFiles.map((f) => {
-    const coords = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', f.filename)));
-    return { ...f, coordinates: coords };
-  });
-
-  res.render('map', { routes: routeFiles });
+  res.render('map', { routes: routeFiles, stationRoute: line?.id });
 });
 
 // --- API
 
 app.get('/api/getBusData/:routeNo', async (req, res) => {
-  const { routeNo } = req.params;
-  const url = `https://bus-ljubljana.eu/app/busDetails?n=${routeNo}`;
-
-  let data = dstore.get(url);
-  if (!data) {
-    // console.log('fetch');
-    data = await ffetch(url);
-    dstore.set(url, data, dstore.SECOND * 4.5);
-  } else {
-    // console.log('dstore');
-  }
-
+  let data = await cachedFetch('https://bus-ljubljana.eu/app/busDetails?n=' + req.params.routeNo, 3000);
   res.json(data);
 });
 
-app.get('/api/getRoute/:routeNo', async (req, res) => {
-  const routeNos = req.params.routeNo.split(','); // ["2", "9"]
-  const routeF = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', 'routes.json')));
-
-  let routeFiles = routeF.filter((fn) => {
-    return routeNos.some((no) => fn.filename.startsWith(no + '_'));
-  });
-
-  routeFiles = routeFiles.map((f) => {
-    const coords = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', f.filename)));
-    return { ...f, coordinates: coords };
-  });
-
-  res.json(routeFiles);
-});
-
 app.get('/api/getTripData/:tripId', async (req, res) => {
-  // 87566148-D49D-4365-A5C0-78743355F01C
-  const fres = await ffetch('https://www.lpp.si/lpp/ajax/2/' + req.params.tripId);
-  res.json(fres);
+  const data = await cachedFetch('https://www.lpp.si/lpp/ajax/2/' + req.params.tripId, 3000);
+  res.json(data);
 });
 
 app.get('/api/getStopData/:stopId', async (req, res) => {
-  const fres = await ffetch('https://www.lpp.si/lpp/ajax/1/' + req.params.stopId);
-  res.json(fres);
+  const data = await cachedFetch('https://www.lpp.si/lpp/ajax/1/' + req.params.stopId, 3000);
+  res.json(data);
 });
 
-// --- f(x)
+// --- ERRORS
 
-async function ffetch(url) {
-  const r = await fetch(url);
-  const j = await r.json();
-  return j;
+app.use((req, res, next) => {
+  res.end('error 404');
+});
+
+app.use((err, req, res, next) => {
+  res.end('error 505\n\n---\n' + err);
+});
+
+// --- utils
+
+async function cachedFetch(url, cacheTime) {
+  try {
+    let data = dstore.get(url);
+    if (!data) {
+      const r = await fetch(url);
+      data = await r.json();
+      dstore.set(url, data, cacheTime);
+    }
+    return data;
+  } catch (error) {
+    return 'ERROR';
+  }
 }

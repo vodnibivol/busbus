@@ -67,9 +67,10 @@ class Bus {
     else if (age > 60) ageMsg = `pred ${Math.round(age / 60)} minutami`;
     else ageMsg = `pred ${age} sekundami`;
 
-    return [`- ${this.data.destination} (${this.data.route_number})`, `- ${ageMsg}`, `- [${this.data.bus_name}]`].join(
-      '<br>'
-    );
+    return `\
+    - ${this.data.destination} (${this.data.route_number})
+    - ${ageMsg}
+    - [${this.data.bus_name}]`.replaceAll('\n', '<br>');
   }
 
   update(data) {

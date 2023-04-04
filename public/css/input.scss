@@ -1,6 +1,6 @@
 * {
   font-family: Menlo, Consolas, monospace;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: bold;
   box-sizing: border-box;
 }
@@ -22,12 +22,15 @@ button {
   padding: 3px 5px;
   outline: none;
   border-radius: 0;
-  appearance: none;
+  // appearance: none;
 }
 
 #main {
-  margin-top: 25vh;
-  padding-bottom: 10rem !important;
+  margin-top: 20vh;
+  padding-bottom: 5rem !important;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .block {

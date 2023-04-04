@@ -24,7 +24,7 @@ const Main = (async function () {
     map = L.map('map').setView([46.05, 14.52], 13);
 
     initMap();
-    L.control.locate().addTo(map);
+    // L.control.locate().addTo(map);
 
     // get bus line
     const params = new URLSearchParams(location.search);
@@ -36,7 +36,7 @@ const Main = (async function () {
 
     setInterval(() => {
       buses.update();
-    }, 1000);
+    }, 2000);
 
     // lines
     lines = new Lines(routes);
@@ -58,6 +58,8 @@ const Main = (async function () {
         map.setView(stop.latlon, 15);
       });
     }
+
+    lines.show(stationRoute);
   }
 
   function initMap() {
@@ -68,7 +70,8 @@ const Main = (async function () {
       tileSize: 512,
       zoomOffset: -1,
       accessToken: 'pk.eyJ1Ijoidm9kbmliaXZvbCIsImEiOiJjbDBrb2ZhNTIwb2YxM2ltOXVmMG5qbW05In0.eH6IYRJquEFQgNTXGcyBmA',
-      attribution: 'vodnibivol | <a href="/">Home</a>',
+      // attribution: 'vodnibivol | <a href="/">Home</a>',
+      attribution: '',
     };
     const tileLayer = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}{r}?access_token={accessToken}';
 
