@@ -12,18 +12,18 @@
         <!-- INPUT SECTION -->
         <div class="section" id="input">
           <input type="text" name="postaja" placeholder="postaja" autocomplete="off" x-model="input" @input="onInput" />
-          <div class="reset" @click="resetInput" x-show="!!input">x</div>
+          <div class="reset" @click="resetInput" x-show="displayed.reset">x</div>
         </div>
 
         <!-- NEDAVNA ISKANJA SECTION -->
-        <div class="section" id="zgodovina" x-show="!input&&filteredHistory.length" x-cloak>
+        <div class="section" id="zgodovina" x-show="displayed.history" x-cloak>
           <template x-for="stop in filteredHistory">
             <div class="postaja" x-text="stop.name" @click="input=stop.name"></div>
           </template>
         </div>
 
         <!-- ISKANJE FILTER SECTION -->
-        <div class="section" id="postaje" x-show="stopSearch.length" x-cloak>
+        <div class="section" id="postaje" x-show="displayed.searchResults" x-cloak>
           <template x-for="stopName in stopSearch">
             <div
               class="postaja"
@@ -35,7 +35,7 @@
         </div>
 
         <!-- POSTAJE MOŽNOSTI SECTION -->
-        <div class="section" id="postaje" x-show="filteredStopOptions.length" x-cloak>
+        <div class="section" id="postaje" x-show="displayed.options" x-cloak>
           <template x-for="option in filteredStopOptions">
             <div
               class="postaja"
@@ -47,7 +47,7 @@
         </div>
 
         <!-- LINIJE SECTION -->
-        <div class="section" id="linije" x-show="!loading && routes.length" x-cloak>
+        <div class="section" id="linije" x-show="displayed.routes" x-cloak>
           <template x-for="r in routes">
             <div class="linija">
               <div class="stevilka" x-text="r[0].key" @click="showMap(r[0].key)"></div>
@@ -55,14 +55,14 @@
                 class="prihodi"
                 x-text="r.map(i=>(eta?i.minutes+' min':i.time)).slice(0,3).join(', ')"
                 @click="eta=!eta"
-                :style="{textDecoration: dataAge >= maxAge && 'line-through'}"
+                :style="{textDecoration: dataExpired && 'line-through'}"
               ></span>
             </div>
           </template>
         </div>
 
         <span x-cloak id="loadingText" x-show="loading">nalaganje ..</span>
-        <span x-cloak id="emptyText" x-show="selectedStop.name && !loading && !routes.length">ni rezultatov.</span>
+        <span x-cloak id="emptyText" x-show="displayed.noResultsText">ni rezultatov.</span>
       </div>
     </div>
 

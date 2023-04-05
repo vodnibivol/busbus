@@ -75,7 +75,7 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  res.end('error 505\n\n---\n' + err);
+  res.end('internal server error\n\n---\n' + err);
 });
 
 // --- utils

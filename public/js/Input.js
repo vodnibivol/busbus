@@ -6,17 +6,40 @@ const Input = () => ({
   loading: false,
   eta: true,
 
-  dataAge: 0, // seconds
-  maxAge: 20, // seconds
-  ageTimer: null,
+  // timer
+  dataExpires: Infinity,
   autoRefresh: true,
+  count: 0,
 
   stopHistory: Alpine.$persist([]),
 
   async init() {
     this.stops = [...stations.to.map((s) => ({ ...s, center: 1 })), ...stations.from.map((s) => ({ ...s, center: 0 }))];
-
+    setInterval(this.checkTime.bind(this), 1000);
     $('input').select();
+  },
+
+  checkTime() {
+    this.count++; // NOTE: for reactivity only
+    if (this.displayed.routes && this.dataExpired && this.autoRefresh) {
+      this.select(this.selectedStop.ref_id);
+    }
+  },
+
+  get dataExpired() {
+    // NOTE: count for reactivity only
+    return this.count && new Date().valueOf() >= this.dataExpires;
+  },
+
+  get displayed() {
+    return {
+      reset: !!this.input,
+      history: !this.input && this.filteredHistory.length,
+      searchResults: this.stopSearch.length,
+      options: this.filteredStopOptions.length,
+      routes: !this.loading && this.routes.length,
+      noResultsText: this.selectedStop.name && !this.loading && !this.routes.length,
+    };
   },
 
   get filteredHistory() {
@@ -38,7 +61,7 @@ const Input = () => ({
       // seznam IMEN postaj (brez C/N), dedupliciran
       const arr = [];
       for (let stop of this.stops) {
-        if (new RegExp(this.input, 'i').test(stop.name) && !arr.includes(stop.name)) arr.push(stop.name); // TODO
+        if (new RegExp(this.input, 'i').test(stop.name) && !arr.includes(stop.name)) arr.push(stop.name); // TODO: čšž
       }
       return arr.sort((a, b) => a.localeCompare(b));
     }
@@ -76,12 +99,7 @@ const Input = () => ({
     this.routes = data.sort((route1, route2) => parseInt(route1[0].key) - parseInt(route2[0].key));
     this.loading = false;
 
-    // clear and restart timer
-    clearInterval(this.ageTimer);
-    this.dataAge = 0;
-    this.ageTimer = setInterval(() => {
-      if (++this.dataAge >= this.maxAge && this.autoRefresh) this.select(stopId);
-    }, 1000);
+    this.dataExpires = new Date().valueOf() + 20 * 1000; // 20 sec
   },
 
   onInput() {
