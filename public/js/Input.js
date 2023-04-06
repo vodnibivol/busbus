@@ -9,18 +9,18 @@ const Input = () => ({
   // timer
   dataExpires: Infinity,
   autoRefresh: true,
-  count: 0,
+  tick: 0,
 
   stopHistory: Alpine.$persist([]),
 
-  async init() {
+  init() {
     this.stops = [...stations.to.map((s) => ({ ...s, center: 1 })), ...stations.from.map((s) => ({ ...s, center: 0 }))];
     setInterval(this.checkTime.bind(this), 1000);
     $('input').select();
   },
 
   checkTime() {
-    this.count++; // NOTE: for reactivity only
+    this.tick++; // NOTE: for reactivity only
     if (this.displayed.routes && this.dataExpired && this.autoRefresh) {
       this.select(this.selectedStop.ref_id);
     }
@@ -28,7 +28,7 @@ const Input = () => ({
 
   get dataExpired() {
     // NOTE: count for reactivity only
-    return this.count && new Date().valueOf() >= this.dataExpires;
+    return this.tick && new Date().valueOf() >= this.dataExpires;
   },
 
   get displayed() {
@@ -60,8 +60,11 @@ const Input = () => ({
     } else {
       // seznam IMEN postaj (brez C/N), dedupliciran
       const arr = [];
+      const reg = new RegExp(this.input, 'i'); // TODO: čšž
       for (let stop of this.stops) {
-        if (new RegExp(this.input, 'i').test(stop.name) && !arr.includes(stop.name)) arr.push(stop.name); // TODO: čšž
+        if (reg.test(stop.name) && !arr.includes(stop.name)) {
+          arr.push(stop.name);
+        }
       }
       return arr.sort((a, b) => a.localeCompare(b));
     }
@@ -72,13 +75,13 @@ const Input = () => ({
       .filter((s) => s.name === this.input)
       .map((val, ind, arr) => ({
         ...val,
-        // text: `${ind+1}) ` + (val.center ? 'V CENTER' : 'IZ CENTRA'),
+        // text: val.center ? 'V CENTER' : 'IZ CENTRA',
         text: (function () {
           // check in filteredStops if there are >1 with same text output ("V CENTER" / "IZ CENTRA")
           const sameDirOptions = arr.filter((o) => o.center === val.center);
           const sym = String.fromCharCode(65 + sameDirOptions.findIndex((o) => o.ref_id === val.ref_id));
           const indexText = sameDirOptions.length > 1 ? ` (${sym})` : '';
-          return val.center ? 'V CENTER' + indexText : 'IZ CENTRA' + indexText;
+          return (val.center ? 'V CENTER' : 'IZ CENTRA') + indexText;
         })(),
       }));
   },

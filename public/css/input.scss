@@ -46,7 +46,8 @@ button {
   gap: 1.25rem;
 
   border-radius: 10px;
-  // box-shadow: 5px 5px 0 #00000033; // BUG: safari rendering glitch
+  // box-shadow: 5px 5px 0 #00000033;
+  // will-change: filter; // BUG: safari bug fix
 }
 
 // --- SECTIONS
@@ -63,7 +64,7 @@ button {
     right: 0;
     top: 0;
     height: 100%;
-    width: 22px;
+    width: 23px;
     cursor: pointer;
 
     display: flex;
@@ -88,20 +89,14 @@ button {
   user-select: none;
 
   .postaja {
-    // padding: 3px;
     min-width: 15px;
-    text-align: center;
-
-    border-radius: 50px;
     padding: 3px 7px;
-
+    background: #ccc;
     border: 2px solid black;
+    border-radius: 50px;
 
     cursor: pointer;
-
-    background: #ccc;
-
-    // text-transform: uppercase;
+    text-align: center;
 
     &:hover {
       background: darken(#ccc, 5);
@@ -164,7 +159,7 @@ button {
   }
 }
 
-// ---
+// --- BUSEK
 
 #busek {
   z-index: -1;

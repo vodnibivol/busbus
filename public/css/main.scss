@@ -39,22 +39,31 @@ a.home {
   opacity: 0.9;
 }
 
-.live-dot {
-  box-sizing: border-box;
+.live-dot-container {
+  // border: 1px solid violet;
   z-index: 1000;
   position: fixed;
-  top: 15px;
-  right: 15px;
-  width: 12px;
-  height: 12px;
-  background: gray;
-  border: 2px solid black;
+  top: 5px;
+  right: 5px;
+  padding: 10px;
+
+  display: flex;
+  align-items: center;
+
   border-radius: 50%;
-  opacity: 0.9;
   cursor: pointer;
-  
-  &.live {
-    animation: blink 1.5s ease-in infinite alternate;
+
+  .live-dot {
+    width: 12px;
+    height: 12px;
+    background: #eee;
+    border: 2px solid black;
+    border-radius: 50%;
+    opacity: 0.9;
+
+    &.live {
+      animation: blink 1.5s ease-in infinite alternate;
+    }
   }
 }
 
