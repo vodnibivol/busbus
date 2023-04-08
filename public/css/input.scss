@@ -5,12 +5,6 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-}
-
 body {
   align-items: flex-start !important;
   // background: url("/static/img/bg_pattern.png");
@@ -22,7 +16,6 @@ button {
   padding: 3px 5px;
   outline: none;
   border-radius: 0;
-  // appearance: none;
 }
 
 #main {
@@ -32,6 +25,8 @@ button {
   flex-direction: column;
   gap: 6px;
 }
+
+// --- BLOCK = glavna reč na sredini
 
 .block {
   background: #eee;
@@ -46,8 +41,6 @@ button {
   gap: 1.25rem;
 
   border-radius: 10px;
-  // box-shadow: 5px 5px 0 #00000033;
-  // will-change: filter; // BUG: safari bug fix
 }
 
 // --- SECTIONS
@@ -66,22 +59,10 @@ button {
     height: 100%;
     width: 23px;
     cursor: pointer;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
-    // background: #00000011;
-
-    // &:hover {
-    //   background: #00000022;
-    // }
   }
 }
 
-#postaje,
-#zgodovina {
+.postaje {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -111,16 +92,6 @@ button {
     }
   }
 }
-
-// #zgodovina {
-//   .postaja {
-//     background: lightblue;
-
-//     &:hover {
-//       background: darken(lightblue, 5);
-//     }
-//   }
-// }
 
 #linije {
   display: flex;
@@ -177,8 +148,4 @@ button {
   to {
     transform: translate3d(calc(100vw + 50px), 0, 0);
   }
-}
-
-[x-cloak] {
-  display: none !important;
 }

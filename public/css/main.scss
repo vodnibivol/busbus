@@ -75,3 +75,11 @@ a.home {
     background: rgb(150, 52, 52);
   }
 }
+
+.hidden {
+  display: none !important;
+}
+
+.invisible {
+  visibility: hidden !important;
+}
