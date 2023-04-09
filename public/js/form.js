@@ -115,7 +115,7 @@ const config = {
     }
 
     // init
-    this.stops = [...stations.to.map((s) => ({ ...s, center: 1 })), ...stations.from.map((s) => ({ ...s, center: 0 }))];
+    this.stops = stops;
     setInterval(this.checkTime.bind(this), 1000);
     $('input').select();
 

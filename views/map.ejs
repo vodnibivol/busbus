@@ -12,14 +12,12 @@
 
     <script>
       const routes = <%- JSON.stringify(routes) %>;
-      const stationRoute = <%- JSON.stringify(stationRoute) %>;
+      const stop = <%- JSON.stringify(stopData) %>;
     </script>
 
     <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script> -->
-
-    <script src="/static/js/stops.js"></script>
     <script src="/static/js/leaflet.rotatedMarker.js"></script>
+
     <script src="/static/js/Lines.js"></script>
     <script src="/static/js/Bus.js"></script>
     <script src="/static/js/map.js"></script>

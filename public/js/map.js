@@ -42,24 +42,22 @@ const Main = (async function () {
     lines = new Lines(routes);
 
     // zoom on location
-    const stopId = params.get('stop');
-    if (stopId) {
-      const stop = stops.find((s) => s.id == stopId);
-      const stopMarker = L.marker(stop.latlon, {
+    if (stop.location) {
+      const stopMarker = L.marker(stop.location, {
         icon: Icons.station,
         zIndexOffset: -1000,
       });
 
       // stopMarker.bindPopup(stop.name);
       stopMarker.addTo(map);
-      map.setView(stop.latlon, 14);
+      map.setView(stop.location, 14);
 
       stopMarker.addEventListener('click', () => {
-        map.setView(stop.latlon, 15);
+        map.setView(stop.location, 15);
       });
-    }
 
-    lines.show(stationRoute);
+      lines.show(stop.trip_id);
+    }
   }
 
   function initMap() {

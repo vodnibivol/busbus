@@ -24,7 +24,7 @@ class Buses {
 
   async updateData() {
     // update buses data
-    const r = await fetch(`/api/getBusData/${this.routeNo}`);
+    const r = await fetch(`/api/getBusData/${this.routeNo}?trip=${stop.trip_id||''}`);
     const j = await r.json();
 
     console.log(j);
@@ -91,8 +91,8 @@ class Bus {
 
       // --- events
       this.marker.on('click', () => this.marker.bindPopup(this.popupContent));
-      this.marker.on('popupopen', () => lines.show(this.data.trip_id));
-      this.marker.on('popupclose', () => lines.hide(this.data.trip_id));
+      // this.marker.on('popupopen', () => lines.show(this.data.trip_id));
+      // this.marker.on('popupclose', () => lines.hide(this.data.trip_id));
     }
 
     this.marker.setLatLng(new L.LatLng(...this.latlon));
