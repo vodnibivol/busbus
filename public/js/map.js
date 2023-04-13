@@ -29,9 +29,9 @@ const Main = (async function () {
     // get bus line
     const params = new URLSearchParams(location.search);
     const r = params.get('route') || '';
-    const routes = r.split(',').map((i) => i.trim());
+    const routeNumbers = r.split(',').map((i) => i.trim());
 
-    buses = new Buses(routes);
+    buses = new Buses(routeNumbers);
     buses.update();
 
     setInterval(() => {
@@ -39,7 +39,7 @@ const Main = (async function () {
     }, 2000);
 
     // lines
-    lines = new Lines(routes);
+    lines = new Lines();
 
     // zoom on location
     if (stop.location) {

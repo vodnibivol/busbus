@@ -32,25 +32,33 @@ app.get('/', (req, res) => {
 
 app.get('/map', (req, res) => {
   if (!req.query.route) return res.redirect('/');
-  const routeNos = req.query.route.split(','); // ["2", "9"]
+  const routeNumbers = req.query.route.split(','); // ["2", "9"]
 
   const stopId = req.query.stop;
-  const tripId = linije.find((l) => l.stops.find((s) => s.ref_id == stopId))?.id || null;
+  const tripId = linije.find((l) => {
+    // NOTE: ni dovolj stop id!! mora biti tudi prava stevilka busa (1/2/3/11b/..)
+    return routeNumbers.includes(l.number) && l.stops.find((s) => s.ref_id == stopId)
+  })?.id || null;
   const stop = stopId ? postajalisca.find((p) => p.ref_id === stopId) : {};
   if (stop) stop.trip_id = tripId;
 
-  const routeF = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', 'routes.json')));
+  const routeFileIndex = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', 'routes.json')));
 
-  let routeFiles = routeF
-    .filter((fn) => {
-      return routeNos.some((no) => fn.filename.startsWith(no + '_'));
-    })
-    .map((f) => {
-      const coords = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', f.filename)));
-      return { ...f, coordinates: coords };
-    });
+  const tripData = routeFileIndex.find((entry) => entry.trip_id === tripId);
 
-  res.render('map', { routes: routeFiles, stopData: stop });
+  if (!tripData) {
+    return res.render('map', { tripData: {}, stopData: stop });
+  } 
+
+  const coordinates = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', tripData.filename)));
+  tripData.coordinates = coordinates;
+
+  // const coordinates = routeFilename.map((f) => {
+  //   return { ...f, coordinates: coords };
+  // });
+
+
+  res.render('map', { tripData: [tripData], stopData: stop });
 });
 
 // --- API
@@ -81,6 +89,7 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+  console.error(err);
   res.end('internal server error\n\n---\n' + err);
 });
 
