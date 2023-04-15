@@ -41,7 +41,6 @@ class Buses {
 
     // show message if no data
     if (!j.data.length) {
-      $('#msg').innerText = 'ni podatkov.';
       $('#msg').classList.remove('hidden');
     } else {
       $('#msg').classList.add('hidden');
