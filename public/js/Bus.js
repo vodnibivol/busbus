@@ -20,8 +20,15 @@ class Buses {
 
   async updateData() {
     // update buses data
-    const r = await fetch(`/api/getBusData/${this.routeNo}`);
-    const j = await r.json();
+    let r, j;
+
+    try {
+      r = await fetch(`/api/getBusData/${this.routeNo}`);
+      j = await r.json();
+      // console.log(j.data);
+    } catch (error) {
+      j = { data: [] };
+    }
 
     for (let busData of j.data) {
       // if tripData not in tripsData: continue
@@ -30,6 +37,14 @@ class Buses {
       const bus = this.buses.find((b) => b.bus_unit_id === busData.bus_unit_id);
       if (bus) bus.update(busData);
       else this.buses.push(new Bus(busData));
+    }
+
+    // show message if no data
+    if (!j.data.length) {
+      $('#msg').innerText = 'ni podatkov.';
+      $('#msg').classList.remove('hidden');
+    } else {
+      $('#msg').classList.add('hidden');
     }
   }
 
