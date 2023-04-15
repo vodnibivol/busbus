@@ -47,6 +47,7 @@ const Main = (async function () {
       stopMarker.addEventListener('click', () => map.setView(stopData.location, 15));
 
       if (lines.lines.length) {
+        // TODO: lines.lines ..
         lines.lines[0].show();
       }
     }

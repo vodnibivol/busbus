@@ -91,8 +91,11 @@ class Bus {
 
       // --- events
       this.marker.on('click', () => this.marker.bindPopup(this.popupContent));
-      // this.marker.on('popupopen', () => lines.show(this.trip_id));
-      // this.marker.on('popupclose', () => lines.hide(this.trip_id));
+
+      if (!stopData.location) {
+        this.marker.on('popupopen', () => lines.show(this.trip_id));
+        this.marker.on('popupclose', () => lines.hide(this.trip_id));
+      }
     }
 
     this.marker.setLatLng(new L.LatLng(...this.latlon));
