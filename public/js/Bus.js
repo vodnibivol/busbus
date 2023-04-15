@@ -1,22 +1,18 @@
 class Buses {
-  constructor(routes) {
-    this.routes = routes;
+  constructor(trips) {
+    // trips = tripsData, ampak filterano .. točno ti tripi, ki jih hočeš pokazat.
+    this.routeNumbers = [...trips.map((t) => t.number)];
+    this.trips = trips;
+
     this.buses = [];
-    this.trips = [];
+    this.tripIds = this.trips.map((t) => t.trip_id);
 
-    this.i = 0;
-    // this.routes = [1, 2, 9, 11, 25, 19, 27, 6];
-    // this.routes = [2, '11b'];
-    console.log(this.routes);
-  }
-
-  updateTrips() {
-    this.trips = [...new Set(this.buses.map((b) => b.data.trip_id))]; //.sort();
-    this.buses.forEach((b) => (b.data.direction = this.trips.indexOf(b.data.trip_id)));
+    this.counter = 0;
+    this.routeNo = null;
   }
 
   async update() {
-    this.routeNo = this.routes[this.i++ % this.routes.length];
+    this.routeNo = this.routeNumbers[this.counter++ % this.routeNumbers.length];
     await this.updateData();
     this.updateTrips();
     this.draw();
@@ -24,19 +20,22 @@ class Buses {
 
   async updateData() {
     // update buses data
-    const r = await fetch(`/api/getBusData/${this.routeNo}?trip=${stop.trip_id||''}`);
+    const r = await fetch(`/api/getBusData/${this.routeNo}`);
     const j = await r.json();
 
-    console.log(j);
-
     for (let busData of j.data) {
-      const id = busData.bus_unit_id;
+      // if tripData not in tripsData: continue
+      if (!this.trips.find((t) => t.trip_id === busData.trip_id)) continue;
 
-      let bus = this.buses.find((b) => b.id === id);
-
+      const bus = this.buses.find((b) => b.bus_unit_id === busData.bus_unit_id);
       if (bus) bus.update(busData);
-      else this.buses.push(new Bus(id, busData));
+      else this.buses.push(new Bus(busData));
     }
+  }
+
+  updateTrips() {
+    const tripIds = [...new Set(this.buses.map((b) => b.trip_id))]; //.sort();
+    this.buses.forEach((b) => (b.destination_code = tripIds.indexOf(b.trip_id)));
   }
 
   draw() {
@@ -47,9 +46,8 @@ class Buses {
 // --- class BUS
 
 class Bus {
-  constructor(id, data) {
-    this.id = id;
-    this.data = null;
+  constructor(data) {
+    this.bus_unit_id = data.bus_unit_id;
     this.marker = null;
 
     this.update(data);
@@ -57,7 +55,7 @@ class Bus {
 
   get age() {
     // when was bus data last updated (seconds)
-    return Math.round((new Date() - new Date(this.data.bus_timestamp)) / 1000);
+    return Math.round((new Date() - new Date(this.bus_timestamp)) / 1000);
   }
 
   get popupContent() {
@@ -68,14 +66,16 @@ class Bus {
     else ageMsg = `pred ${age} sekundami`;
 
     return `\
-    - ${this.data.destination} (${this.data.route_number})
+    - ${this.destination} (${this.route_number})
     - ${ageMsg}
-    - [${this.data.bus_name}]`.replaceAll('\n', '<br>');
+    - [${this.bus_name}]`.replaceAll('\n', '<br>');
   }
 
   update(data) {
     // update (only data)
-    this.data = data;
+    for (let prop in data) {
+      this[prop] = data[prop];
+    }
     this.latlon = [data.latitude, data.longitude];
   }
 
@@ -91,16 +91,16 @@ class Bus {
 
       // --- events
       this.marker.on('click', () => this.marker.bindPopup(this.popupContent));
-      // this.marker.on('popupopen', () => lines.show(this.data.trip_id));
-      // this.marker.on('popupclose', () => lines.hide(this.data.trip_id));
+      // this.marker.on('popupopen', () => lines.show(this.trip_id));
+      // this.marker.on('popupclose', () => lines.hide(this.trip_id));
     }
 
     this.marker.setLatLng(new L.LatLng(...this.latlon));
-    this.marker.setRotationAngle(this.data.cardinal_direction - 90);
+    this.marker.setRotationAngle(this.cardinal_direction - 90);
     this.marker.bindPopup(this.popupContent);
 
     this.marker._icon.style.opacity = this.age > 60 ? '0.5' : '1';
-    this.marker._icon.style.filter = 'hue-rotate(' + this.data.direction * 280 + 'deg)';
+    this.marker._icon.style.filter = 'hue-rotate(' + this.destination_code * 280 + 'deg)';
   }
 
   removeMarker() {

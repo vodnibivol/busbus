@@ -4,15 +4,14 @@
     <%- include('partials/head') %>
     <!-- prettier-ignore -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" /> -->
   </head>
   <body class="flex-center">
     <div id="map"></div>
     <div class="live-dot live"></div>
 
     <script>
-      const routes = <%- JSON.stringify(tripData) %>;
-      const stop = <%- JSON.stringify(stopData) %>;
+      const tripsData = <%- JSON.stringify(tripsData) %>;
+      const stopData = <%- JSON.stringify(stopData) %>;
     </script>
 
     <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script>

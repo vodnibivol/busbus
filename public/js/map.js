@@ -24,40 +24,38 @@ const Main = (async function () {
     map = L.map('map').setView([46.05, 14.52], 13);
 
     initMap();
-    // L.control.locate().addTo(map);
 
-    // get bus line
-    const params = new URLSearchParams(location.search);
-    const r = params.get('route') || '';
-    const routeNumbers = r.split(',').map((i) => i.trim());
+    // --- TRIPS
 
-    buses = new Buses(routeNumbers);
-    buses.update();
+    let trips = tripsData;
+    if (stopData.location) trips = trips.filter((t) => t.stops.some((s) => s.ref_id == stopData.ref_id));
+    trips = trips.filter((t) => !!t.coordinates);
 
-    setInterval(() => {
-      buses.update();
-    }, 2000);
+    // --- LINES
 
-    // lines
-    lines = new Lines();
+    lines = new Lines(trips);
 
     // zoom on location
-    if (stop.location) {
-      const stopMarker = L.marker(stop.location, {
+    if (stopData.location) {
+      const stopMarker = L.marker(stopData.location, {
         icon: Icons.station,
         zIndexOffset: -1000,
       });
 
-      // stopMarker.bindPopup(stop.name);
       stopMarker.addTo(map);
-      map.setView(stop.location, 14);
+      map.setView(stopData.location, 14);
+      stopMarker.addEventListener('click', () => map.setView(stopData.location, 15));
 
-      stopMarker.addEventListener('click', () => {
-        map.setView(stop.location, 15);
-      });
-
-      lines.show(stop.trip_id);
+      if (lines.lines.length) {
+        lines.lines[0].show();
+      }
     }
+
+    // --- BUSES
+
+    buses = new Buses(trips);
+    buses.update();
+    setInterval(() => buses.update(), 1000);
   }
 
   function initMap() {

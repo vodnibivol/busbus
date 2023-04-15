@@ -103,7 +103,7 @@ const config = {
     },
 
     showMap(routeNo) {
-      location.href = `/map?stop=${this.selectedStop.ref_id}&route=${routeNo}&center=${this.selectedStop.center}`;
+      location.href = `/map?route=${routeNo}&stop=${this.selectedStop.ref_id}`;
     },
   },
 

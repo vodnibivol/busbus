@@ -21,8 +21,18 @@ app.use(cors());
 
 // --- DATA
 
-const linije = JSON.parse(fs.readFileSync(path.resolve('db', 'linije.json')));
-const postajalisca = JSON.parse(fs.readFileSync(path.resolve('db', 'postajalisca.json')));
+const STOPS = JSON.parse(fs.readFileSync(path.resolve('db', 'stops.json')));
+const TRIPS = JSON.parse(fs.readFileSync(path.resolve('db', 'trips.json')));
+const tripFileIndex = JSON.parse(fs.readFileSync(path.resolve('db', 'trips', 'index.json')));
+
+// for each trip: get coordinates
+for (let trip of TRIPS) {
+  // find trip id in
+  const coordsFilename = tripFileIndex.find((entry) => entry.trip_id === trip.trip_id)?.filename;
+  if (coordsFilename) {
+    trip.coordinates = JSON.parse(fs.readFileSync(path.resolve('db', 'trips', coordsFilename)));
+  }
+}
 
 // --- ROUTER
 
@@ -31,34 +41,19 @@ app.get('/', (req, res) => {
 });
 
 app.get('/map', (req, res) => {
+  // /map?route=11&stop=303001
   if (!req.query.route) return res.redirect('/');
+
+  // get STOP DATA
+  const stopId = req.query.stop;
+  const stopData = stopId ? STOPS.find((p) => p.ref_id === stopId) : {};
+
+  // get TRIP DATA
   const routeNumbers = req.query.route.split(','); // ["2", "9"]
 
-  const stopId = req.query.stop;
-  const tripId = linije.find((l) => {
-    // NOTE: ni dovolj stop id!! mora biti tudi prava stevilka busa (1/2/3/11b/..)
-    return routeNumbers.includes(l.number) && l.stops.find((s) => s.ref_id == stopId)
-  })?.id || null;
-  const stop = stopId ? postajalisca.find((p) => p.ref_id === stopId) : {};
-  if (stop) stop.trip_id = tripId;
+  const tripsData = TRIPS.filter((t) => routeNumbers.includes(t.number));
 
-  const routeFileIndex = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', 'routes.json')));
-
-  const tripData = routeFileIndex.find((entry) => entry.trip_id === tripId);
-
-  if (!tripData) {
-    return res.render('map', { tripData: {}, stopData: stop });
-  } 
-
-  const coordinates = JSON.parse(fs.readFileSync(path.resolve('db', 'routes', tripData.filename)));
-  tripData.coordinates = coordinates;
-
-  // const coordinates = routeFilename.map((f) => {
-  //   return { ...f, coordinates: coords };
-  // });
-
-
-  res.render('map', { tripData: [tripData], stopData: stop });
+  res.render('map', { tripsData, stopData });
 });
 
 // --- API

@@ -1,7 +1,6 @@
 class Lines {
-  constructor() {
-    this.lines = routes.map((r) => new Line(r));
-    console.log(this.lines);
+  constructor(trips) {
+    this.lines = trips.filter((t) => !!t.coordinates).map((r) => new Line(r));
 
     if (this.lines.length) this.lines[0].focus();
   }
@@ -26,8 +25,8 @@ class Line {
     this.coordinates = coordinates;
 
     this.polyline = L.polyline(coordinates, {
-      color: 'royalblue', // cornflowerblue, dodgerblue, royalblue
-      opacity: 0.5,
+      color: 'cornflowerblue', // cornflowerblue, dodgerblue, royalblue
+      opacity: 0.7,
       lineCap: 'round',
       lineJoin: 'round',
     });
