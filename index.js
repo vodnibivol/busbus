@@ -34,7 +34,7 @@ for (let trip of TRIPS) {
   }
 }
 
-// --- ROUTER
+// --- ROUTES
 
 app.get('/', (req, res) => {
   res.render('form');
