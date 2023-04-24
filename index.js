@@ -22,7 +22,7 @@ app.use(cors());
 // --- DATA
 
 const STOPS = JSON.parse(fs.readFileSync(path.resolve('db', 'stops.json')));
-const TRIPS = JSON.parse(fs.readFileSync(path.resolve('db', 'trips.json')));
+const TRIPS = JSON.parse(fs.readFileSync(path.resolve('db', 'trips_ascii.json')));
 const tripFileIndex = JSON.parse(fs.readFileSync(path.resolve('db', 'trips', 'index.json')));
 
 // for each trip: get coordinates
