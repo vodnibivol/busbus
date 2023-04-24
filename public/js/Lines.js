@@ -7,6 +7,7 @@ class Lines {
 
   show(trip_id) {
     console.log(trip_id);
+    console.log(this.lines);
     const line = this.lines.find((t) => t.trip_id === trip_id);
     if (line) line.show();
     else console.warn('no line with id: ' + trip_id);

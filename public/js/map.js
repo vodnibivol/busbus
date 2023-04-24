@@ -27,9 +27,7 @@ const Main = (async function () {
 
     // --- TRIPS
 
-    let trips = tripsData;
-    if (stopData.location) trips = trips.filter((t) => t.stops.some((s) => s.ref_id == stopData.ref_id));
-    trips = trips.filter((t) => !!t.coordinates);
+    const trips = stopData.location ? tripsData.filter((t) => t.stops.some((s) => s.ref_id == stopData.ref_id)) : tripsData;
 
     // --- LINES
 

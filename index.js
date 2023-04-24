@@ -46,7 +46,7 @@ app.get('/map', (req, res) => {
 
   // get STOP DATA
   const stopId = req.query.stop;
-  const stopData = stopId ? STOPS.find((p) => p.ref_id === stopId) : {};
+  const stopData = stopId ? STOPS.find((p) => p.ref_id === stopId) : null;
 
   // get TRIP DATA
   const routeNumbers = req.query.route.split(','); // ["2", "9"]

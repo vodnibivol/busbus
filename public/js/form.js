@@ -37,11 +37,15 @@ const config = {
     },
 
     filteredSearch() {
+      // used in a) searchResults (displayed results); and b) stopOptions
       // const reg = new RegExp(latin(this.input), 'i');
       return this.input.length < 3 ? [] : this.stops.filter((s) => simplify(s.name).includes(simplify(this.input)));
     },
 
     searchResults() {
+      // displayed results
+      const exactMatch = this.filteredSearch.find((r) => r.name === this.input);
+      if (exactMatch) return [exactMatch.name];
       return deduplicate(this.filteredSearch.map((r) => r.name)).sort((a, b) => a.localeCompare(b));
     },
 

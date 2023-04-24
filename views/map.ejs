@@ -17,8 +17,8 @@
     <script>
       const $ = (sel) => document.querySelector(sel);
 
-      const tripsData = <%- JSON.stringify(tripsData) %>;
-      const stopData = <%- JSON.stringify(stopData) %>;
+      const tripsData = <%- JSON.stringify(tripsData || []) %>;
+      const stopData = <%- JSON.stringify(stopData || {}) %>;
     </script>
 
     <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script>

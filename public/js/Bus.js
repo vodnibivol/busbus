@@ -13,6 +13,7 @@ class Buses {
 
   async update() {
     this.routeNo = this.routeNumbers[this.counter++ % this.routeNumbers.length];
+    
     await this.updateData();
     this.updateTrips();
     this.draw();
@@ -40,7 +41,7 @@ class Buses {
     }
 
     // show message if no data
-    if (!j.data.length) {
+    if (!this.buses.length) {
       $('#msg').classList.remove('hidden');
     } else {
       $('#msg').classList.add('hidden');

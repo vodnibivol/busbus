@@ -20,11 +20,16 @@ body {
 }
 
 #mapContainer {
-  height: 80%;
-  width: 80%;
-  border: 2px solid;
-  box-shadow: 7px 7px 0 #ddd;
+  height: 100%;
+  width: 100%;
   position: relative;
+
+  @media screen and (min-width: 500px) {
+    height: 80%;
+    width: 80%;
+    border: 2px solid;
+    box-shadow: 7px 7px 0 #ddd;
+  }
 
   #map {
     outline: none;
