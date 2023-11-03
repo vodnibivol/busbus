@@ -40,6 +40,10 @@ app.get('/', (req, res) => {
   res.render('form');
 });
 
+app.get('/206', (req, res) => {
+  res.render('206');
+});
+
 app.get('/map', (req, res) => {
   // /map?route=11&stop=303001
   if (!req.query.route) return res.redirect('/');
@@ -75,6 +79,24 @@ app.get('/api/getStopData/:stopId', async (req, res) => {
 app.get('/api/getTripData/:tripId', async (req, res) => {
   const data = await cachedFetch('https://www.lpp.si/lpp/ajax/2/' + req.params.tripId, 3000);
   res.json(data);
+});
+
+// --- find bus 206
+
+app.get('/api/get206', async (req, res) => {
+  const LINE_NUMBERS = [...new Set(TRIPS.map((t) => t.number))];
+  const bus_data = { success: false };
+  const TARGET_NUM = '206';
+
+  for (let num of LINE_NUMBERS) {
+    const data = await cachedFetch('https://bus-ljubljana.eu/app/busDetails?n=' + num, 30_000);
+    const targetBus = data.data.find((route) => route.bus_name.includes(TARGET_NUM));
+
+    if (targetBus) return res.json({ success: true, ...targetBus });
+    else bus_data[num] = data.data.map((route) => route.bus_name);
+  }
+
+  res.json(bus_data);
 });
 
 // --- ERRORS
