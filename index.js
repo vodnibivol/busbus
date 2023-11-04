@@ -44,6 +44,10 @@ app.get('/206', (req, res) => {
   res.render('206');
 });
 
+app.get('/getBus/:plateNum', (req, res) => {
+  res.render('getBus', { plateNum: req.params.plateNum });
+});
+
 app.get('/map', (req, res) => {
   // /map?route=11&stop=303001
   if (!req.query.route) return res.redirect('/');
@@ -83,14 +87,15 @@ app.get('/api/getTripData/:tripId', async (req, res) => {
 
 // --- find bus 206
 
-app.get('/api/get206', async (req, res) => {
+app.get('/api/getBus/:plateNum', async (req, res) => {
+  const PLATE_NUM = req.params.plateNum;
+
   const LINE_NUMBERS = [...new Set(TRIPS.map((t) => t.number))];
   const bus_data = { success: false };
-  const TARGET_NUM = '206';
 
   for (let num of LINE_NUMBERS) {
     const data = await cachedFetch('https://bus-ljubljana.eu/app/busDetails?n=' + num, 30_000);
-    const targetBus = data.data.find((route) => route.bus_name.includes(TARGET_NUM));
+    const targetBus = data.data.find((route) => route.bus_name.includes(PLATE_NUM));
 
     if (targetBus) return res.json({ success: true, ...targetBus });
     else bus_data[num] = data.data.map((route) => route.bus_name);

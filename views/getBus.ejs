@@ -8,7 +8,7 @@
   <body class="flex-center">
     <div id="mapContainer">
       <div id="map"></div>
-      <div id="msg" class="">ISKANJE AVTOBUSA 206 ...</div>
+      <div id="msg" class="">ISKANJE AVTOBUSA <%- plateNum %> ...</div>
     </div>
 
     <div class="live-dot live"></div>
@@ -27,7 +27,7 @@
       const stopData = [];
 
       (async function () {
-        const r = await fetch('/api/getBus/206');
+        const r = await fetch('/api/getBus/<%- plateNum %>');
         const j = await r.json();
         console.log(j);
         if (j.success) {
@@ -39,7 +39,7 @@
           map.setView(bus.latlon, 14);
           console.log(bus);
         } else {
-          $('#msg').innerText = 'AVTOBUS 206 NI BIL NAJDEN.';
+          $('#msg').innerText = 'AVTOBUS <%- plateNum %> NI BIL NAJDEN.';
         }
       })();
     </script>
