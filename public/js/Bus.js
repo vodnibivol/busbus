@@ -13,7 +13,7 @@ class Buses {
 
   async update() {
     this.routeNo = this.routeNumbers[this.counter++ % this.routeNumbers.length];
-    
+
     await this.updateData();
     this.updateTrips();
     this.draw();
@@ -28,12 +28,14 @@ class Buses {
       j = await r.json();
       // console.log(j.data);
     } catch (error) {
+      console.error(error);
       j = { data: [] };
     }
 
     for (let busData of j.data) {
       // if tripData not in tripsData: continue
-      if (!this.trips.find((t) => t.trip_id === busData.trip_id)) continue;
+      // if (!this.trips.find((t) => t.trip_id === busData.trip_id)) continue;
+      // console.log(busData);
 
       const bus = this.buses.find((b) => b.bus_unit_id === busData.bus_unit_id);
       if (bus) bus.update(busData);
