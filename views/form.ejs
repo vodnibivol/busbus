@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/static/css/form.css" />
   </head>
   <body class="flex-center">
+    <div id="bg"></div>
     <div id="main" class="hidden">
       <div class="live-dot-container" @click="autoRefresh = !autoRefresh">
         <div class="live-dot" :class="{live: autoRefresh}"></div>
@@ -13,7 +14,7 @@
       <div class="block">
         <!-- INPUT SECTION -->
         <div class="section" id="input">
-          <input type="text" name="postaja" placeholder="postaja" autocomplete="off" v-model="input" @input="onInput" />
+          <input type="text" name="postaja" placeholder="postaja" autocomplete="off" spellcheck="false" v-model="input" @input="onInput" />
           <div class="reset flex-center" @click="resetInput" v-if="input">x</div>
         </div>
 
@@ -80,7 +81,7 @@
         const prevNum = localStorage.getItem
         const today = Math.floor(new Date().valueOf() / (1000 * 60 * 60 * 24));
         const num = today % 5;
-        document.body.style.backgroundImage = `url('/static/img/SNEZINKE/${num}.jpg')`;
+        document.body.style.backgroundImage = `url('/static/img/SNEZINKE/${num}.jpeg')`;
       }
 
       setTimeout(izletek, random(100_000, 300_000));
