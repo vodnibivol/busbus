@@ -16,13 +16,14 @@ body {
   align-items: flex-start !important;
   background: var(--bg-image);
   background-size: 300px;
+  // overflow: hidden;
 
   &::after {
     content: '';
     background: #ffffff99;
     // background: #ff000099;
     z-index: -1;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
