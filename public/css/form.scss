@@ -1,3 +1,10 @@
+:root {
+  --bg-image: url('/static/img/SNEZINKE/2.jpg');
+}
+
+$color-primary: lightcoral;
+$color-secondary: hsl(173, 35%, 82%);
+
 * {
   font-family: Menlo, Consolas, monospace;
   font-size: 12px;
@@ -7,7 +14,20 @@
 
 body {
   align-items: flex-start !important;
-  // background: url("/static/img/bg_pattern.png");
+  background: var(--bg-image);
+  background-size: 300px;
+
+  &::after {
+    content: '';
+    background: #ffffff99;
+    // background: #ff000099;
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 input,
@@ -84,10 +104,10 @@ button {
     }
 
     &.selected {
-      background: lightcoral;
+      background: $color-primary;
 
       &:hover {
-        background: darken(lightcoral, 5);
+        background: darken($color-primary, 5);
       }
     }
   }
@@ -110,13 +130,13 @@ button {
       min-width: 30px; // 30 px "19I"
       text-align: center;
 
-      background: #ffe4b3;
+      background: $color-secondary;
       border: 2px solid black;
 
       cursor: pointer;
 
       &:hover {
-        background: darken(#ffe4b3, 5);
+        background: darken($color-secondary, 5);
       }
     }
 
