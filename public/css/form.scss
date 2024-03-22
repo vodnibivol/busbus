@@ -2,8 +2,9 @@
   --bg-image: url('/static/img/sakura.png');
 }
 
-$color-primary: lightcoral;
-$color-secondary: hsl(173, 35%, 82%);
+$color-primary: #f5c3d5;
+$color-secondary: #e7d8ed;
+// christmas: lightcoral (primary); hsl(173, 35%, 82%) (secondary)
 
 * {
   font-family: Menlo, Consolas, monospace;
