@@ -71,8 +71,9 @@ app.get('/', (req, res) => {
   console.log('log user: ' + req.query.userId);
 
   // get user data;
-  const stopHistory = userStore.get(req.cookies.userId)?.stopHistory;
   res.cookie('userId', req.query.userId);
+  const stopHistory = userStore.get(req.query.userId)?.stopHistory || [];
+  console.log(stopHistory);
   return res.render('form', { stopHistory: stopHistory });
 });
 

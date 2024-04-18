@@ -28,7 +28,7 @@ const config = {
       const count = arrayCount(this.stopHistory);
       const arr = [];
       for (let id of this.stopHistory.slice(0, 10)) {
-        if (count[id] < 2) continue;
+        // if (count[id] < 2) continue;
         let s = this.stops.find((s) => s.ref_id === id);
         const alreadyInArr = arr.find((a) => a.name === s.name);
         if (s && !alreadyInArr) arr.push(s);
@@ -119,7 +119,7 @@ const config = {
 
   mounted() {
     // version
-    if (localStorage.version !== this.version) {
+    if (localStorage.version && localStorage.version !== this.version) {
       localStorage.removeItem('stopHistory');
       localStorage.setItem('version', this.version);
     }

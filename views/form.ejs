@@ -78,10 +78,13 @@
     <script>
       // add stop history
       <% if (typeof stopHistory === 'object') { %>
-        console.log([<%- stopHistory %>]);
-        localStorage.stopHistory = [<%- stopHistory %>];
-        // TODO: remove query from url (popstate)
-        // FIXME: zakaj mora bit []??
+        localStorage.stopHistory = "<%- stopHistory.join(','); %>";
+        console.log(localStorage.stopHistory);
+
+        // remove query from url (popstate)
+        const u = new URL(location.href);
+        u.searchParams.delete('userId');
+        window.history.replaceState({}, document.title, u.toString());
       <% } %>
 
       // busek
