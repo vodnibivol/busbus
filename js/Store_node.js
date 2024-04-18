@@ -11,7 +11,7 @@ export default class Store {
     this.storageData = [];
   }
 
-  set(key, data, expires) {
+  set(key, data, expires = Infinity) {
     // expires: time in ms
     const element = { key, data, expires: new Date().valueOf() + expires };
 

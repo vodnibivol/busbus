@@ -4,6 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import cors from 'cors';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 
 import Store from './js/Store_node.js';
 const dstore = new Store();
@@ -18,6 +20,8 @@ app.use(compression());
 app.use('/static', express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cors());
+app.use(cookieParser());
+app.use(bodyParser.json());
 
 // --- DATA
 
@@ -34,10 +38,42 @@ for (let trip of TRIPS) {
   }
 }
 
+// --- USERS
+
+const userStore = {
+  data: JSON.parse(fs.readFileSync(path.resolve('db', 'users.json'))),
+  get(id) {
+    return this.data[id];
+  },
+  setHistory(id, stopHistory) {
+    const user = this.data[id] || {};
+    user.stopHistory = stopHistory;
+    this.data[id] = user;
+    this.saveFile();
+  },
+  pushStop(userId, stopId) {
+    const user = this.data[userId] || { stopHistory: [] };
+    user.stopHistory.push(stopId);
+    this.data[userId] = user;
+    this.saveFile();
+  },
+  saveFile() {
+    fs.writeFileSync(path.resolve('db', 'users.json'), JSON.stringify(this.data));
+  },
+};
+
 // --- ROUTES
 
 app.get('/', (req, res) => {
-  res.render('form');
+  if (!req.query.userId) return res.render('form');
+
+  // first time: only when ?userId=xxxxx // also: push history
+  console.log('log user: ' + req.query.userId);
+
+  // get user data;
+  const stopHistory = userStore.get(req.cookies.userId)?.stopHistory;
+  res.cookie('userId', req.query.userId);
+  return res.render('form', { stopHistory: stopHistory });
 });
 
 app.get('/206', (req, res) => {
@@ -65,6 +101,20 @@ app.get('/map', (req, res) => {
 });
 
 // --- API
+
+app.post('/api/updateUserData', (req, res) => {
+  const userId = req.cookies.userId;
+  console.log('update user data: ' + userId);
+
+  if (!userId) return res.end();
+
+  console.log(req.body.stopHistory);
+  const MAX_LENGTH = 20;
+  userStore.setHistory(userId, req.body.stopHistory.slice(0, MAX_LENGTH));
+  console.log('pushed data: ' + userId);
+
+  res.status(200).end('success');
+});
 
 app.get('/api/getBusData/:routeNo', async (req, res) => {
   const data = await cachedFetch('https://bus-ljubljana.eu/app/busDetails?n=' + req.params.routeNo, 3000);

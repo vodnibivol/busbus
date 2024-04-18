@@ -14,7 +14,15 @@
       <div class="block">
         <!-- INPUT SECTION -->
         <div class="section" id="input">
-          <input type="text" name="postaja" placeholder="postaja" autocomplete="off" spellcheck="false" v-model="input" @input="onInput" />
+          <input
+            type="text"
+            name="postaja"
+            placeholder="postaja"
+            autocomplete="off"
+            spellcheck="false"
+            v-model="input"
+            @input="onInput"
+          />
           <div class="reset flex-center" @click="resetInput" v-if="input">x</div>
         </div>
 
@@ -68,6 +76,15 @@
     <img src="/static/img/bus.png" alt="" id="busek" />
 
     <script>
+      // add stop history
+      <% if (typeof stopHistory === 'object') { %>
+        console.log([<%- stopHistory %>]);
+        localStorage.stopHistory = [<%- stopHistory %>];
+        // TODO: remove query from url (popstate)
+        // FIXME: zakaj mora bit []??
+      <% } %>
+
+      // busek
       const $ = (sel) => document.querySelector(sel);
       const random = (min, max) => min + Math.random() * (max - min);
 
@@ -78,7 +95,7 @@
       }
 
       function randomBG() {
-        const prevNum = localStorage.getItem
+        const prevNum = localStorage.getItem;
         const today = Math.floor(new Date().valueOf() / (1000 * 60 * 60 * 24));
         const num = today % 5;
         document.body.style.backgroundImage = `url('/static/img/SNEZINKE/${num}.jpeg')`;
