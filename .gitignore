@@ -1,3 +1,4 @@
 /node_modules
 old.*
 *.psd
+/db/users.json
