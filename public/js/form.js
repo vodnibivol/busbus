@@ -7,6 +7,7 @@ const config = {
       arrivals: [],
       loading: false,
       eta: true,
+      error: false,
 
       // timer
       dataExpires: Infinity,
@@ -91,10 +92,17 @@ const config = {
     async getData() {
       this.loading = true;
 
-      const res = await fetch('/api/getStopData/' + this.selectedStop.ref_id);
-      const data = await res.json();
+      try {
+        const res = await fetch('/api/getStopData/' + this.selectedStop.ref_id);
+        const data = await res.json();
+        this.arrivals = data.sort((route1, route2) => parseInt(route1[0].key) - parseInt(route2[0].key));
 
-      this.arrivals = data.sort((route1, route2) => parseInt(route1[0].key) - parseInt(route2[0].key));
+        if (!res.ok) throw new Error('Network response was not OK');
+      } catch (error) {
+        console.warn(error);
+        this.error = true;
+      }
+
       this.loading = false;
 
       this.dataExpires = new Date().valueOf() + 20 * 1000; // 20 sec

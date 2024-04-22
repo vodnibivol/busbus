@@ -70,6 +70,7 @@
 
         <span id="loadingText" v-if="loading">nalaganje ..</span>
         <span id="emptyText" v-if="selectedStop.name && !loading && !arrivals.length">ni rezultatov.</span>
+        <span id="errorText" v-if="error">[error]</span>
       </div>
     </div>
 
