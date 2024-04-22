@@ -41,7 +41,7 @@ for (let trip of TRIPS) {
 // --- USERS
 
 const userStore = {
-  data: JSON.parse(fs.readFileSync(path.resolve('db', 'users.json'))),
+  data: null,
   get(id) {
     return this.data[id];
   },
@@ -60,7 +60,17 @@ const userStore = {
   saveFile() {
     fs.writeFileSync(path.resolve('db', 'users.json'), JSON.stringify(this.data));
   },
+
+  init() {
+    if (!fs.existsSync(path.resolve('db', 'users.json'))) {
+      fs.writeFileSync(path.resolve('db', 'users.json'), '{}');
+    }
+
+    this.data = JSON.parse(fs.readFileSync(path.resolve('db', 'users.json')));
+  },
 };
+
+userStore.init();
 
 // --- ROUTES
 
