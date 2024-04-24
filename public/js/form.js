@@ -92,16 +92,13 @@ const config = {
     async getData() {
       this.loading = true;
 
-      try {
-        const res = await fetch('/api/getStopData/' + this.selectedStop.ref_id);
-        const data = await res.json();
-        this.arrivals = data.sort((route1, route2) => parseInt(route1[0].key) - parseInt(route2[0].key));
+      const res = await fetch('/api/getStopData/' + this.selectedStop.ref_id);
+      const data = await res.json();
+      this.arrivals = data.sort((route1, route2) => parseInt(route1[0].key) - parseInt(route2[0].key));
 
-        if (!res.ok) throw new Error('Network response was not OK');
-      } catch (error) {
-        console.warn(error);
-        this.error = true;
-      }
+      // error
+      if (!res.ok) this.error = true;
+      else this.error = false;
 
       this.loading = false;
 

@@ -75,15 +75,14 @@ userStore.init();
 // --- ROUTES
 
 app.get('/', (req, res) => {
-  if (!req.query.userId) return res.render('form');
+  if (!req.query.userId && !req.cookies.userId) return res.render('form');
 
-  // first time: only when ?userId=xxxxx // also: push history
   console.log('log user: ' + req.query.userId);
 
   // get user data;
-  res.cookie('userId', req.query.userId);
   const stopHistory = userStore.get(req.query.userId)?.stopHistory || [];
   console.log(stopHistory);
+  res.cookie('userId', req.query.userId);
   return res.render('form', { stopHistory: stopHistory });
 });
 
