@@ -80,9 +80,10 @@ app.get('/', (req, res) => {
   console.log('log user: ' + req.query.userId);
 
   // get user data;
-  const stopHistory = userStore.get(req.query.userId)?.stopHistory || [];
+  const userId = req.query.userId || req.cookies.userId;
+  const stopHistory = userStore.get(userId)?.stopHistory || [];
   console.log(stopHistory);
-  res.cookie('userId', req.query.userId);
+  res.cookie('userId', userId);
   return res.render('form', { stopHistory: stopHistory });
 });
 
