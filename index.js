@@ -14,7 +14,7 @@ const app = express();
 
 const PORT = process.env.PORT || 2200;
 
-app.listen(PORT, () => console.log('::' + PORT));
+app.listen(PORT, () => console.log('http://localhost:' + PORT));
 
 app.use(compression());
 app.use('/static', express.static('public'));
