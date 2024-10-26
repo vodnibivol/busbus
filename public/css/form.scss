@@ -1,12 +1,12 @@
 :root {
   // --bg-image: url('/static/img/sakura.jpeg');
-  --bg-image: url('/static/img/leaves_wc.jpg');
+  --bg-image: url('/static/img/JESEN/jesen3.jpg');
 }
 
 // $color-primary: #f5c3d5;
 // $color-secondary: #e7d8ed;
-$color-primary: #d5ebc0;
-$color-secondary: #d8edea;
+$color-primary: #f2dab7;
+$color-secondary: #e8e8e8;
 // christmas: lightcoral (primary); hsl(173, 35%, 82%) (secondary)
 
 * {
@@ -22,7 +22,7 @@ body {
 
 #bg {
   background: var(--bg-image);
-  background-size: 600px;
+  background-size: 300px;
   background-position: top center;
   background-repeat: repeat;
   width: 100%;
