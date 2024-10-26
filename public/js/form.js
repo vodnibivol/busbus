@@ -166,9 +166,9 @@ function deduplicate(arr) {
 }
 
 function simplify(str) {
-  const chars = { Č: 'č', č: 'c', Š: 'S', š: 's', Ž: 'Z', ž: 'z' };
+  const chars = { č: 'c', š: 's', ž: 'z' };
   // prettier-ignore
-  return [...str].map((char) => chars[char] || char).join('').toLowerCase();
+  return [...str.toLowerCase()].map((char) => chars[char] || char).join('');
 }
 
 // MDN POST method implementation:
