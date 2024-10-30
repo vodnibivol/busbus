@@ -3,7 +3,7 @@ const config = {
     return {
       input: '',
       selectedStop: {},
-      stops: [],
+      stops: [], //
       arrivals: [],
       loading: false,
       eta: true,
@@ -27,7 +27,6 @@ const config = {
 
     filteredHistory() {
       // trenutno: zadnjih 10: po pogostosti
-      // TODO: novo: vzemi zadnjih 20, razporedi po pogostosti, dedupliciraj
       const shortHistory = this.stopHistory.slice(0, 30);
       const counted = arrayCount(shortHistory);
       console.log(counted);
@@ -36,7 +35,7 @@ const config = {
 
       const arr = [];
       for (let id of sortedHistory) {
-        if (counted[id] < 2) continue;
+        // if (counted[id] < 2) continue;
         const s = this.stops.find((s) => s.ref_id === id);
         const alreadyInArr = arr.find((a) => a.name === s.name);
         if (s && !alreadyInArr) arr.push(s);
@@ -46,15 +45,21 @@ const config = {
 
     filteredSearch() {
       // used in a) searchResults (displayed results); and b) stopOptions
-      // const reg = new RegExp(latin(this.input), 'i');
-      return this.input.length < 3 ? [] : this.stops.filter((s) => simplify(s.name).includes(simplify(this.input)));
+      if (this.input.length < 3) return [];
+
+      return this.stops.filter((s) => simplify(s.name).includes(simplify(this.input)));
     },
 
     searchResults() {
       // displayed results
+      const count = arrayCount(this.stopHistory.slice(0, 30));
+
       const exactMatch = this.filteredSearch.find((r) => r.name === this.input);
       if (exactMatch) return [exactMatch.name];
-      return deduplicate(this.filteredSearch.map((r) => r.name)).sort((a, b) => a.localeCompare(b));
+
+      return deduplicate(
+        this.filteredSearch.sort((a, b) => count[b.ref_id] || 0 - count[a.ref_id] || 0).map((r) => r.name)
+      );
     },
 
     stopOptions() {
@@ -173,7 +178,12 @@ function arrayCount(arr) {
 }
 
 function deduplicate(arr) {
-  return [...new Set(arr)];
+  // return [...new Set(arr)];
+  const newArr = [];
+  for (let i of arr) {
+    if (!newArr.includes(i)) newArr.push(i);
+  }
+  return newArr;
 }
 
 function simplify(str) {
