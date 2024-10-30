@@ -26,11 +26,18 @@ const config = {
     },
 
     filteredHistory() {
-      const count = arrayCount(this.stopHistory);
+      // trenutno: zadnjih 10: po pogostosti
+      // TODO: novo: vzemi zadnjih 20, razporedi po pogostosti, dedupliciraj
+      const shortHistory = this.stopHistory.slice(0, 30);
+      const counted = arrayCount(shortHistory);
+      console.log(counted);
+      const sortedHistory = deduplicate(shortHistory.sort((id1, id2) => counted[id2] - counted[id1]));
+      console.log(sortedHistory);
+
       const arr = [];
-      for (let id of this.stopHistory.slice(0, 10)) {
-        // if (count[id] < 2) continue;
-        let s = this.stops.find((s) => s.ref_id === id);
+      for (let id of sortedHistory) {
+        if (counted[id] < 2) continue;
+        const s = this.stops.find((s) => s.ref_id === id);
         const alreadyInArr = arr.find((a) => a.name === s.name);
         if (s && !alreadyInArr) arr.push(s);
       }
@@ -94,7 +101,11 @@ const config = {
 
       const res = await fetch('/api/getStopData/' + this.selectedStop.ref_id);
       const data = await res.json();
-      this.arrivals = data.sort((route1, route2) => parseInt(route1[0].key) - parseInt(route2[0].key));
+      this.arrivals = data.sort((route1, route2) => {
+        const no1 = route1[0].key.match(/\d+/)[0];
+        const no2 = route2[0].key.match(/\d+/)[0];
+        return parseInt(no1) - parseInt(no2);
+      });
 
       // error
       if (!res.ok) this.error = true;

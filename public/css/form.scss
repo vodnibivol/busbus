@@ -75,24 +75,40 @@ button {
   gap: 1.25rem;
 
   border-radius: 10px;
+  box-shadow: 6px 6px 0 #00000033;
 }
 
 // --- SECTIONS
 
 #input {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 3px;
 
   input {
-    width: 100%;
+    width: calc(100% - 23px);
+    border-radius: 3px;
   }
 
   div.reset {
-    position: absolute;
-    right: 0;
-    top: 0;
+    // position: relative;
+    // right: 0;
+    // top: 0;
     height: 100%;
     width: 23px;
+    padding: 3px;
     cursor: pointer;
+    background: #ccc;
+    border: 2px solid black;
+    border-radius: 3px;
+
+
+    &:hover {
+      background: darken(#ccc, 5);
+    }
   }
 }
 

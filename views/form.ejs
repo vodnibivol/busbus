@@ -17,13 +17,13 @@
           <input
             type="text"
             name="postaja"
-            placeholder="postaja"
+            placeholder="Postaja"
             autocomplete="off"
             spellcheck="false"
             v-model="input"
             @input="onInput"
           />
-          <div class="reset flex-center" @click="resetInput" v-if="input">x</div>
+          <div class="reset flex-center" @click="resetInput">×</div>
         </div>
 
         <!-- NEDAVNA ISKANJA SECTION -->
@@ -68,8 +68,8 @@
           </div>
         </div>
 
-        <span id="loadingText" v-if="loading">nalaganje ..</span>
-        <span id="emptyText" v-if="selectedStop.name && !loading && !arrivals.length">ni rezultatov.</span>
+        <span id="loadingText" v-if="loading">Iskanje ..</span>
+        <span id="emptyText" v-if="selectedStop.name && !loading && !arrivals.length">Ni rezultatov.</span>
         <span id="errorText" v-if="error">[error]</span>
       </div>
     </div>
