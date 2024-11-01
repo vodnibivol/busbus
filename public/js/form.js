@@ -29,9 +29,9 @@ const config = {
       // trenutno: zadnjih 10: po pogostosti
       const shortHistory = this.stopHistory.slice(0, 30);
       const counted = arrayCount(shortHistory);
-      console.log(counted);
+      // console.log(counted);
       const sortedHistory = deduplicate(shortHistory.sort((id1, id2) => counted[id2] - counted[id1]));
-      console.log(sortedHistory);
+      // console.log(sortedHistory);
 
       const arr = [];
       for (let id of sortedHistory) {
@@ -98,7 +98,7 @@ const config = {
 
     updateUserData() {
       postData('/api/updateUserData', { stopHistory: this.stopHistory });
-      console.log('updateUserData JS');
+      // console.log('updateUserData JS');
     },
 
     async getData() {
@@ -107,8 +107,8 @@ const config = {
       const res = await fetch('/api/getStopData/' + this.selectedStop.ref_id);
       const data = await res.json();
       this.arrivals = data.sort((route1, route2) => {
-        const no1 = route1[0].key.match(/\d+/)[0];
-        const no2 = route2[0].key.match(/\d+/)[0];
+        const no1 = ('' + route1[0].key).match(/\d+/)[0];
+        const no2 = ('' + route2[0].key).match(/\d+/)[0];
         return parseInt(no1) - parseInt(no2);
       });
 

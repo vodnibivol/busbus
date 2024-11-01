@@ -80,7 +80,7 @@
       // add stop history
       <% if (typeof stopHistory === 'object') { %>
         localStorage.stopHistory = "<%- stopHistory.join(','); %>";
-        console.log(localStorage.stopHistory);
+        // console.log(localStorage.stopHistory);
 
         // remove query from url (popstate)
         const u = new URL(location.href);

@@ -115,10 +115,10 @@ app.get('/map', (req, res) => {
 
 app.post('/api/updateUserData', (req, res) => {
   const userId = req.cookies.userId;
-  console.log('update user data: ' + userId);
 
   if (!userId) return res.end();
 
+  console.log('update user data: ' + userId);
   console.log(req.body.stopHistory);
   const MAX_LENGTH = 20;
   userStore.setHistory(userId, req.body.stopHistory.slice(0, MAX_LENGTH));
