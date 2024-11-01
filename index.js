@@ -18,7 +18,7 @@ app.listen(PORT, () => console.log('http://localhost:' + PORT));
 
 app.use(compression());
 app.use('/static', express.static('public'));
-// app.use('/static', express.static('/busbus/public')); // added for nginx location /busbus/
+app.use('/static', express.static('/busbus/public')); // added for nginx location /busbus/
 app.set('view engine', 'ejs');
 app.use(cors());
 app.use(cookieParser());
