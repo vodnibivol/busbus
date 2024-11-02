@@ -5,11 +5,11 @@ let lines;
 
 const Icons = {
   bus: L.icon({
-    iconUrl: '/static/img/bus_arrow.png',
+    iconUrl: 'static/img/bus_arrow.png',
     iconSize: [48, 48],
   }),
   station: L.icon({
-    iconUrl: '/static/img/station.png',
+    iconUrl: 'static/img/station.png',
     iconSize: [32, 32],
     iconAnchor: [16, 32],
   }),

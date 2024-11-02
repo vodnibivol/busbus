@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <%- include('./partials/head'); %>
-    <link rel="stylesheet" href="/static/css/form.css" />
+    <link rel="stylesheet" href="static/css/form.css" />
   </head>
   <body class="flex-center">
     <div id="bg"></div>
@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <img src="/static/img/bus.png" alt="" id="busek" />
+    <img src="static/img/bus.png" alt="" id="busek" />
 
     <script>
       // add stop history
@@ -102,16 +102,16 @@
         const prevNum = localStorage.getItem;
         const today = Math.floor(new Date().valueOf() / (1000 * 60 * 60 * 24));
         const num = today % 5;
-        document.body.style.backgroundImage = `url('/static/img/SNEZINKE/${num}.jpeg')`;
+        document.body.style.backgroundImage = `url('static/img/SNEZINKE/${num}.jpeg')`;
       }
 
       setTimeout(izletek, random(100_000, 300_000));
       // randomBG();
     </script>
 
-    <!-- <script src="/static/js/vue.global.js"></script> -->
+    <!-- <script src="static/js/vue.global.js"></script> -->
     <script src="https://unpkg.com/vue@3.2.47/dist/vue.global.prod.js"></script>
-    <script src="/static/js/stops.js"></script>
-    <script src="/static/js/form.js"></script>
+    <script src="static/js/stops.js"></script>
+    <script src="static/js/form.js"></script>
   </body>
 </html>
