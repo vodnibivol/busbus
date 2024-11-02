@@ -97,14 +97,14 @@ const config = {
     },
 
     updateUserData() {
-      postData('/api/updateUserData', { stopHistory: this.stopHistory });
+      postData('api/updateUserData', { stopHistory: this.stopHistory });
       // console.log('updateUserData JS');
     },
 
     async getData() {
       this.loading = true;
 
-      const res = await fetch('/api/getStopData/' + this.selectedStop.ref_id);
+      const res = await fetch('api/getStopData/' + this.selectedStop.ref_id);
       const data = await res.json();
       this.arrivals = data.sort((route1, route2) => {
         const no1 = ('' + route1[0].key).match(/\d+/)[0];
@@ -134,7 +134,7 @@ const config = {
     },
 
     showMap(routeNo) {
-      location.href = `/map?route=${routeNo}&stop=${this.selectedStop.ref_id}`;
+      location.href = `map?route=${routeNo}&stop=${this.selectedStop.ref_id}`;
     },
   },
 

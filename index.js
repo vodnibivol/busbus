@@ -16,15 +16,20 @@ const PORT = process.env.PORT || 2200;
 
 app.listen(PORT, () => console.log('http://localhost:' + PORT));
 
-app.use('*', (req, res, next) => {
+// FIXME: TESTING
+const SUBPATH = '/busbus';
+
+app.use((req, res, next) => {
   console.log(req.hostname + req.originalUrl);
+  if (req.url.startsWith(SUBPATH)) {
+    req.url = req.url.slice(SUBPATH.length); // Strip the subpath
+  }
+  console.log(req.url)
   next();
 });
 
 app.use(compression());
-app.use('static/', express.static('public'));
 app.use('/static/', express.static('public'));
-app.use('/busbus/static/', express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cors());
 app.use(cookieParser());

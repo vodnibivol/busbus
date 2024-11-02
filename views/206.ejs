@@ -27,7 +27,7 @@
       const stopData = [];
 
       (async function () {
-        const r = await fetch('/api/getBus/206');
+        const r = await fetch('api/getBus/206');
         const j = await r.json();
         console.log(j);
         if (j.success) {
