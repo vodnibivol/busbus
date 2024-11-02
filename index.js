@@ -16,6 +16,11 @@ const PORT = process.env.PORT || 2200;
 
 app.listen(PORT, () => console.log('http://localhost:' + PORT));
 
+app.use('*', (req, res, next) => {
+  console.log(req.hostname + req.originalUrl);
+  next();
+});
+
 app.use(compression());
 app.use('static/', express.static('public'));
 app.use('/static/', express.static('public'));
