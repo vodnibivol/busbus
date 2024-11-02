@@ -16,13 +16,14 @@ const PORT = process.env.PORT || 2200;
 
 app.listen(PORT, () => console.log('http://localhost:' + PORT));
 
-app.use((req, res, next) => {
+app.use('/busbus', (req, res, next) => {
   // console.log(req.hostname + req.originalUrl);
-  const SUBPATH = '/busbus';
+  // const SUBPATH = '/busbus';
 
-  if (req.url.startsWith(SUBPATH)) {
-    req.url = req.url.slice(SUBPATH.length); // Strip the subpath
-  }
+  // if (req.url.startsWith(SUBPATH)) {
+  // req.url = req.url.slice(SUBPATH.length); // Strip the subpath
+  req.url = req.url.replace('/busbus', '');
+  // }
   next();
 });
 
