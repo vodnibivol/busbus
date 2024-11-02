@@ -16,15 +16,13 @@ const PORT = process.env.PORT || 2200;
 
 app.listen(PORT, () => console.log('http://localhost:' + PORT));
 
-// FIXME: TESTING
-const SUBPATH = '/busbus';
-
 app.use((req, res, next) => {
-  console.log(req.hostname + req.originalUrl);
+  // console.log(req.hostname + req.originalUrl);
+  const SUBPATH = '/busbus';
+
   if (req.url.startsWith(SUBPATH)) {
     req.url = req.url.slice(SUBPATH.length); // Strip the subpath
   }
-  console.log(req.url)
   next();
 });
 
