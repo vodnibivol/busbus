@@ -17,8 +17,9 @@ const PORT = process.env.PORT || 2200;
 app.listen(PORT, () => console.log('http://localhost:' + PORT));
 
 app.use(compression());
-app.use('/static', express.static('public'));
-app.use('/busbus/static', express.static('public'));
+app.use('static/', express.static('public'));
+app.use('/static/', express.static('public'));
+app.use('/busbus/static/', express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cors());
 app.use(cookieParser());
