@@ -24,7 +24,7 @@ class Buses {
     let r, j;
 
     try {
-      r = await fetch(`/api/getBusData/${this.routeNo}`);
+      r = await fetch(`api/getBusData/${this.routeNo}`);
       j = await r.json();
       // console.log(j.data);
     } catch (error) {

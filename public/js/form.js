@@ -98,23 +98,27 @@ const config = {
 
     updateUserData() {
       postData('api/updateUserData', { stopHistory: this.stopHistory });
-      // console.log('updateUserData JS');
+      console.log('updateUserData JS');
     },
 
     async getData() {
       this.loading = true;
+      this.error = false;
 
-      const res = await fetch('api/getStopData/' + this.selectedStop.ref_id);
-      const data = await res.json();
-      this.arrivals = data.sort((route1, route2) => {
-        const no1 = ('' + route1[0].key).match(/\d+/)[0];
-        const no2 = ('' + route2[0].key).match(/\d+/)[0];
-        return parseInt(no1) - parseInt(no2);
-      });
+      try {
+        const res = await fetch('api/getStopData/' + this.selectedStop.ref_id);
+        const data = await res.json();
+        this.arrivals = data.sort((route1, route2) => {
+          const no1 = ('' + route1[0].key).match(/\d+/)[0];
+          const no2 = ('' + route2[0].key).match(/\d+/)[0];
+          return parseInt(no1) - parseInt(no2);
+        });
 
-      // error
-      if (!res.ok) this.error = true;
-      else this.error = false;
+        // error
+        if (!res.ok) throw new Error(res);
+      } catch (error) {
+        this.error = true;
+      }
 
       this.loading = false;
 

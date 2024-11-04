@@ -122,14 +122,15 @@ app.get('/map', (req, res) => {
 
 app.post('/api/updateUserData', (req, res) => {
   const userId = req.cookies.userId;
+  console.log(userId);
 
-  if (!userId) return res.end();
+  if (!userId) return res.end('no user id provided');
 
   console.log('update user data: ' + userId);
-  console.log(req.body.stopHistory);
+  // console.log(req.body.stopHistory);
   const MAX_LENGTH = 20;
   userStore.setHistory(userId, req.body.stopHistory.slice(0, MAX_LENGTH));
-  console.log('pushed data: ' + userId);
+  // console.log('pushed data: ' + userId);
 
   res.status(200).end('success');
 });
@@ -175,7 +176,7 @@ app.get('/api/getBus/:plateNum', async (req, res) => {
 // --- ERRORS
 
 app.use((req, res, next) => {
-  res.end('error 404');
+  res.status(404).end('error 404');
 });
 
 app.use((err, req, res, next) => {
