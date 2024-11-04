@@ -82,16 +82,17 @@ userStore.init();
 // --- ROUTES
 
 app.get('/', (req, res) => {
-  if (!req.query.userId && !req.cookies.userId) return res.render('form');
+  const userId = req.query.userId || req.cookies.userId;
+  console.log('user id: ' + userId);
 
-  console.log('log user: ' + req.query.userId);
+  // no userId in query or cookies => just render a normal form
+  if (!userId) return res.render('form');
 
   // get user data;
-  const userId = req.query.userId || req.cookies.userId;
   const stopHistory = userStore.get(userId)?.stopHistory || [];
-  console.log(stopHistory);
+  // console.log(stopHistory);
   res.cookie('userId', userId);
-  return res.render('form', { stopHistory: stopHistory });
+  return res.render('form', { userId, stopHistory: stopHistory });
 });
 
 app.get('/206', (req, res) => {
@@ -122,7 +123,7 @@ app.get('/map', (req, res) => {
 
 app.post('/api/updateUserData', (req, res) => {
   const userId = req.cookies.userId;
-  console.log(userId);
+  console.log("/api/updateUserData " + userId);
 
   if (!userId) return res.end('no user id provided');
 

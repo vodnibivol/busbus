@@ -75,6 +75,25 @@
     </div>
 
     <img src="static/img/bus.png" alt="" id="busek" />
+    <% if (typeof userId !== 'string') { %>
+    <style>
+      #login {
+        position: absolute;
+        bottom: 5px;
+        right: 10px;
+        color: black;
+        font-weight: normal;
+      }
+    </style>
+    <a id="login" href="#">prijava</a>
+    <script>
+      document.querySelector('#login').onclick = (e) => {
+        e.preventDefault();
+        const userName = prompt('uporabiško ime:');
+        if (userName) location.search = 'userId=' + userName;
+      };
+    </script>
+    <% }; %>
 
     <script>
       // add stop history
