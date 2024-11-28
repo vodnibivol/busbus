@@ -1,12 +1,19 @@
+// TODO: naredi classe samo .zima, .pomlad, .poletje, .jesen in notri vse definiraj
+
 :root {
   // --bg-image: url('static/img/sakura.jpeg');
-  --bg-image: url('../img/JESEN/jesen3.jpg');
+  // --bg-image: url('../img/JESEN/jesen3.jpg');
+  // ZIMA
+  --bg-image: url('../img/SNEZINKE/2.jpeg');
 }
 
 // $color-primary: #f5c3d5;
 // $color-secondary: #e7d8ed;
-$color-primary: #f2dab7;
-$color-secondary: #e8e8e8;
+// JESEN:
+// $color-primary: #f2dab7;
+// $color-secondary: #e8e8e8;
+$color-primary: lightcoral;
+$color-secondary: hsl(173, 35%, 82%);
 // christmas: lightcoral (primary); hsl(173, 35%, 82%) (secondary)
 
 * {
