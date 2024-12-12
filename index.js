@@ -83,7 +83,7 @@ userStore.init();
 
 app.get('/', (req, res) => {
   const userId = req.query.userId || req.cookies.userId;
-  console.log('user id: ' + userId);
+  console.log('user id: ' + userId || 'not provided');
 
   // no userId in query or cookies => just render a normal form
   if (!userId) return res.render('form');
@@ -91,7 +91,7 @@ app.get('/', (req, res) => {
   // get user data;
   const stopHistory = userStore.get(userId)?.stopHistory || [];
   // console.log(stopHistory);
-  res.cookie('userId', userId);
+  res.cookie('userId', userId, { maxAge: 31536000000 }); // maxAge: 1 year
   return res.render('form', { userId, stopHistory: stopHistory });
 });
 
@@ -123,7 +123,7 @@ app.get('/map', (req, res) => {
 
 app.post('/api/updateUserData', (req, res) => {
   const userId = req.cookies.userId;
-  console.log("/api/updateUserData " + userId);
+  console.log('/api/updateUserData ' + userId);
 
   if (!userId) return res.end('no user id provided');
 
