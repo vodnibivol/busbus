@@ -38,7 +38,7 @@ const config = {
         const alreadyInArr = arr.find((a) => a.name === s.name);
         if (s && !alreadyInArr) arr.push(s);
       }
-      return arr.slice(0, 5); // return 5 stops
+      return arr.slice(0, 4); // return 5 stops
     },
 
     filteredSearch() {
