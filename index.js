@@ -129,7 +129,7 @@ app.post('/api/updateUserData', (req, res) => {
 
   console.log('update user data: ' + userId);
   // console.log(req.body.stopHistory);
-  const MAX_LENGTH = 20;
+  const MAX_LENGTH = 50;
   userStore.setHistory(userId, req.body.stopHistory.slice(0, MAX_LENGTH));
   // console.log('pushed data: ' + userId);
 

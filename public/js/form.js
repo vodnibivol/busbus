@@ -27,11 +27,9 @@ const config = {
 
     filteredHistory() {
       // trenutno: zadnjih 10: po pogostosti
-      const shortHistory = this.stopHistory.slice(0, 30);
-      const counted = arrayCount(shortHistory);
-      // console.log(counted);
-      const sortedHistory = deduplicate(shortHistory.sort((id1, id2) => counted[id2] - counted[id1]));
-      // console.log(sortedHistory);
+      // const shortHistory = this.stopHistory.slice(0, 30);
+      const counted = arrayCount(this.stopHistory);
+      const sortedHistory = deduplicate(this.stopHistory.sort((id1, id2) => counted[id2] - counted[id1])); // najpogostejša iskanja
 
       const arr = [];
       for (let id of sortedHistory) {
@@ -40,7 +38,7 @@ const config = {
         const alreadyInArr = arr.find((a) => a.name === s.name);
         if (s && !alreadyInArr) arr.push(s);
       }
-      return arr;
+      return arr.slice(0, 5); // return 5 stops
     },
 
     filteredSearch() {
