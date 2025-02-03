@@ -59,12 +59,9 @@
         <div class="section" id="linije" v-if="!loading && arrivals.length">
           <div class="linija" v-for="r in arrivals">
             <div class="stevilka" @click="showMap(r[0].key)">{{ r[0].key }}</div>
-            <span
-              class="prihodi"
-              @click="eta=!eta"
-              :style="{'text-decoration':dataExpired?'line-through':''}"
-              >{{ r.map(i=>(eta?i.minutes+' min':i.time)).slice(0,3).join(', ') }}</span
-            >
+            <div class="prihodi" @click="eta=!eta" :style="{'text-decoration':dataExpired?'line-through':''}">
+              <span v-for="arrival in r.slice(0,3)" :class="{garaza:arrival.v_garazo}">{{eta?arrival.minutes+'m':arrival.time}}</span>
+            </div>
           </div>
         </div>
 

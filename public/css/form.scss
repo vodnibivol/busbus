@@ -178,11 +178,21 @@ button {
     }
 
     .prihodi {
+      display: flex;
+      gap: 3px;
+      cursor: pointer;
       background: white;
       border: 2px solid black;
-      padding: 3px 5px;
-      cursor: pointer;
-      user-select: none;
+      
+      span {
+        padding: 3px 5px;
+        user-select: none;
+        pointer-events: none;
+
+        &.garaza {
+          background: lightgray;
+        }
+      }
     }
   }
 }
