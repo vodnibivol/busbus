@@ -106,6 +106,7 @@ const config = {
       try {
         const res = await fetch('api/getStopData/' + this.selectedStop.ref_id);
         const data = await res.json();
+        console.log(data);
         this.arrivals = data.sort((route1, route2) => {
           const no1 = ('' + route1[0].key).match(/\d+/)[0];
           const no2 = ('' + route2[0].key).match(/\d+/)[0];
