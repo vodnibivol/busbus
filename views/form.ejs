@@ -60,7 +60,7 @@
           <div class="linija" v-for="r in arrivals">
             <div class="stevilka" @click="showMap(r[0].key)">{{ r[0].key }}</div>
             <div class="prihodi" @click="eta=!eta" :style="{'text-decoration':dataExpired?'line-through':''}">
-              <span v-for="arrival in r.slice(0,3)" :class="{garaza:arrival.v_garazo}">{{eta?arrival.minutes:arrival.time}}</span>
+              <span v-for="arrival in r.slice(0,3)" :class="{garaza:arrival.v_garazo}">{{eta?arrival.minutes+' min':arrival.time}}</span>
             </div>
           </div>
         </div>

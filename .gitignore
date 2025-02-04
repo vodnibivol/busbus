@@ -3,3 +3,5 @@ old.*
 *.psd
 db/users.json
 /refs
+request.rest
+.env

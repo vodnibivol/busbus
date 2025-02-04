@@ -190,13 +190,8 @@ button {
         pointer-events: none;
         display: flex;
 
-        &::after {
-          content: "min,";
-          padding-left: 5px;
-        }
-        &:last-of-type::after {
-          content: "min";
-          padding-left: 5px;
+        &:not(:last-of-type)::after {
+          content: ",";
         }
 
         &.garaza {

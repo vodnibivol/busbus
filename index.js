@@ -6,6 +6,7 @@ import cors from 'cors';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import 'dotenv/config'
 
 import Store from './js/Store_node.js';
 const dstore = new Store();
@@ -185,22 +186,22 @@ app.get('/api/getStopData/:stopId', async (req, res) => {
 
 // --- find bus 206
 
-app.get('/api/getBus/:plateNum', async (req, res) => {
-  const PLATE_NUM = req.params.plateNum;
+// app.get('/api/getBus/:plateNum', async (req, res) => {
+//   const PLATE_NUM = req.params.plateNum;
 
-  const LINE_NUMBERS = [...new Set(TRIPS.map((t) => t.number))];
-  const bus_data = { success: false };
+//   const LINE_NUMBERS = [...new Set(TRIPS.map((t) => t.number))];
+//   const bus_data = { success: false };
 
-  for (let num of LINE_NUMBERS) {
-    const data = await cachedFetch('https://bus-ljubljana.eu/app/busDetails?n=' + num, 30_000);
-    const targetBus = data.data.find((route) => route.bus_name.includes(PLATE_NUM));
+//   for (let num of LINE_NUMBERS) {
+//     const data = await cachedFetch('https://bus-ljubljana.eu/app/busDetails?n=' + num, 30_000);
+//     const targetBus = data.data.find((route) => route.bus_name.includes(PLATE_NUM));
 
-    if (targetBus) return res.json({ success: true, ...targetBus });
-    else bus_data[num] = data.data.map((route) => route.bus_name);
-  }
+//     if (targetBus) return res.json({ success: true, ...targetBus });
+//     else bus_data[num] = data.data.map((route) => route.bus_name);
+//   }
 
-  res.json(bus_data);
-});
+//   res.json(bus_data);
+// });
 
 // --- ERRORS
 

@@ -27,7 +27,9 @@ const Main = (async function () {
 
     // --- TRIPS
 
-    const trips = stopData.location ? tripsData.filter((t) => t.stops.some((s) => s.ref_id == stopData.ref_id)) : tripsData;
+    const trips = stopData.location
+      ? tripsData.filter((t) => t.stops.some((s) => s.ref_id == stopData.ref_id))
+      : tripsData;
 
     // --- LINES
 
@@ -59,18 +61,25 @@ const Main = (async function () {
 
   function initMap() {
     const mapConfig = {
-      maxZoom: 18,
-      minZoom: 12,
-      id: 'mapbox/streets-v11',
-      tileSize: 512,
-      zoomOffset: -1,
-      accessToken: 'pk.eyJ1Ijoidm9kbmliaXZvbCIsImEiOiJjbDBrb2ZhNTIwb2YxM2ltOXVmMG5qbW05In0.eH6IYRJquEFQgNTXGcyBmA',
+      // maxZoom: 18,
+      // minZoom: 12,
+      // id: 'mapbox/streets-v11',
+      // tileSize: 512,
+      // zoomOffset: -1,
+      // accessToken: 'pk.eyJ1Ijoidm9kbmliaXZvbCIsImEiOiJjbDBrb2ZhNTIwb2YxM2ltOXVmMG5qbW05In0.eH6IYRJquEFQgNTXGcyBmA',
       // attribution: 'vodnibivol | <a href="/">Home</a>',
       attribution: '',
+      subdomains: 'abcd',
     };
-    const tileLayer = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}{r}?access_token={accessToken}';
 
-    L.tileLayer(tileLayer, mapConfig).addTo(map);
+    // L.tileLayer(
+    //   'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}{r}?access_token={accessToken}',
+    //   mapConfig
+    // ).addTo(map);
+    L.tileLayer(
+      'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'),
+      mapConfig
+    ).addTo(map);
 
     // attribution
     document.querySelector('.leaflet-control-attribution').innerHTML = mapConfig.attribution;
