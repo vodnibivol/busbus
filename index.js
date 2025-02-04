@@ -160,6 +160,8 @@ app.get('/api/getStopData/:stopId', async (req, res) => {
   //   ],
   // };
 
+  // console.log(data);
+
   const dataFormatted = data.data.arrivals.reduce((acc, cur) => {
     const name = cur.route_name;
     acc[name] = acc[name] || [];

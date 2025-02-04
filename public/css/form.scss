@@ -179,7 +179,7 @@ button {
 
     .prihodi {
       display: flex;
-      gap: 3px;
+      // gap: 3px;
       cursor: pointer;
       background: white;
       border: 2px solid black;
@@ -188,6 +188,16 @@ button {
         padding: 3px 5px;
         user-select: none;
         pointer-events: none;
+        display: flex;
+
+        &::after {
+          content: "min,";
+          padding-left: 5px;
+        }
+        &:last-of-type::after {
+          content: "min";
+          padding-left: 5px;
+        }
 
         &.garaza {
           background: lightgray;
