@@ -60,7 +60,9 @@
           <div class="linija" v-for="r in arrivals">
             <div class="stevilka" @click="showMap(r[0].key)">{{ r[0].key }}</div>
             <div class="prihodi" @click="eta=!eta" :style="{'text-decoration':dataExpired?'line-through':''}">
-              <span v-for="arrival in r.slice(0,3)" :class="{garaza:arrival.v_garazo}">{{eta?arrival.minutes+' min':arrival.time}}</span>
+              <span v-for="arrival in r.slice(0,3)" :class="{garaza:arrival.v_garazo}">{{
+                eta ? arrival.minutes + ' min' : arrival.time
+              }}</span>
             </div>
           </div>
         </div>
@@ -73,40 +75,9 @@
 
     <img src="static/img/bus.png" alt="" id="busek" />
 
-    <% if (typeof userId !== 'string') { %>
-    <style>
-      #login {
-        position: fixed;
-        bottom: 5px;
-        right: 10px;
-        color: black;
-        font-weight: normal;
-      }
-    </style>
-    <a id="login" href="#">prijava</a>
     <script>
-      document.querySelector('#login').onclick = (e) => {
-        e.preventDefault();
-        const userName = prompt('uporabiško ime:');
-        if (userName) location.search = 'userId=' + userName;
-      };
-    </script>
-    <% }; %>
-
-    <script>
-      // add stop history
-      <% if (typeof stopHistory === 'object') { %>
-        localStorage.stopHistory = "<%- stopHistory.join(','); %>";
-        // console.log(localStorage.stopHistory);
-
-        // remove query from url (popstate)
-        const u = new URL(location.href);
-        u.searchParams.delete('userId');
-        window.history.replaceState({}, document.title, u.toString());
-      <% } %>
-
-      // busek
-      const $ = (sel) => document.querySelector(sel);
+      // --- IZLETEK (BUSEK)
+      window.$ = window.$ || ((sel) => document.querySelector(sel));
       const random = (min, max) => min + Math.random() * (max - min);
 
       function izletek() {
@@ -115,19 +86,11 @@
         $('#busek').onanimationend = () => setTimeout(izletek, random(100_000, 300_000));
       }
 
-      function randomBG() {
-        const prevNum = localStorage.getItem;
-        const today = Math.floor(new Date().valueOf() / (1000 * 60 * 60 * 24));
-        const num = today % 5;
-        document.body.style.backgroundImage = `url('static/img/SNEZINKE/${num}.jpeg')`;
-      }
-
       setTimeout(izletek, random(100_000, 300_000));
-      // randomBG();
     </script>
 
     <!-- <script src="static/js/vue.global.js"></script> -->
-    <script src="https://unpkg.com/vue@3.2.47/dist/vue.global.prod.js"></script>
+    <script src="static/js/vendor/vue.global.prod.js"></script>
     <script src="static/js/stops.js"></script>
     <script src="static/js/form.js"></script>
   </body>

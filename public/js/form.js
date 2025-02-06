@@ -90,21 +90,21 @@ const config = {
     selectStop(stopId) {
       this.selectedStop = this.stopOptions.find((s) => s.ref_id === stopId);
       this.stopHistory = [this.selectedStop.ref_id, ...this.stopHistory];
-      this.updateUserData(); // TODO: only if userId in cookie storage
+      // this.updateUserData(); // TODO: only if userId in cookie storage
       this.getData();
     },
 
-    updateUserData() {
-      postData('api/updateUserData', { stopHistory: this.stopHistory });
-      console.log('updateUserData JS');
-    },
+    // updateUserData() {
+    //   postData('api/updateUserData', { stopHistory: this.stopHistory });
+    //   console.log('updateUserData JS');
+    // },
 
     async getData() {
       this.loading = true;
       this.error = false;
 
       try {
-        const res = await fetch("api/getStopData/" + this.selectedStop.ref_id);
+        const res = await fetch("api/arrival/" + this.selectedStop.ref_id);
         const data = await res.json();
         console.log(data);
         this.arrivals = data.sort((route1, route2) => {
@@ -137,7 +137,7 @@ const config = {
     },
 
     showMap(routeNo) {
-      location.href = `map?route=${routeNo}&stop=${this.selectedStop.ref_id}`;
+      location.href = `zemljevid?route=${routeNo}&stop=${this.selectedStop.ref_id}`;
     },
   },
 

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/head') %>
+    <link rel="stylesheet" href="static/css/vendor/leaflet.css" />
+    <style>
+      .leaflet-control-attribution {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="flex-center">
+    <div id="mapContainer">
+      <div id="map"></div>
+    </div>
+
+    <div class="live-dot live"></div>
+
+    <script>
+      window.$ = (window.$ || (sel) => document.querySelector(sel));
+    </script>
+
+    <script src="static/js/vendor/leaflet@1.9.2.js"></script>
+    <script src="static/js/vendor/leaflet.rotatedMarker.js"></script>
+    <script src="static/js/zemljevid.js"></script>
+  </body>
+</html>
