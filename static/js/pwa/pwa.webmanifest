@@ -9,7 +9,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/",
+  "start_url": "/busbus",
   "display": "fullscreen",
   "theme_color": "#FAF4F0",
   "background_color": "#FAF4F0"
