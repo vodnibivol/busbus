@@ -27,7 +27,7 @@ const Main = {
 
     if (this.route_id) {
       // get shape
-      const route_res = await fetch(`/api/route?route_id=${this.route_id}&trip_id=${this.trip_id}`); // TODO: samo trip_id
+      const route_res = await fetch(`api/route?route_id=${this.route_id}&trip_id=${this.trip_id}`); // TODO: samo trip_id
       const route_data = await route_res.json();
       console.log('route_data:');
       console.log(route_data);
@@ -56,7 +56,7 @@ const Main = {
 
   async updateBuses() {
     // get buses
-    const bus_res = await fetch('/api/bus?route_group_number=' + this.route_group_number + '&trip_id=' + this.trip_id);
+    const bus_res = await fetch('api/bus?route_group_number=' + this.route_group_number + '&trip_id=' + this.trip_id);
     const bus_data = await bus_res.json();
 
     console.log(bus_data);
