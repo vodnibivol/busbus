@@ -17,10 +17,11 @@
     <div class="live-dot live"></div>
 
     <script>
-      window.$ = (window.$ || (sel) => document.querySelector(sel));
+      window.$ = window.$ || ((sel) => document.querySelector(sel));
     </script>
 
     <script src="static/js/vendor/leaflet@1.9.2.js"></script>
+    <!-- <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script> -->
     <script src="static/js/vendor/leaflet.rotatedMarker.js"></script>
     <script src="static/js/zemljevid.js"></script>
   </body>

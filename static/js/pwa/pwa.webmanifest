@@ -1,0 +1,16 @@
+{
+  "name": "Busbus",
+  "short_name": "Busbus",
+  "description": "Iskalnik busov in ocenjevalec šoferjev!",
+  "icons": [
+    {
+      "src": "/static/img/splash-screen.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "fullscreen",
+  "theme_color": "#FAF4F0",
+  "background_color": "#FAF4F0"
+}

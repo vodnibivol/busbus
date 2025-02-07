@@ -14,6 +14,7 @@ const dstore = new Store();
 const app = express();
 
 const PORT = process.env.PORT || 2200;
+const API_KEY = process.env.API_KEY;
 
 app.listen(PORT, () => console.log('http://localhost:' + PORT + '/'));
 
@@ -26,7 +27,7 @@ app.use(SUBPATH, (req, res, next) => {
 });
 
 app.use(compression());
-app.use('/static/', express.static('public'));
+app.use('/static/', express.static('static'));
 app.set('view engine', 'ejs');
 app.use(cors());
 app.use(cookieParser());
@@ -35,26 +36,17 @@ app.use(bodyParser.json());
 // --- ROUTES
 
 app.get('/', (req, res) => {
-  return res.render('prihod');
+  return res.render('iskanje');
 });
 
 app.get('/zemljevid', (req, res) => {
   // /zemljevid?linija=3&center=1 // &postaja=303001
-  if (!req.query.route) return res.redirect('/');
+  // if (!req.query.route) return res.redirect('/');
 
   res.render('zemljevid');
 });
 
 // --- API
-
-app.get('/api/getBusData/:routeNo', async (req, res) => {
-  const data = await cachedFetch('https://bus-ljubljana.eu/app/busDetails?n=' + req.params.routeNo, 3000);
-  const tripId = req.query.trip; // TODO: rename to TRIP
-  if (tripId && data.success) {
-    data.data = data.data.filter((d) => d.trip_id === tripId);
-  }
-  res.json(data);
-});
 
 app.get('/api/arrival/:stopId', async (req, res) => {
   // const data = await cachedFetch('https://www.lpp.si/lpp/ajax/1/' + req.params.stopId, 3000);
@@ -81,6 +73,8 @@ app.get('/api/arrival/:stopId', async (req, res) => {
       minutes: cur.eta_min,
       time: timeAfterMinutes(cur.eta_min),
       v_garazo: !!cur.depot,
+      trip_id: cur.trip_id,
+      route_id: cur.route_id,
     });
 
     return acc;
@@ -88,6 +82,51 @@ app.get('/api/arrival/:stopId', async (req, res) => {
 
   res.json(Object.values(dataFormatted));
 });
+
+// --- zemljevid
+
+app.get('/api/route', async (req, res) => {
+  const route_id = req.query.route_id;
+  const trip_id = req.query.trip_id;
+
+  // get shape
+  const r = await fetch('https://data.lpp.si/api/route/routes?shape=1&route_id=' + route_id);
+  const data = await r.json();
+
+  if (data.success) {
+    const trip = data.data.find((r) => r.trip_id === trip_id);
+    res.json(trip);
+  } else {
+    res.status(400).json({ success: false });
+  }
+});
+
+app.get('/api/bus', async (req, res) => {
+  const route_group_number = req.query.route_group_number;
+  const trip_id = req.query.trip_id; // TODO: samo en parameter: trip_id!
+  console.log(route_group_number);
+
+  // get bus data
+  const r = await fetch('https://data.lpp.si/api/bus/buses-on-route?route-group-number=' + route_group_number, {
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: API_KEY,
+      'User-Agent': 'travana/4 CFNetwork/1568.300.101 Darwin/24.2.0',
+    },
+  });
+
+  const data = await r.json();
+
+  if (data.success) {
+    // filter: only 
+    const tripBuses = data.data.filter((bus => bus.trip_id = trip_id))
+    res.json(tripBuses); // FIXME: to pokaže vse buske ...
+  } else {
+    res.status(400).json({ success: false });
+  }
+});
+
+// trip_id=${trip_id}&stop
 
 // --- ERRORS
 

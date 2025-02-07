@@ -5,3 +5,4 @@ db/users.json
 /refs
 request.rest
 .env
+vars.txt

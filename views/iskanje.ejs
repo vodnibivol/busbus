@@ -58,7 +58,7 @@
         <!-- LINIJE SECTION -->
         <div class="section" id="linije" v-if="!loading && arrivals.length">
           <div class="linija" v-for="r in arrivals">
-            <div class="stevilka" @click="showMap(r[0].key)">{{ r[0].key }}</div>
+            <div class="stevilka" @click="showMap(r[0])">{{ r[0].key }}</div>
             <div class="prihodi" @click="eta=!eta" :style="{'text-decoration':dataExpired?'line-through':''}">
               <span v-for="arrival in r.slice(0,3)" :class="{garaza:arrival.v_garazo}">{{
                 eta ? arrival.minutes + ' min' : arrival.time
@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <img src="static/img/bus.png" alt="" id="busek" />
+    <img src="static/img/busek.png" id="busek" />
 
     <script>
       // --- IZLETEK (BUSEK)
@@ -92,6 +92,7 @@
     <!-- <script src="static/js/vue.global.js"></script> -->
     <script src="static/js/vendor/vue.global.prod.js"></script>
     <script src="static/js/stops.js"></script>
-    <script src="static/js/form.js"></script>
+    <script src="static/js/iskanje.js"></script>
+    <script src="static/js/pwa/pwa.js"></script>
   </body>
 </html>
