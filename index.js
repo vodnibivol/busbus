@@ -7,6 +7,8 @@ import compression from 'compression';
 import bodyParser from 'body-parser';
 import 'dotenv/config';
 
+import Datastore from '@seald-io/nedb';
+
 import Store from './js/Store_node.js';
 const dstore = new Store();
 
@@ -26,15 +28,22 @@ app.use(SUBPATH, (req, res, next) => {
 });
 
 app.use(compression());
-app.use('/static/', express.static('static'));
+app.use('/public/', express.static('public'));
 app.set('view engine', 'ejs');
 // app.use(cors());
 // app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // --- DATA
 
 const ROUTES = JSON.parse(fs.readFileSync('db/routes.json'));
+const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
+
+const DB = {
+  drivers: new Datastore({ filename: 'db/drivers.db', autoload: true, timestampData: true }),
+  buses: new Datastore({ filename: 'db/buses.db', autoload: true, timestampData: true }),
+};
 
 // --- ROUTES
 
@@ -43,16 +52,57 @@ app.get('/', (req, res) => {
 });
 
 app.get('/zemljevid', (req, res) => {
-  // /zemljevid?linija=3&center=1 // &postaja=303001
-  // if (!req.query.route) return res.redirect('/');
+  const station_loc = STATIONS[req.query.station_code];
 
-  res.render('zemljevid');
+  res.render('zemljevid', { station_loc });
+});
+
+app.get('/objavi', async (req, res) => {
+  const { bus_id, driver_id } = req.query;
+
+  const db_driver_data = await DB.drivers.findOneAsync({ driver_id });
+  const db_bus_data = await DB.buses.findOneAsync({ bus_id });
+
+  if (!db_driver_data && !db_bus_data) {
+    return res.redirect('/');
+  }
+
+  res.render('objavi', {
+    bus_id,
+    driver_id,
+    bus_description: db_bus_data.bus_description,
+    driver_description: db_driver_data.driver_description,
+    driver_nickname: db_driver_data.driver_nickname,
+    driver_rating: db_driver_data.driver_rating,
+  });
+});
+
+app.post('/objavi', async (req, res) => {
+  const { bus_id, bus_description, driver_id, driver_description, driver_nickname, driver_rating, author } = req.body;
+
+  // update bus data
+  if (bus_description) {
+    const res1 = await DB.buses.updateAsync({ bus_id }, { bus_id, bus_description, author }, { upsert: true });
+    console.log(res1);
+  }
+
+  // update driver data
+  if (driver_description || driver_nickname || driver_rating) {
+    const res2 = await DB.drivers.updateAsync(
+      { driver_id },
+      { driver_id, driver_description, driver_nickname, driver_rating, author },
+      { upsert: true }
+    );
+    console.log(res2);
+  }
+
+  res.render('objavi', { ...req.body });
 });
 
 // --- API
 
-app.get('/api/arrival/:stopId', async (req, res) => {
-  const data = await cachedFetch('https://data.lpp.si/api/station/arrival?station-code=' + req.params.stopId, 3000);
+app.get('/api/arrival', async (req, res) => {
+  const data = await fetchLPP('https://data.lpp.si/api/station/arrival?station-code=' + req.query.station_code, 3000);
 
   // const formatted = {
   //   '3B': [
@@ -120,10 +170,28 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
 app.get('/api/bus/bus-details/', async (req, res) => {
   const bus_id = req.query.bus_id;
 
-  const data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?trip-info=1&bus-id=' + bus_id);
+  const data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?&bus-id=' + bus_id);
+
+  // pridobi svoje podatke in jih zzdruži z ibzbranini podatki lpp.
 
   if (data.success) {
-    res.json(data.data?.[0]);
+    const d = data.data?.[0] || {};
+    const db_driver_data = await DB.drivers.findOneAsync({ driver_id: d.driver_id }) || {};
+    const db_bus_data = await DB.buses.findOneAsync({ bus_id: d.bus_id }) || {};
+
+    const response_data = {
+      bus_unit_id: d.bus_unit_id,
+      bus_name: d.name,
+      odo: d.odo,
+      driver_id: d.driver_id,
+
+      bus_description: db_bus_data.bus_description,
+      driver_description: db_driver_data.driver_description,
+      driver_nickname: db_driver_data.driver_nickname,
+      driver_rating: db_driver_data.driver_rating,
+    };
+
+    res.json(response_data);
   } else {
     res.status(400).json({ success: false });
   }

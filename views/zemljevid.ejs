@@ -2,15 +2,15 @@
 <html lang="en">
   <head>
     <%- include('partials/head') %>
-    <link rel="stylesheet" href="static/css/vendor/leaflet.css" />
-    <link rel="stylesheet" href="static/css/vendor/L.Control.Locate.css" />
-    <link rel="stylesheet" href="static/css/zemljevid.css" />
+    <link rel="stylesheet" href="public/css/vendor/leaflet.css" />
+    <link rel="stylesheet" href="public/css/vendor/L.Control.Locate.css" />
+    <link rel="stylesheet" href="public/css/zemljevid.css" />
   </head>
   <body class="flex-center">
     <div id="mapContainer">
       <button class="back-button">nazaj</button>
       <div id="map"></div>
-      <div class="data-age-container">starost podatkov: <span id="dataAge"></span></div>
+      <div class="data-age-container">starost podatkov: <span id="dataAge">0</span>s</div>
       <div class="bus-info-container">
         <div class="bg">
           <div id="closeBtn">[x]</div>
@@ -41,7 +41,7 @@
               <li class="driver">
                 <span class="title">Voznik:</span>
                 <ul>
-                  <li class="niceness">
+                  <li class="rating">
                     <span class="title">Prijazen?</span>
                     <span class="content"></span>
                   </li>
@@ -57,7 +57,7 @@
               </li>
             </ul>
           </div>
-          <a id="editData" href="#" disabled>[uredi]</a>
+          <a id="editData" href="#" class="disabled">[dopolni]</a>
         </div>
       </div>
     </div>
@@ -66,15 +66,14 @@
 
     <script>
       window.$ = window.$ || ((sel) => document.querySelector(sel));
-      document.querySelector('.back-button').onclick = () => history.back();
+      window.station_loc = <%- JSON.stringify(station_loc) %>;
     </script>
 
-    <script src="static/js/vendor/leaflet@1.9.2.js"></script>
+    <script src="public/js/vendor/leaflet@1.9.2.js"></script>
     <!-- <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script> -->
-    <script src="static/js/vendor/leaflet.rotatedMarker.js"></script>
-    <script src="static/js/vendor/L.Control.Locate.min.js"></script>
-    <!-- <script src="static/js/vendor/leaflet.edgebuffer.js"></script> -->
-    <script src="static/js/station_locations.js"></script>
-    <script src="static/js/zemljevid.js"></script>
+    <script src="public/js/vendor/leaflet.rotatedMarker.js"></script>
+    <script src="public/js/vendor/L.Control.Locate.min.js"></script>
+    <!-- <script src="public/js/vendor/leaflet.edgebuffer.js"></script> -->
+    <script src="public/js/zemljevid.js"></script>
   </body>
 </html>

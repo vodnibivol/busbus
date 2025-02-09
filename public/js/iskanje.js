@@ -104,7 +104,7 @@ const config = {
       this.error = false;
 
       try {
-        const res = await fetch('api/arrival/' + this.selectedStop.ref_id);
+        const res = await fetch('api/arrival?station_code=' + this.selectedStop.ref_id);
         const data = await res.json();
         console.log(data);
         this.arrivals = data.sort((route1, route2) => {

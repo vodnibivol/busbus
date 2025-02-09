@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/head') %>
+    <style>
+      * {
+        font-size: 13px;
+        font-family: Helvetica, Arial, sans-serif;
+      }
+
+      p {
+        margin-bottom: 5px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      h3 {
+        font-size: 15px;
+        margin-bottom: 0;
+      }
+
+      i {
+        color: #ccc;
+      }
+
+      hr {
+        width: 100%;
+      }
+
+      form {
+        padding: 15px;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+      }
+
+      textarea {
+        resize: none;
+      }
+
+      spacer {
+        min-height: 40px;
+        flex-grow: 1;
+      }
+
+      button {
+        /* font-weight: bold; */
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <form method="POST" action="objavi">
+      <input type="hidden" name="bus_id" value="<%- bus_id %>" />
+      <input type="hidden" name="driver_id" value="<%- driver_id %>" />
+      <h2>Dodaj oceno</h2>
+
+      <h3>Avtobus</h3>
+      <p>Opis:</p>
+      <input type="text" name="bus_description" placeholder="Povej kaj o busku" value="<%- bus_description %>" />
+
+      <h3>Voznik</h3>
+      <p>Ime:</p>
+      <input type="text" name="driver_nickname" placeholder="Mirko Mirkić" value="<%- driver_nickname %>" />
+
+      <p>Prijazen: <i>(Če ti pobegne: kakec!)</i></p>
+      <select name="driver_rating" value="<%- driver_rating %>">
+        <option value="">-- izberi --</option>
+        <option value="1">Kakec! (1)</option>
+        <option value="2">Slabo ... (2)</option>
+        <option value="3">Meh (3)</option>
+        <option value="4">Vredu. (4)</option>
+        <option value="5">Popoln! (5)</option>
+      </select>
+
+      <p>Opis:</p>
+      <textarea
+        rows="3"
+        cols="30"
+        type="text"
+        name="driver_description"
+        placeholder="Povej kaj o šoferju"
+        value="<%- driver_description %>"
+      ></textarea>
+
+      <spacer></spacer>
+
+      <p>Tvoje ime:</p>
+      <input type="text" name="author" placeholder="Kako ti je ime!" required />
+
+      <br />
+      <br />
+      <button>Objavi</button>
+    </form>
+  </body>
+</html>

@@ -5,20 +5,23 @@ const Main = {
   busMarkers: {},
   dataAge: 0,
 
+  station_code: null,
+  trip_id: null,
+
   async init() {
     // --- EVENTS
     $('.bus-info-container #closeBtn').onclick = this.closeInfo;
+    $('.back-button').onclick = () => history.back();
 
     // --- MAP
     this.map = L.map('map', {
-      center: [46.05, 14.507],
-      zoom: 13,
+      center: window.station_loc, // [46.05, 14.507] <= LJUBLJANA
+      zoom: 14,
       zoomControl: false,
     });
 
-    this.map.on('drag', () => {
-      this.map.fitBounds(this.map.getBounds());
-    });
+    // draw shapes out of bounds
+    this.map.on('drag', () => this.map.fitBounds(this.map.getBounds()));
 
     this.tileLayer = L.tileLayer(
       'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}{r}?access_token={accessToken}',
@@ -37,19 +40,19 @@ const Main = {
     // Location marker
     L.control.locate({ position: 'bottomright', initialZoomLevel: 16 }).addTo(this.map);
 
-    this.params = new URLSearchParams(window.location.search);
-    this.station_code = this.params.get('station_code');
-    this.trip_id = this.params.get('trip_id');
+    // Data
+    const params = new URLSearchParams(window.location.search);
+    this.station_code = params.get('station_code');
+    this.trip_id = params.get('trip_id');
 
     // --- POSTAJA
 
-    L.marker(station_locations[this.station_code], {
+    L.marker(window.station_loc, {
       icon: Icons.station,
       // zIndexOffset: -1000,
     })
       .addTo(this.map)
-      .on('click', () => this.map.setView(station_locations[this.station_code], 15));
-    this.map.setView(station_locations[this.station_code], 14);
+      .on('click', () => this.map.setView(window.station_loc, 15));
 
     // --- OBLIKA
 
@@ -58,43 +61,19 @@ const Main = {
     // --- UPDATE BUSES
 
     this.updateBuses();
-    setInterval(() => this.updateBuses(), 5000);
+    setInterval(this.updateBuses.bind(this), 5000);
 
+    // Data age
     setInterval(() => {
-      this.dataAge++;
-      document.querySelector('#dataAge').innerText = this.dataAge + 's';
+      $('#dataAge').innerText = ++this.dataAge;
     }, 1000);
-  },
-
-  async getRouteShape() {
-    // get shape
-    const route_res = await fetch(`api/route-shape?trip_id=${this.trip_id}`); // TODO: samo trip_id
-    const route_data = await route_res.json();
-    // console.log(route_data);
-
-    if (route_data.geojson_shape) {
-      const geojsonLayer = L.geoJson(route_data.geojson_shape, {
-        color: '#51504Dcc', // cornflowerblue, dodgerblue, royalblue
-        // opacity: 0.7,
-        // lineCap: 'round',
-        // lineJoin: 'round',
-        weight: 3,
-        dashArray: '4 10',
-      }).addTo(this.map);
-
-      // const s = route_data.geojson_shape.bbox;
-      // this.map.fitBounds([
-      //   [s[1], s[0]],
-      //   [s[3], s[2]],
-      // ]);
-    }
   },
 
   async updateBuses() {
     // get buses
     const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + this.trip_id);
     const bus_data = await bus_res.json();
-    console.log(bus_data);
+    // console.log(bus_data);
 
     for (let bus of bus_data) {
       const latLng = [bus.latitude, bus.longitude];
@@ -131,26 +110,49 @@ const Main = {
     }
   },
 
-  async openInfo(data) {
-    console.log(data);
+  async getRouteShape() {
+    // get shape
+    const route_res = await fetch(`api/route-shape?trip_id=${this.trip_id}`); // TODO: samo trip_id
+    const route_data = await route_res.json();
+    // console.log(route_data);
+
+    if (route_data.geojson_shape) {
+      const geojsonLayer = L.geoJson(route_data.geojson_shape, {
+        color: '#51504Dcc', // cornflowerblue, dodgerblue, royalblue, rgb(233, 106, 57)
+        weight: 3,
+        dashArray: '4 10',
+      }).addTo(this.map);
+    }
+  },
+
+  async openInfo(bus_data) {
+    console.log(bus_data);
+
+    $('#editData').classList.add('disabled');
 
     // populate data
-    $('.bus-info-container .route .content').innerText = `${data.route_number}) ${data.route_name}`;
-    $('.bus-info-container .direction .content').innerText = data.destination;
-    $('.bus-info-container .bus .registration .content').innerText = data.bus_name;
+    $('.bus-info-container .route .content').innerText = `${bus_data.route_number}) ${bus_data.route_name}`;
+    $('.bus-info-container .direction .content').innerText = bus_data.destination;
+    $('.bus-info-container .bus .registration .content').innerText = bus_data.bus_name;
     $('.bus-info-container .bus .description .content').innerText = '[...]';
-    $('.bus-info-container .driver .niceness .content').innerText = '[...]';
     $('.bus-info-container .driver .nickname .content').innerText = '[...]';
+    $('.bus-info-container .driver .rating .content').innerText = '[...]';
     $('.bus-info-container .driver .description .content').innerText = '[...]';
-
+    
     $('.bus-info-container').classList.add('open');
-
+    
     // load info from db
-    const r = await fetch('/api/bus/bus-details?bus_id=' + data.bus_unit_id);
-    const d = await r.json();
-    console.log(d);
+    const r = await fetch('/api/bus/bus-details?bus_id=' + bus_data.bus_unit_id); // db in lpp data
+    const bus_details = await r.json();
+    console.log(bus_details);
 
-    $('.bus-info-container .driver .nickname .content').innerText = d.driver_id;
+    $('.bus-info-container .bus .description .content').innerText = bus_details.bus_description || 'ni podatkov.';
+    $('.bus-info-container .driver .nickname .content').innerText = bus_details.driver_nickname || 'ni podatkov.';
+    $('.bus-info-container .driver .rating .content').innerText = bus_details.driver_rating || 'ni podatkov.';
+    $('.bus-info-container .driver .description .content').innerText = bus_details.driver_description || 'ni podatkov.';
+
+    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}&driver_id=${bus_details.driver_id}`;
+    $('#editData').classList.remove('disabled');
   },
 
   closeInfo() {
@@ -162,11 +164,11 @@ const Main = {
 
 const Icons = {
   bus: L.icon({
-    iconUrl: 'static/img/busek_arrow.png',
+    iconUrl: 'public/img/busek_arrow.png',
     iconSize: [48, 48],
   }),
   station: L.icon({
-    iconUrl: 'static/img/postaja.png',
+    iconUrl: 'public/img/postaja.png',
     iconSize: [32, 32],
     iconAnchor: [16, 32],
   }),
