@@ -3,26 +3,78 @@
   <head>
     <%- include('partials/head') %>
     <link rel="stylesheet" href="static/css/vendor/leaflet.css" />
-    <style>
-      .leaflet-control-attribution {
-        display: none;
-      }
-    </style>
+    <link rel="stylesheet" href="static/css/vendor/L.Control.Locate.css" />
+    <link rel="stylesheet" href="static/css/zemljevid.css" />
   </head>
   <body class="flex-center">
     <div id="mapContainer">
+      <button class="back-button">nazaj</button>
       <div id="map"></div>
+      <div class="data-age-container">starost podatkov: <span id="dataAge"></span></div>
+      <div class="bus-info-container">
+        <div class="bg">
+          <div id="closeBtn">[x]</div>
+          <div id="textBox">
+            <!-- <h3>LJ LPP-174</h3> -->
+            <ul>
+              <li class="route">
+                <span class="title">Linija:</span>
+                <span class="content"></span>
+              </li>
+              <li class="direction">
+                <span class="title">Smer:</span>
+                <span class="content">center</span>
+              </li>
+              <li class="bus">
+                <span class="title">Avtobus:</span>
+                <ul>
+                  <li class="registration">
+                    <span class="title">Registracija:</span>
+                    <span class="content"></span>
+                  </li>
+                  <li class="description">
+                    <span class="title">Opis:</span>
+                    <span class="content"></span>
+                  </li>
+                </ul>
+              </li>
+              <li class="driver">
+                <span class="title">Voznik:</span>
+                <ul>
+                  <li class="niceness">
+                    <span class="title">Prijazen?</span>
+                    <span class="content"></span>
+                  </li>
+                  <li class="nickname">
+                    <span class="title">Ime:</span>
+                    <span class="content"></span>
+                  </li>
+                  <li class="description">
+                    <span class="title">Opis:</span>
+                    <span class="content"></span>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <a id="editData" href="#" disabled>[uredi]</a>
+        </div>
+      </div>
     </div>
 
     <div class="live-dot live"></div>
 
     <script>
       window.$ = window.$ || ((sel) => document.querySelector(sel));
+      document.querySelector('.back-button').onclick = () => history.back();
     </script>
 
     <script src="static/js/vendor/leaflet@1.9.2.js"></script>
     <!-- <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script> -->
     <script src="static/js/vendor/leaflet.rotatedMarker.js"></script>
+    <script src="static/js/vendor/L.Control.Locate.min.js"></script>
+    <!-- <script src="static/js/vendor/leaflet.edgebuffer.js"></script> -->
+    <script src="static/js/station_locations.js"></script>
     <script src="static/js/zemljevid.js"></script>
   </body>
 </html>

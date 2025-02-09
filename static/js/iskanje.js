@@ -104,7 +104,7 @@ const config = {
       this.error = false;
 
       try {
-        const res = await fetch("api/arrival/" + this.selectedStop.ref_id);
+        const res = await fetch('api/arrival/' + this.selectedStop.ref_id);
         const data = await res.json();
         console.log(data);
         this.arrivals = data.sort((route1, route2) => {
@@ -137,8 +137,13 @@ const config = {
     },
 
     showMap(data) {
-      // alert(trip_id);
-      window.location.href = `zemljevid?trip_id=${data.trip_id}&route_id=${data.route_id}&station_code=${this.selectedStop.ref_id}&route_group_number=${data.key}`;
+      let url = 'zemljevid';
+      url += '?station_code=' + this.selectedStop.ref_id;
+      url += '&trip_id=' + data.trip_id;
+      // url += '&route_id=' + data.route_id;
+      // url += '&route_group_number=' + data.key;
+      window.location.href = url;
+      // window.location.href = `zemljevid?trip_id=${data.trip_id}&route_id=${data.route_id}&station_code=${this.selectedStop.ref_id}&route_group_number=${data.key}`;
     },
   },
 

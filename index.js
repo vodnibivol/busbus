@@ -1,10 +1,9 @@
 import express from 'express';
 import fetch from 'node-fetch';
-import path from 'path';
 import fs from 'fs';
-import cors from 'cors';
+// import cors from 'cors';
 import compression from 'compression';
-import cookieParser from 'cookie-parser';
+// import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import 'dotenv/config';
 
@@ -29,9 +28,13 @@ app.use(SUBPATH, (req, res, next) => {
 app.use(compression());
 app.use('/static/', express.static('static'));
 app.set('view engine', 'ejs');
-app.use(cors());
-app.use(cookieParser());
+// app.use(cors());
+// app.use(cookieParser());
 app.use(bodyParser.json());
+
+// --- DATA
+
+const ROUTES = JSON.parse(fs.readFileSync('db/routes.json'));
 
 // --- ROUTES
 
@@ -49,7 +52,6 @@ app.get('/zemljevid', (req, res) => {
 // --- API
 
 app.get('/api/arrival/:stopId', async (req, res) => {
-  // const data = await cachedFetch('https://www.lpp.si/lpp/ajax/1/' + req.params.stopId, 3000);
   const data = await cachedFetch('https://data.lpp.si/api/station/arrival?station-code=' + req.params.stopId, 3000);
 
   // const formatted = {
@@ -74,7 +76,7 @@ app.get('/api/arrival/:stopId', async (req, res) => {
       time: timeAfterMinutes(cur.eta_min),
       v_garazo: !!cur.depot,
       trip_id: cur.trip_id,
-      route_id: cur.route_id,
+      // route_id: cur.route_id,
     });
 
     return acc;
@@ -85,13 +87,12 @@ app.get('/api/arrival/:stopId', async (req, res) => {
 
 // --- zemljevid
 
-app.get('/api/route', async (req, res) => {
-  const route_id = req.query.route_id;
+app.get('/api/route-shape/', async (req, res) => {
   const trip_id = req.query.trip_id;
+  const route_id = routeIdFromTripId(trip_id);
 
   // get shape
-  const r = await fetch('https://data.lpp.si/api/route/routes?shape=1&route_id=' + route_id);
-  const data = await r.json();
+  const data = await fetchLPP('https://data.lpp.si/api/route/routes?shape=1&route_id=' + route_id);
 
   if (data.success) {
     const trip = data.data.find((r) => r.trip_id === trip_id);
@@ -101,32 +102,32 @@ app.get('/api/route', async (req, res) => {
   }
 });
 
-app.get('/api/bus', async (req, res) => {
-  const route_group_number = req.query.route_group_number;
-  const trip_id = req.query.trip_id; // TODO: samo en parameter: trip_id!
-  console.log(route_group_number);
+app.get('/api/bus/buses-on-route/', async (req, res) => {
+  const trip_id = req.query.trip_id;
+  const route_name = ROUTES.find((r) => r.trip_id === trip_id)?.route_number;
 
   // get bus data
-  const r = await fetch('https://data.lpp.si/api/bus/buses-on-route?route-group-number=' + route_group_number, {
-    headers: {
-      'Content-Type': 'application/json',
-      apikey: API_KEY,
-      'User-Agent': 'travana/4 CFNetwork/1568.300.101 Darwin/24.2.0',
-    },
-  });
-
-  const data = await r.json();
+  const data = await fetchLPP('https://data.lpp.si/api/bus/buses-on-route?specific=1&route-group-number=' + route_name);
 
   if (data.success) {
-    // filter: only 
-    const tripBuses = data.data.filter((bus => bus.trip_id = trip_id))
-    res.json(tripBuses); // FIXME: to pokaže vse buske ...
+    const tripBuses = data.data.filter((bus) => bus.trip_id === trip_id);
+    res.json(tripBuses);
   } else {
     res.status(400).json({ success: false });
   }
 });
 
-// trip_id=${trip_id}&stop
+app.get('/api/bus/bus-details/', async (req, res) => {
+  const bus_id = req.query.bus_id;
+
+  const data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?trip-info=1&bus-id=' + bus_id);
+
+  if (data.success) {
+    res.json(data.data?.[0]);
+  } else {
+    res.status(400).json({ success: false });
+  }
+});
 
 // --- ERRORS
 
@@ -163,4 +164,20 @@ function timeAfterMinutes(minutes) {
   const mins = String(now.getMinutes()).padStart(2, '0');
 
   return `${hours}:${mins}`;
+}
+
+function routeIdFromTripId(trip_id) {
+  return ROUTES.find((r) => r.trip_id === trip_id)?.route_id;
+}
+
+async function fetchLPP(url) {
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: API_KEY,
+      'User-Agent': 'travana/4 CFNetwork/1568.300.101 Darwin/24.2.0',
+    },
+  });
+
+  return response.json();
 }

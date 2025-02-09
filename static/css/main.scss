@@ -19,44 +19,6 @@ body {
   align-items: center;
 }
 
-#mapContainer {
-  height: 100%;
-  width: 100%;
-  position: relative;
-
-  @media screen and (min-width: 500px) {
-    height: 80%;
-    width: 80%;
-    border: 2px solid;
-    box-shadow: 7px 7px 0 #ddd;
-  }
-
-  #map {
-    outline: none;
-    width: 100%;
-    height: 100%;
-  }
-
-  #msg {
-    z-index: 9999;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-
-    width: 100%;
-    padding: 10px;
-    text-align: center;
-    background: #ffffffcc;
-    pointer-events: none;
-
-    border-top: 2px solid;
-    border-bottom: 2px solid;
-
-    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    font-size: 12px;
-  }
-}
-
 a.home {
   position: absolute;
   z-index: 1000;

@@ -1,10 +1,14 @@
 const Main = {
   map: null,
   tileLayer: null,
-  // busObject: {},
+  busDetails: null,
   busMarkers: {},
+  dataAge: 0,
 
   async init() {
+    // --- EVENTS
+    $('.bus-info-container #closeBtn').onclick = this.closeInfo;
+
     // --- MAP
     this.map = L.map('map', {
       center: [46.05, 14.507],
@@ -12,53 +16,84 @@ const Main = {
       zoomControl: false,
     });
 
+    this.map.on('drag', () => {
+      this.map.fitBounds(this.map.getBounds());
+    });
+
     this.tileLayer = L.tileLayer(
-      'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'),
-      { attribution: '', subdomains: 'abcd' }
+      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}{r}?access_token={accessToken}',
+      {
+        maxZoom: 18,
+        minZoom: 12,
+        id: 'mapbox/streets-v8',
+        tileSize: 512,
+        zoomOffset: -1,
+        // edgeBufferTiles: 1,
+        accessToken: 'pk.eyJ1Ijoidm9kbmliaXZvbCIsImEiOiJjbDBrb2ZhNTIwb2YxM2ltOXVmMG5qbW05In0.eH6IYRJquEFQgNTXGcyBmA',
+        attribution: '',
+      }
     ).addTo(this.map);
 
-    // --- OBLIKA
+    // Location marker
+    L.control.locate({ position: 'bottomright', initialZoomLevel: 16 }).addTo(this.map);
 
     this.params = new URLSearchParams(window.location.search);
     this.station_code = this.params.get('station_code');
-    this.route_id = this.params.get('route_id');
     this.trip_id = this.params.get('trip_id');
-    this.route_group_number = this.params.get('route_group_number');
 
-    if (this.route_id) {
-      // get shape
-      const route_res = await fetch(`api/route?route_id=${this.route_id}&trip_id=${this.trip_id}`); // TODO: samo trip_id
-      const route_data = await route_res.json();
-      console.log('route_data:');
-      console.log(route_data);
+    // --- POSTAJA
 
-      if (route_data.geojson_shape) {
-        const geojsonLayer = L.geoJson(route_data.geojson_shape, {
-          color: 'cornflowerblue', // cornflowerblue, dodgerblue, royalblue
-          opacity: 0.7,
-          lineCap: 'round',
-          lineJoin: 'round',
-          weight: 5,
-        }).addTo(this.map);
+    L.marker(station_locations[this.station_code], {
+      icon: Icons.station,
+      // zIndexOffset: -1000,
+    })
+      .addTo(this.map)
+      .on('click', () => this.map.setView(station_locations[this.station_code], 15));
+    this.map.setView(station_locations[this.station_code], 14);
 
-        const s = route_data.geojson_shape.bbox;
-        this.map.fitBounds([
-          [s[1], s[0]],
-          [s[3], s[2]],
-        ]);
-      }
+    // --- OBLIKA
 
-      // --- update buses
-      this.updateBuses();
-      setTimeout(() => this.updateBuses(), 2000);
+    this.getRouteShape();
+
+    // --- UPDATE BUSES
+
+    this.updateBuses();
+    setInterval(() => this.updateBuses(), 5000);
+
+    setInterval(() => {
+      this.dataAge++;
+      document.querySelector('#dataAge').innerText = this.dataAge + 's';
+    }, 1000);
+  },
+
+  async getRouteShape() {
+    // get shape
+    const route_res = await fetch(`api/route-shape?trip_id=${this.trip_id}`); // TODO: samo trip_id
+    const route_data = await route_res.json();
+    // console.log(route_data);
+
+    if (route_data.geojson_shape) {
+      const geojsonLayer = L.geoJson(route_data.geojson_shape, {
+        color: '#51504Dcc', // cornflowerblue, dodgerblue, royalblue
+        // opacity: 0.7,
+        // lineCap: 'round',
+        // lineJoin: 'round',
+        weight: 3,
+        dashArray: '4 10',
+      }).addTo(this.map);
+
+      // const s = route_data.geojson_shape.bbox;
+      // this.map.fitBounds([
+      //   [s[1], s[0]],
+      //   [s[3], s[2]],
+      // ]);
     }
   },
 
   async updateBuses() {
     // get buses
-    const bus_res = await fetch('api/bus?route_group_number=' + this.route_group_number + '&trip_id=' + this.trip_id);
+    const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + this.trip_id);
     const bus_data = await bus_res.json();
-
     console.log(bus_data);
 
     for (let bus of bus_data) {
@@ -66,20 +101,23 @@ const Main = {
 
       if (this.busMarkers[bus.bus_name]) {
         // premakni
-        this.busMarkers[bus.bus_name].setLatLng(latLng).bindTooltip(bus.bus_name);
-        //   this.busMarkers[bus].setIcon(L.divIcon({
+        this.busMarkers[bus.bus_name].setLatLng(latLng);
+        // this.busMarkers[bus].setIcon(
+        //   L.divIcon({
         //     className: 'icon-active',
-        //     iconSize:     [25, 25],
-        //     iconAnchor:   [13, 13],
-        //     popupAnchor:  [0, 0],
-        //     html: `<p class="icon">${busObject[i].line_number ? busObject[i].line_number : "⬤"}</p>
-        //             <img class="icon-pointer" style="transform: rotate(${busObject[i].direction + 225}deg)" src="img/ico/rotIcoActive.svg"/>`
-        // }));
+        //     iconSize: [25, 25],
+        //     iconAnchor: [13, 13],
+        //     popupAnchor: [0, 0],
+        //     html: `<p class="icon">${busObject[i].line_number ? busObject[i].line_number : '⬤'}</p>
+        //             <img class="icon-pointer" style="transform: rotate(${
+        //               busObject[i].direction + 225
+        //             }deg)" src="img/ico/rotIcoActive.svg"/>`,
+        //   })
+        // );
       } else {
         this.busMarkers[bus.bus_name] = L.marker(latLng, {
           rotationOrigin: 'center center',
           title: bus.bus_name,
-          riseOnHover: true,
           icon: Icons.bus,
         })
           .addTo(this.map)
@@ -87,32 +125,38 @@ const Main = {
       }
 
       this.busMarkers[bus.bus_name].setRotationAngle(bus.cardinal_direction - 90);
+
+      // set data age text
+      this.dataAge = 0;
     }
   },
 
-  openInfo(data) {
-    console.log('open bus');
+  async openInfo(data) {
     console.log(data);
+
+    // populate data
+    $('.bus-info-container .route .content').innerText = `${data.route_number}) ${data.route_name}`;
+    $('.bus-info-container .direction .content').innerText = data.destination;
+    $('.bus-info-container .bus .registration .content').innerText = data.bus_name;
+    $('.bus-info-container .bus .description .content').innerText = '[...]';
+    $('.bus-info-container .driver .niceness .content').innerText = '[...]';
+    $('.bus-info-container .driver .nickname .content').innerText = '[...]';
+    $('.bus-info-container .driver .description .content').innerText = '[...]';
+
+    $('.bus-info-container').classList.add('open');
+
+    // load info from db
+    const r = await fetch('/api/bus/bus-details?bus_id=' + data.bus_unit_id);
+    const d = await r.json();
+    console.log(d);
+
+    $('.bus-info-container .driver .nickname .content').innerText = d.driver_id;
   },
 
-  // station_code
-  // trip_id
-
-  // --- POSTAJA
-
-  // if (stopData.location) {
-  //   const stopMarker = L.marker(stopData.location, {
-  //     icon: Icons.station,
-  //     zIndexOffset: -1000,
-  //   });
-
-  //   stopMarker.addTo(map);
-  //   map.setView(stopData.location, 14);
-  //   stopMarker.addEventListener('click', () => map.setView(stopData.location, 15));
-  // }
+  closeInfo() {
+    $('.bus-info-container').classList.remove('open');
+  },
 };
-
-Main.init();
 
 // --- ICONS
 
@@ -127,3 +171,5 @@ const Icons = {
     iconAnchor: [16, 32],
   }),
 };
+
+Main.init();
