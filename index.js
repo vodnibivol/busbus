@@ -82,7 +82,7 @@ app.post('/objavi', async (req, res) => {
     );
   }
 
-  res.render('objavi', { ...req.body });
+  res.redirect(req.query.from_url);
 });
 
 // --- API

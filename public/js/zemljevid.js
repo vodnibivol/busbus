@@ -11,7 +11,7 @@ const Main = {
   async init() {
     // --- EVENTS
     $('.bus-info-container #closeBtn').onclick = this.closeInfo;
-    $('.back-button').onclick = () => history.back();
+    $('.back-button').onclick = () => (window.location = '/busbus/'); // () => history.back()
 
     // --- MAP
     this.map = L.map('map', {
@@ -138,9 +138,9 @@ const Main = {
     $('.bus-info-container .driver .nickname .content').innerText = 'nalaganje ...';
     $('.bus-info-container .driver .rating .content').innerText = 'nalaganje ...';
     $('.bus-info-container .driver .description .content').innerText = 'nalaganje ...';
-    
+
     $('.bus-info-container').classList.add('open');
-    
+
     // load info from db
     const r = await fetch('api/bus/bus-details?bus_id=' + bus_data.bus_unit_id); // db in lpp data
     const bus_details = await r.json();
@@ -151,7 +151,8 @@ const Main = {
     $('.bus-info-container .driver .rating .content').innerText = bus_details.driver_rating || 'ni podatkov.';
     $('.bus-info-container .driver .description .content').innerText = bus_details.driver_description || 'ni podatkov.';
 
-    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}&driver_id=${bus_details.driver_id}`;
+    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}\
+    &driver_id=${bus_details.driver_id}&from_url=${encodeURIComponent(location.href)}`;
     $('#editData').classList.remove('disabled');
   },
 
