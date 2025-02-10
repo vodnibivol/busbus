@@ -1,7 +1,7 @@
 /node_modules
 old.*
 *.psd
-db/users.json
+db/TO_POPRAVI!! // TODO
 /refs
 request.rest
 .env
