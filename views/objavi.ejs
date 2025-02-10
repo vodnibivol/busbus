@@ -106,8 +106,23 @@
     </form>
 
     <script>
-      document.querySelector('form').setAttribute('action', location.pathname+location.search);
-      document.querySelector('.back-button').onclick = () => history.back();
+      window.$ = window.$ || ((sel) => document.querySelector(sel));
+      $('form').setAttribute('action', location.pathname+location.search);
+      $('.back-button').onclick = (e) => {
+        e.preventDefault();
+        history.back();
+      };
+
+      $('button.submit').onclick = (e) => {
+        e.preventDefault();
+
+        if ($('form').checkValidity()) {
+          $('.submit').disabled = true;
+          $("form").submit();
+        } else {
+          $('form').reportValidity();
+        }
+      };
     </script>
   </body>
 </html>
