@@ -1,7 +1,7 @@
 html,
-body {
-  font-family: sans-serif;
-  font-size: 13px;
+body, button {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 15px;
 }
 
 #mapContainer {
@@ -29,15 +29,17 @@ body {
 
 .back-button {
   position: fixed;
-  top: 5px;
-  left: 5px;
+  top: 10px;
+  left: 10px;
   z-index: 999;
+  // font-size: 13px;
+  cursor: pointer;
 }
 
 .data-age-container {
   position: fixed;
-  bottom: 5px;
-  left: 5px;
+  bottom: 10px;
+  left: 10px;
   z-index: 999;
   background: #ffffffcc;
 }
@@ -49,6 +51,8 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
+
+  font-size: 13px;
 
   // padding: 5px;
 

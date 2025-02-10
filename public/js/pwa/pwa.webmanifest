@@ -4,7 +4,7 @@
   "description": "Iskalnik busov in ocenjevalec šoferjev!",
   "icons": [
     {
-      "src": "/public/img/splash-screen.png",
+      "src": "public/img/splash-screen.png",
       "sizes": "512x512",
       "type": "image/png"
     }

@@ -55,7 +55,7 @@
         cursor: pointer;
       }
 
-      button.back {
+      button.back-button {
         align-self: flex-start;
       }
 
@@ -68,9 +68,9 @@
     <form method="POST" action="objavi">
       <input type="hidden" name="bus_id" value="<%- bus_id %>" />
       <input type="hidden" name="driver_id" value="<%- driver_id %>" />
-      <button class="back">← nazaj</button>
+      <button class="back-button">← nazaj</button>
 
-      <h2>Dodaj oceno</h2>
+      <h2>Oceni!</h2>
 
       <h3>Avtobus</h3>
       <p>Opis:</p>
@@ -106,8 +106,8 @@
     </form>
 
     <script>
-      document.querySelector("form").setAttribute("action", location.pathname+location.search);
-      document.querySelector("button.back").onclick = () => history.back();
+      document.querySelector('form').setAttribute('action', location.pathname+location.search);
+      document.querySelector('.back-button').onclick = () => history.back();
     </script>
   </body>
 </html>
