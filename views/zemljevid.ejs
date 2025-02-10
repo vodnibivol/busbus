@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <%- include('partials/head') %>
-    <link rel="stylesheet" href="public/css/vendor/leaflet.css" />
-    <link rel="stylesheet" href="public/css/vendor/L.Control.Locate.css" />
-    <link rel="stylesheet" href="public/css/zemljevid.css" />
+    <link rel="stylesheet" href="/public/css/vendor/leaflet.css" />
+    <link rel="stylesheet" href="/public/css/vendor/L.Control.Locate.css" />
+    <link rel="stylesheet" href="/public/css/zemljevid.css" />
   </head>
   <body class="flex-center">
     <div id="mapContainer">
@@ -69,11 +69,11 @@
       window.station_loc = <%- JSON.stringify(station_loc) %>;
     </script>
 
-    <script src="public/js/vendor/leaflet@1.9.2.js"></script>
+    <script src="/public/js/vendor/leaflet@1.9.2.js"></script>
     <!-- <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script> -->
-    <script src="public/js/vendor/leaflet.rotatedMarker.js"></script>
-    <script src="public/js/vendor/L.Control.Locate.min.js"></script>
-    <!-- <script src="public/js/vendor/leaflet.edgebuffer.js"></script> -->
-    <script src="public/js/zemljevid.js"></script>
+    <script src="/public/js/vendor/leaflet.rotatedMarker.js"></script>
+    <script src="/public/js/vendor/L.Control.Locate.min.js"></script>
+    <!-- <script src="/public/js/vendor/leaflet.edgebuffer.js"></script> -->
+    <script src="/public/js/zemljevid.js"></script>
   </body>
 </html>

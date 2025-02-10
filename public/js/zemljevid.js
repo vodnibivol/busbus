@@ -134,15 +134,15 @@ const Main = {
     $('.bus-info-container .route .content').innerText = `${bus_data.route_number}) ${bus_data.route_name}`;
     $('.bus-info-container .direction .content').innerText = bus_data.destination;
     $('.bus-info-container .bus .registration .content').innerText = bus_data.bus_name;
-    $('.bus-info-container .bus .description .content').innerText = '[...]';
-    $('.bus-info-container .driver .nickname .content').innerText = '[...]';
-    $('.bus-info-container .driver .rating .content').innerText = '[...]';
-    $('.bus-info-container .driver .description .content').innerText = '[...]';
+    $('.bus-info-container .bus .description .content').innerText = 'nalaganje ...';
+    $('.bus-info-container .driver .nickname .content').innerText = 'nalaganje ...';
+    $('.bus-info-container .driver .rating .content').innerText = 'nalaganje ...';
+    $('.bus-info-container .driver .description .content').innerText = 'nalaganje ...';
     
     $('.bus-info-container').classList.add('open');
     
     // load info from db
-    const r = await fetch('/api/bus/bus-details?bus_id=' + bus_data.bus_unit_id); // db in lpp data
+    const r = await fetch('api/bus/bus-details?bus_id=' + bus_data.bus_unit_id); // db in lpp data
     const bus_details = await r.json();
     console.log(bus_details);
 

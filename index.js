@@ -1,9 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import fs from 'fs';
-// import cors from 'cors';
 import compression from 'compression';
-// import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import 'dotenv/config';
 
@@ -22,8 +20,6 @@ app.listen(PORT, () => console.log('http://localhost:' + PORT + '/'));
 app.use(compression());
 app.use('/public/', express.static('public'));
 app.set('view engine', 'ejs');
-// app.use(cors());
-// app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

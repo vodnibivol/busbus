@@ -1,8 +1,11 @@
 /node_modules
 old.*
 *.psd
-db/TO_POPRAVI!! // TODO
+.env
+
+db/buses.db
+db/drivers.db
+
 /refs
 request.rest
-.env
 vars.txt
