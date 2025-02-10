@@ -151,8 +151,9 @@ const Main = {
     $('.bus-info-container .driver .rating .content').innerText = bus_details.driver_rating || 'ni podatkov.';
     $('.bus-info-container .driver .description .content').innerText = bus_details.driver_description || 'ni podatkov.';
 
-    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}\
-    &driver_id=${bus_details.driver_id}&from_url=${encodeURIComponent(location.href)}`;
+    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}&driver_id=${
+      bus_details.driver_id
+    }&from_url=${encodeURIComponent(location.href)}`;
     $('#editData').classList.remove('disabled');
   },
 

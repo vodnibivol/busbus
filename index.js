@@ -47,6 +47,7 @@ app.get('/zemljevid', (req, res) => {
 
 app.get('/objavi', async (req, res) => {
   const { bus_id, driver_id } = req.query;
+  console.log(req.query);
 
   const db_driver_data = (await DB.drivers.findOneAsync({ driver_id })) || {};
   const db_bus_data = (await DB.buses.findOneAsync({ bus_id })) || {};
@@ -67,6 +68,7 @@ app.get('/objavi', async (req, res) => {
 
 app.post('/objavi', async (req, res) => {
   const { bus_id, bus_description, driver_id, driver_description, driver_nickname, driver_rating, author } = req.body;
+  console.log('+' + bus_id + '+');
 
   // update bus data
   if (bus_description) {
@@ -163,6 +165,8 @@ app.get('/api/bus/bus-details/', async (req, res) => {
   if (data.success) {
     const d = data.data?.[0] || {};
 
+    console.log(d);
+
     const db_driver_data = (await DB.drivers.findOneAsync({ driver_id: d.driver_id })) || {};
     const db_bus_data = (await DB.buses.findOneAsync({ bus_id: d.bus_unit_id })) || {};
 
@@ -178,7 +182,8 @@ app.get('/api/bus/bus-details/', async (req, res) => {
       driver_rating: db_driver_data.driver_rating,
     };
 
-    // console.log(response_data);
+    console.log(db_bus_data);
+    console.log(response_data);
 
     res.json(response_data);
   } else {
