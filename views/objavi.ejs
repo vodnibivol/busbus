@@ -67,24 +67,19 @@
       <input type="text" name="driver_nickname" placeholder="Mirko Mirkić" value="<%- driver_nickname %>" />
 
       <p>Prijazen: <i>(Če ti pobegne: kakec!)</i></p>
-      <select name="driver_rating" value="<%- driver_rating %>">
+      <select name="driver_rating">
         <option value="">-- izberi --</option>
-        <option value="1">Kakec! (1)</option>
-        <option value="2">Slabo ... (2)</option>
-        <option value="3">Meh (3)</option>
-        <option value="4">Vredu. (4)</option>
-        <option value="5">Popoln! (5)</option>
+        <option value="1" <% if(driver_rating==='1'){%>selected<%}%>>Kakec! (1)</option>
+        <option value="2" <% if(driver_rating==='2'){%>selected<%}%>>Slabo ... (2)</option>
+        <option value="3" <% if(driver_rating==='3'){%>selected<%}%>>Meh (3)</option>
+        <option value="4" <% if(driver_rating==='4'){%>selected<%}%>>Vredu. (4)</option>
+        <option value="5" <% if(driver_rating==='5'){%>selected<%}%>>Popoln! (5)</option>
       </select>
 
       <p>Opis:</p>
-      <textarea
-        rows="3"
-        cols="30"
-        type="text"
-        name="driver_description"
-        placeholder="Povej kaj o šoferju"
-        value="<%- driver_description %>"
-      ></textarea>
+      <textarea rows="3" cols="30" type="text" name="driver_description" placeholder="Povej kaj o šoferju">
+<%- driver_description %></textarea
+      >
 
       <spacer></spacer>
 

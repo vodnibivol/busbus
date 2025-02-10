@@ -19,14 +19,6 @@ const API_KEY = process.env.API_KEY;
 
 app.listen(PORT, () => console.log('http://localhost:' + PORT + '/'));
 
-// --- SUBPATH REROUTE
-
-const SUBPATH = '/busbus';
-app.use(SUBPATH, (req, res, next) => {
-  req.url = req.url.replace(SUBPATH, '');
-  next();
-});
-
 app.use(compression());
 app.use('/public/', express.static('public'));
 app.set('view engine', 'ejs');
@@ -60,12 +52,12 @@ app.get('/zemljevid', (req, res) => {
 app.get('/objavi', async (req, res) => {
   const { bus_id, driver_id } = req.query;
 
-  const db_driver_data = await DB.drivers.findOneAsync({ driver_id });
-  const db_bus_data = await DB.buses.findOneAsync({ bus_id });
+  const db_driver_data = (await DB.drivers.findOneAsync({ driver_id })) || {};
+  const db_bus_data = (await DB.buses.findOneAsync({ bus_id })) || {};
 
-  if (!db_driver_data && !db_bus_data) {
-    return res.redirect('/');
-  }
+  // if (!bus_id && !driver_id) {
+  //   return res.redirect('/');
+  // }
 
   res.render('objavi', {
     bus_id,
@@ -83,7 +75,6 @@ app.post('/objavi', async (req, res) => {
   // update bus data
   if (bus_description) {
     const res1 = await DB.buses.updateAsync({ bus_id }, { bus_id, bus_description, author }, { upsert: true });
-    console.log(res1);
   }
 
   // update driver data
@@ -93,7 +84,6 @@ app.post('/objavi', async (req, res) => {
       { driver_id, driver_description, driver_nickname, driver_rating, author },
       { upsert: true }
     );
-    console.log(res2);
   }
 
   res.render('objavi', { ...req.body });
@@ -176,8 +166,9 @@ app.get('/api/bus/bus-details/', async (req, res) => {
 
   if (data.success) {
     const d = data.data?.[0] || {};
-    const db_driver_data = await DB.drivers.findOneAsync({ driver_id: d.driver_id }) || {};
-    const db_bus_data = await DB.buses.findOneAsync({ bus_id: d.bus_id }) || {};
+
+    const db_driver_data = (await DB.drivers.findOneAsync({ driver_id: d.driver_id })) || {};
+    const db_bus_data = (await DB.buses.findOneAsync({ bus_id: d.bus_unit_id })) || {};
 
     const response_data = {
       bus_unit_id: d.bus_unit_id,
@@ -190,6 +181,8 @@ app.get('/api/bus/bus-details/', async (req, res) => {
       driver_nickname: db_driver_data.driver_nickname,
       driver_rating: db_driver_data.driver_rating,
     };
+
+    // console.log(response_data);
 
     res.json(response_data);
   } else {
