@@ -1,8 +1,10 @@
 const Main = {
   map: null,
   tileLayer: null,
-  busDetails: null,
-  busMarkers: {},
+
+  routeBusData: {},
+  routeBusMarkers: {},
+
   dataAge: 0,
 
   station_code: null,
@@ -73,27 +75,29 @@ const Main = {
     // get buses
     const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + this.trip_id);
     const bus_data = await bus_res.json();
-    // console.log(bus_data);
 
     for (let bus of bus_data) {
+      this.routeBusData[bus.bus_unit_id] = bus;
+
       const latLng = [bus.latitude, bus.longitude];
 
-      if (this.busMarkers[bus.bus_name]) {
-        // spremeni busek
-        this.busMarkers[bus.bus_name].setLatLng(latLng); // premakni
-        // this.busMarkers[bus.bus_name].setIcon(this.determineBusIcon(bus));
+      if (this.routeBusMarkers[bus.bus_unit_id]) {
+        // ON CHANGE
+        this.routeBusMarkers[bus.bus_unit_id]
+          .setLatLng(latLng)
+          .setIcon(this.determineBusIcon(bus))
       } else {
-        // nova ikonica
-        this.busMarkers[bus.bus_name] = L.marker(latLng, {
+        // ON CREATE
+        this.routeBusMarkers[bus.bus_unit_id] = L.marker(latLng, {
           rotationOrigin: 'center center',
           title: bus.bus_name,
           icon: this.determineBusIcon(bus),
         })
           .addTo(this.map)
-          .on('click', () => this.openInfo(bus));
+          .on('click', () => this.openInfo(bus.bus_unit_id));
       }
 
-      this.busMarkers[bus.bus_name].setRotationAngle(bus.cardinal_direction - 90);
+      this.routeBusMarkers[bus.bus_unit_id].setRotationAngle(bus.cardinal_direction - 90);
 
       // set data age text
       this.dataAge = 0;
@@ -102,7 +106,7 @@ const Main = {
 
   async getRouteShape() {
     // get shape
-    const route_res = await fetch(`api/route-shape?trip_id=${this.trip_id}`); // TODO: samo trip_id
+    const route_res = await fetch(`api/route-shape?trip_id=${this.trip_id}`);
     const route_data = await route_res.json();
     // console.log(route_data);
 
@@ -115,8 +119,19 @@ const Main = {
     }
   },
 
-  async openInfo(bus_data) {
+  async openInfo(bus_id) {
+    console.log(bus_id);
+    const bus_data = this.routeBusData[bus_id];
     console.log(bus_data);
+    console.log(bus_data);
+
+    const ratings = {
+      1: 'Grozen! (1)',
+      2: 'Neprijazen! (2)',
+      3: 'Meh ... (3)',
+      4: 'Vredu. (4)',
+      5: 'Super! (5)',
+    };
 
     // populate data
     $('.bus-info-container .route .content').innerText = `${bus_data.route_number}) ${bus_data.route_name}`;
@@ -125,7 +140,7 @@ const Main = {
 
     $('.bus-info-container .bus .description .content').innerText = bus_data.bus_description || 'Ni podatkov.';
     $('.bus-info-container .driver .nickname .content').innerText = bus_data.driver_nickname || 'Ni podatkov.';
-    $('.bus-info-container .driver .rating .content').innerText = bus_data.driver_rating || 'Ni podatkov.';
+    $('.bus-info-container .driver .rating .content').innerText = ratings[bus_data.driver_rating] || 'Ni podatkov.';
     $('.bus-info-container .driver .description .content').innerText = bus_data.driver_description || 'Ni podatkov.';
 
     // prettier-ignore

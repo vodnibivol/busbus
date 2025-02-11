@@ -45,7 +45,10 @@ async function refreshBusData() {
   BUS_DATA = lpp_data.data.map((bus_entry) => {
     const db_driver = db_driver_data.find((d) => d.driver_id === bus_entry.driver_id) || {};
     const db_bus = db_bus_data.find((d) => d.bus_id === bus_entry.bus_unit_id) || {};
-    const user_edited = !!Object.keys({ ...db_driver, ...db_bus }).length;
+    // const user_edited = !!Object.keys({ ...db_driver, ...db_bus }).length;
+    const user_edited = ['driver_description', 'driver_nickname', 'driver_rating', 'bus_description'].some(
+      (key) => !!{ ...db_driver, ...db_bus }[key]
+    );
 
     return { ...bus_entry, ...db_driver, ...db_bus, user_edited };
   });
@@ -83,23 +86,16 @@ app.get('/objavi', async (req, res) => {
 });
 
 app.post('/objavi', async (req, res) => {
-  // TODO: če izbrišeš polja, se ne shranijo!
   const { bus_id, bus_description, driver_id, driver_description, driver_nickname, driver_rating, author } = req.body;
   console.log(req.body);
 
-  // update bus data
-  if (bus_description) {
-    await DB.buses.updateAsync({ bus_id }, { bus_id, bus_description, author }, { upsert: true });
-  }
-
-  // update driver data
-  if (driver_description || driver_nickname || driver_rating) {
-    await DB.drivers.updateAsync(
-      { driver_id },
-      { driver_id, driver_description, driver_nickname, driver_rating, author },
-      { upsert: true }
-    );
-  }
+  // update bus & driver data
+  await DB.buses.updateAsync({ bus_id }, { bus_id, bus_description, author }, { upsert: true });
+  await DB.drivers.updateAsync(
+    { driver_id },
+    { driver_id, driver_description, driver_nickname, driver_rating, author },
+    { upsert: true }
+  );
 
   await refreshBusData();
   res.redirect(req.query.from_url);
@@ -269,3 +265,9 @@ async function fetchLPP(url) {
 
   return response.json();
 }
+
+// DB.buses.updateAsync(
+//   { bus_id: '3BAFA466-FF2F-4FC9-9AEA-88096AD4AC84' },
+//   { $set: { bus_description: 'test4', author: '' } }
+//   // { upsert: true }
+// );
