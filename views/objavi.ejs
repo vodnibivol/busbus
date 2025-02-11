@@ -68,7 +68,7 @@
     <form method="POST" action="objavi">
       <input type="hidden" name="bus_id" value="<%- bus_id %>" />
       <input type="hidden" name="driver_id" value="<%- driver_id %>" />
-      <button class="back-button">← nazaj</button>
+      <button type="button" class="back-button">← nazaj</button>
 
       <h2>Oceni!</h2>
 
@@ -102,7 +102,7 @@
 
       <br />
       <br />
-      <button class="submit">Objavi</button>
+      <button type="submit" class="submit">Objavi</button>
     </form>
 
     <script>
@@ -113,7 +113,10 @@
         history.back();
       };
 
-      $('button.submit').onclick = (e) => {
+      $('button.submit').addEventListener('click', submitForm);
+      $('form').addEventListener('submit', submitForm);
+
+      function submitForm(e) {
         e.preventDefault();
 
         if ($('form').checkValidity()) {
@@ -122,7 +125,7 @@
         } else {
           $('form').reportValidity();
         }
-      };
+      }
     </script>
   </body>
 </html>

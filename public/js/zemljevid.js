@@ -79,25 +79,15 @@ const Main = {
       const latLng = [bus.latitude, bus.longitude];
 
       if (this.busMarkers[bus.bus_name]) {
-        // premakni
-        this.busMarkers[bus.bus_name].setLatLng(latLng);
-        // this.busMarkers[bus].setIcon(
-        //   L.divIcon({
-        //     className: 'icon-active',
-        //     iconSize: [25, 25],
-        //     iconAnchor: [13, 13],
-        //     popupAnchor: [0, 0],
-        //     html: `<p class="icon">${busObject[i].line_number ? busObject[i].line_number : '⬤'}</p>
-        //             <img class="icon-pointer" style="transform: rotate(${
-        //               busObject[i].direction + 225
-        //             }deg)" src="img/ico/rotIcoActive.svg"/>`,
-        //   })
-        // );
+        // spremeni busek
+        this.busMarkers[bus.bus_name].setLatLng(latLng); // premakni
+        // this.busMarkers[bus.bus_name].setIcon(this.determineBusIcon(bus));
       } else {
+        // nova ikonica
         this.busMarkers[bus.bus_name] = L.marker(latLng, {
           rotationOrigin: 'center center',
           title: bus.bus_name,
-          icon: Icons.bus,
+          icon: this.determineBusIcon(bus),
         })
           .addTo(this.map)
           .on('click', () => this.openInfo(bus));
@@ -128,37 +118,31 @@ const Main = {
   async openInfo(bus_data) {
     console.log(bus_data);
 
-    $('#editData').classList.add('disabled');
-
     // populate data
     $('.bus-info-container .route .content').innerText = `${bus_data.route_number}) ${bus_data.route_name}`;
     $('.bus-info-container .direction .content').innerText = bus_data.destination;
     $('.bus-info-container .bus .registration .content').innerText = bus_data.bus_name;
-    $('.bus-info-container .bus .description .content').innerText = 'nalaganje ...';
-    $('.bus-info-container .driver .nickname .content').innerText = 'nalaganje ...';
-    $('.bus-info-container .driver .rating .content').innerText = 'nalaganje ...';
-    $('.bus-info-container .driver .description .content').innerText = 'nalaganje ...';
+
+    $('.bus-info-container .bus .description .content').innerText = bus_data.bus_description || 'Ni podatkov.';
+    $('.bus-info-container .driver .nickname .content').innerText = bus_data.driver_nickname || 'Ni podatkov.';
+    $('.bus-info-container .driver .rating .content').innerText = bus_data.driver_rating || 'Ni podatkov.';
+    $('.bus-info-container .driver .description .content').innerText = bus_data.driver_description || 'Ni podatkov.';
+
+    // prettier-ignore
+    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}&driver_id=${bus_data.driver_id}&from_url=${encodeURIComponent(location.href)}`;
 
     $('.bus-info-container').classList.add('open');
-
-    // load info from db
-    const r = await fetch('api/bus/bus-details?bus_id=' + bus_data.bus_unit_id); // db in lpp data
-    const bus_details = await r.json();
-    console.log(bus_details);
-
-    $('.bus-info-container .bus .description .content').innerText = bus_details.bus_description || 'ni podatkov.';
-    $('.bus-info-container .driver .nickname .content').innerText = bus_details.driver_nickname || 'ni podatkov.';
-    $('.bus-info-container .driver .rating .content').innerText = bus_details.driver_rating || 'ni podatkov.';
-    $('.bus-info-container .driver .description .content').innerText = bus_details.driver_description || 'ni podatkov.';
-
-    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}&driver_id=${
-      bus_details.driver_id
-    }&from_url=${encodeURIComponent(location.href)}`;
-    $('#editData').classList.remove('disabled');
   },
 
   closeInfo() {
     $('.bus-info-container').classList.remove('open');
+  },
+
+  determineBusIcon(bus_data) {
+    if (!bus_data.user_edited) return Icons.bus;
+
+    if (bus_data.driver_rating && parseInt(bus_data.driver_rating) < 3) return Icons.bus_bad_rating;
+    return Icons.bus_user_edited;
   },
 };
 
@@ -169,10 +153,18 @@ const Icons = {
     iconUrl: 'public/img/busek_arrow.png',
     iconSize: [48, 48],
   }),
+  bus_user_edited: L.icon({
+    iconUrl: 'public/img/busek_arrow_user-edited.png',
+    iconSize: [48, 48],
+  }),
+  bus_bad_rating: L.icon({
+    iconUrl: 'public/img/busek_arrow_bad-rating.png',
+    iconSize: [48, 48],
+  }),
   station: L.icon({
     iconUrl: 'public/img/postaja.png',
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
   }),
 };
 
