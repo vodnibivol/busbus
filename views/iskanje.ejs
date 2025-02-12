@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="public/css/prihod.css" />
   </head>
   <body class="flex-center">
+    <%- include('./partials/body-common'); %>
+
     <div id="bg"></div>
     <div id="main" class="hidden">
       <div class="live-dot-container" @click="autoRefresh = !autoRefresh">
@@ -77,7 +79,6 @@
 
     <script>
       // --- IZLETEK (BUSEK)
-      window.$ = window.$ || ((sel) => document.querySelector(sel));
       const random = (min, max) => min + Math.random() * (max - min);
 
       function izletek() {

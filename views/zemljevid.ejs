@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="public/css/zemljevid.css" />
   </head>
   <body class="flex-center">
+    <%- include('./partials/body-common'); %>
+
     <div id="mapContainer">
       <button class="back-button">← nazaj</button>
       <div id="map"></div>
@@ -15,7 +17,6 @@
         <div class="bg">
           <div id="closeBtn">[x]</div>
           <div id="textBox">
-            <!-- <h3>LJ LPP-174</h3> -->
             <ul>
               <li class="route">
                 <span class="title">Linija:</span>
@@ -57,6 +58,7 @@
               </li>
             </ul>
           </div>
+          <spacer></spacer>
           <a id="editData" href="#">[oceni]</a>
         </div>
       </div>
@@ -65,7 +67,6 @@
     <div class="live-dot live"></div>
 
     <script>
-      window.$ = window.$ || ((sel) => document.querySelector(sel));
       window.station_loc = <%- JSON.stringify(station_loc) %>;
     </script>
 

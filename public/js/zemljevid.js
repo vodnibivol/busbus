@@ -14,6 +14,8 @@ const Main = {
     // --- EVENTS
     $('.bus-info-container #closeBtn').onclick = this.closeInfo;
     $('.back-button').onclick = () => (window.location = '/busbus/'); // () => history.back()
+    $('#editData').onclick = () => document.body.classList.add('loading');
+    $('spacer').onclick = this.closeInfo;
 
     // --- MAP
     this.map = L.map('map', {
@@ -83,9 +85,7 @@ const Main = {
 
       if (this.routeBusMarkers[bus.bus_unit_id]) {
         // ON CHANGE
-        this.routeBusMarkers[bus.bus_unit_id]
-          .setLatLng(latLng)
-          .setIcon(this.determineBusIcon(bus))
+        this.routeBusMarkers[bus.bus_unit_id].setLatLng(latLng).setIcon(this.determineBusIcon(bus));
       } else {
         // ON CREATE
         this.routeBusMarkers[bus.bus_unit_id] = L.marker(latLng, {

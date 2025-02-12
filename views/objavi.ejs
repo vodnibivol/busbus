@@ -37,6 +37,10 @@
         flex-direction: column;
       }
 
+      form * {
+        flex-shrink: 0;
+      }
+
       input[name="driver_nickname"] {
         font-style: italic;
       }
@@ -65,6 +69,8 @@
     </style>
   </head>
   <body>
+    <%- include('./partials/body-common'); %>
+
     <form method="POST" action="objavi">
       <input type="hidden" name="bus_id" value="<%- bus_id %>" />
       <input type="hidden" name="driver_id" value="<%- driver_id %>" />
@@ -87,7 +93,7 @@
         <option value="2" <% if(driver_rating==='2'){%>selected<%}%>>Slabo ... (2)</option>
         <option value="3" <% if(driver_rating==='3'){%>selected<%}%>>Meh (3)</option>
         <option value="4" <% if(driver_rating==='4'){%>selected<%}%>>Vredu. (4)</option>
-        <option value="5" <% if(driver_rating==='5'){%>selected<%}%>>Popoln! (5)</option>
+        <option value="5" <% if(driver_rating==='5'){%>selected<%}%>>Super! (5)</option>
       </select>
 
       <p>Opis:</p>
@@ -106,7 +112,6 @@
     </form>
 
     <script>
-      window.$ = window.$ || ((sel) => document.querySelector(sel));
       $('form').setAttribute('action', location.pathname+location.search);
       $('.back-button').onclick = (e) => {
         e.preventDefault();
@@ -121,7 +126,8 @@
 
         if ($('form').checkValidity()) {
           $('.submit').disabled = true;
-          $("form").submit();
+          $('form').submit();
+          document.body.classList.add('loading');
         } else {
           $('form').reportValidity();
         }

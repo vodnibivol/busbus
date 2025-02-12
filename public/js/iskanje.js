@@ -137,13 +137,8 @@ const config = {
     },
 
     showMap(data) {
-      let url = 'zemljevid';
-      url += '?station_code=' + this.selectedStop.ref_id;
-      url += '&trip_id=' + data.trip_id;
-      // url += '&route_id=' + data.route_id;
-      // url += '&route_group_number=' + data.key;
-      window.location.href = url;
-      // window.location.href = `zemljevid?trip_id=${data.trip_id}&route_id=${data.route_id}&station_code=${this.selectedStop.ref_id}&route_group_number=${data.key}`;
+      window.location.href = `zemljevid?station_code=${this.selectedStop.ref_id}&trip_id=${data.trip_id}`;
+      document.body.classList.add('loading');
     },
   },
 

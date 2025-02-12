@@ -10,6 +10,12 @@ body {
   font-family: Helvetica, Arial, sans-serif;
 }
 
+body.loading {
+  #loading-bar {
+    display: block;
+  }
+}
+
 ::selection {
   background: lightblue;
 }
@@ -79,4 +85,33 @@ a.home {
 
 .invisible {
   visibility: hidden !important;
+}
+
+#loading-bar {
+  width: 100vw;
+  height: 4px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+
+  display: none;
+
+  $width: 8px;
+  $color-1: lightcoral;
+  $color-2: darken($color-1, 10);
+  background-position-x: 0;
+  background-repeat: repeat-x;
+  background-image: repeating-linear-gradient(135deg, $color-1, $color-1 $width, $color-2 $width, $color-2 2 * $width);
+
+  animation: 10s linear infinite loading;
+
+  @keyframes loading {
+    from {
+      background-position-x: 0;
+    }
+    to {
+      background-position-x: 100vw;
+    }
+  }
 }
