@@ -115,7 +115,8 @@
       $('form').setAttribute('action', location.pathname+location.search);
       $('.back-button').onclick = (e) => {
         e.preventDefault();
-        history.back();
+        window.location.href = '<%- from_url %>';
+        document.body.classList.add('loading');
       };
 
       $('button.submit').addEventListener('click', submitForm);

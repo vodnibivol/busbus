@@ -112,7 +112,8 @@ button {
 
     #editData {
       color: #eee;
-      align-self: flex-end;
+      text-align: right;
+      padding-top: 20px;
       text-decoration: underline;
 
       &.disabled {

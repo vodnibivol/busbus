@@ -70,12 +70,13 @@ app.get('/zemljevid', (req, res) => {
 });
 
 app.get('/objavi', async (req, res) => {
-  const { bus_id, driver_id } = req.query;
+  const { bus_id, driver_id, from_url } = req.query;
 
   const db_driver_data = (await DB.drivers.findOneAsync({ driver_id })) || {};
   const db_bus_data = (await DB.buses.findOneAsync({ bus_id })) || {};
 
   res.render('objavi', {
+    from_url,
     bus_id,
     driver_id,
     bus_description: db_bus_data.bus_description,

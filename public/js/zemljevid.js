@@ -13,7 +13,10 @@ const Main = {
   async init() {
     // --- EVENTS
     $('.bus-info-container #closeBtn').onclick = this.closeInfo;
-    $('.back-button').onclick = () => (window.location = '/busbus/'); // () => history.back()
+    $('.back-button').onclick = () => {
+      document.body.classList.add('loading');
+      window.location = '/busbus/'; // () => history.back()
+    };
     $('#editData').onclick = () => document.body.classList.add('loading');
     $('spacer').onclick = this.closeInfo;
 
@@ -92,6 +95,7 @@ const Main = {
           rotationOrigin: 'center center',
           title: bus.bus_name,
           icon: this.determineBusIcon(bus),
+          // TODO: če je star, je opacity manjša
         })
           .addTo(this.map)
           .on('click', () => this.openInfo(bus.bus_unit_id));
