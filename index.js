@@ -36,7 +36,6 @@ const DB = {
 
 async function refreshBusData() {
   // TODO: cache LPP data ...
-  // TODO: izberi samo določene spremenljivke (createdAt ipd. daj ven).
 
   const lpp_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details');
   const db_bus_data = await DB.buses.findAsync({});
@@ -45,12 +44,24 @@ async function refreshBusData() {
   BUS_DATA = lpp_data.data.map((bus_entry) => {
     const db_driver = db_driver_data.find((d) => d.driver_id === bus_entry.driver_id) || {};
     const db_bus = db_bus_data.find((d) => d.bus_id === bus_entry.bus_unit_id) || {};
-    // const user_edited = !!Object.keys({ ...db_driver, ...db_bus }).length;
     const user_edited = ['driver_description', 'driver_nickname', 'driver_rating', 'bus_description'].some(
       (key) => !!{ ...db_driver, ...db_bus }[key]
     );
 
-    return { ...bus_entry, ...db_driver, ...db_bus, user_edited };
+    return {
+      bus_unit_id: lpp_data.bus_unit_id,
+      bus_name: lpp_data.bus_name,
+      // odo: lpp_data.odo,
+      driver_id: lpp_data.driver_id,
+
+      driver_nickname: db_driver.driver_nickname,
+      driver_rating: db_driver.driver_rating,
+      driver_description: db_driver.driver_description,
+
+      bus_description: db_bus.bus_description,
+
+      user_edited,
+    };
   });
 }
 
@@ -129,7 +140,6 @@ app.get('/api/arrival', async (req, res) => {
       time: timeAfterMinutes(cur.eta_min),
       v_garazo: !!cur.depot,
       trip_id: cur.trip_id,
-      // route_id: cur.route_id,
     });
 
     return acc;
@@ -168,8 +178,9 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
     const tripBuses = bus_data.data
       .filter((bus) => bus.trip_id === trip_id)
       .map((bus) => {
+        // združi s podatki iz serverja
         const cachedData = BUS_DATA.find((b) => b.bus_unit_id === bus.bus_unit_id);
-        return { ...cachedData, ...bus }; // TODO: samo določene parametre ...
+        return { ...cachedData, ...bus };
       });
 
     res.json(tripBuses);
@@ -177,42 +188,6 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
     res.status(400).json({ success: false });
   }
 });
-
-// app.get('/api/bus/bus-details/', async (req, res) => {
-//   const bus_id = req.query.bus_id;
-
-//   const data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?&bus-id=' + bus_id);
-
-//   // pridobi svoje podatke in jih združi z ibzbranini podatki lpp.
-
-//   if (data.success) {
-//     const d = data.data?.[0] || {};
-
-//     console.log(d);
-
-//     const db_driver_data = (await DB.drivers.findOneAsync({ driver_id: d.driver_id })) || {};
-//     const db_bus_data = (await DB.buses.findOneAsync({ bus_id: d.bus_unit_id })) || {};
-
-//     const response_data = {
-//       bus_unit_id: d.bus_unit_id,
-//       bus_name: d.name,
-//       odo: d.odo,
-//       driver_id: d.driver_id,
-
-//       bus_description: db_bus_data.bus_description,
-//       driver_description: db_driver_data.driver_description,
-//       driver_nickname: db_driver_data.driver_nickname,
-//       driver_rating: db_driver_data.driver_rating,
-//     };
-
-//     console.log(db_bus_data);
-//     console.log(response_data);
-
-//     res.json(response_data);
-//   } else {
-//     res.status(400).json({ success: false });
-//   }
-// });
 
 // --- ERRORS
 

@@ -63,12 +63,12 @@ const Main = {
 
     // --- OBLIKA
 
-    this.getRouteShape();
+    this.drawRouteShape();
 
     // --- UPDATE BUSES
 
     this.updateBuses();
-    setInterval(this.updateBuses.bind(this), 5000);
+    setInterval(this.updateBuses.bind(this), 3000);
 
     // Data age
     setInterval(() => {
@@ -80,10 +80,12 @@ const Main = {
     // get buses
     const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + this.trip_id);
     const bus_data = await bus_res.json();
+    // console.log(bus_data);
 
     for (let bus of bus_data) {
       this.routeBusData[bus.bus_unit_id] = bus;
 
+      const data_age = (new Date() - new Date(bus.bus_timestamp)) / 1000;
       const latLng = [bus.latitude, bus.longitude];
 
       if (this.routeBusMarkers[bus.bus_unit_id]) {
@@ -95,7 +97,7 @@ const Main = {
           rotationOrigin: 'center center',
           title: bus.bus_name,
           icon: this.determineBusIcon(bus),
-          // TODO: če je star, je opacity manjša
+          opacity: data_age > 60 ? 0.5 : 1,
         })
           .addTo(this.map)
           .on('click', () => this.openInfo(bus.bus_unit_id));
@@ -108,14 +110,14 @@ const Main = {
     }
   },
 
-  async getRouteShape() {
+  async drawRouteShape() {
     // get shape
     const route_res = await fetch(`api/route-shape?trip_id=${this.trip_id}`);
     const route_data = await route_res.json();
     // console.log(route_data);
 
     if (route_data.geojson_shape) {
-      const geojsonLayer = L.geoJson(route_data.geojson_shape, {
+      L.geoJson(route_data.geojson_shape, {
         color: '#51504Dcc', // cornflowerblue, dodgerblue, royalblue, rgb(233, 106, 57)
         weight: 3,
         dashArray: '4 10',
@@ -124,9 +126,7 @@ const Main = {
   },
 
   async openInfo(bus_id) {
-    console.log(bus_id);
     const bus_data = this.routeBusData[bus_id];
-    console.log(bus_data);
     console.log(bus_data);
 
     const ratings = {

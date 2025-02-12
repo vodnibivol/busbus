@@ -88,7 +88,7 @@ a.home {
 }
 
 #loading-bar {
-  width: 100vw;
+  width: 110vw;
   height: 4px;
   position: fixed;
   top: 0;
@@ -102,16 +102,17 @@ a.home {
   $color-2: darken($color-1, 10);
   background-position-x: 0;
   background-repeat: repeat-x;
-  background-image: repeating-linear-gradient(135deg, $color-1, $color-1 $width, $color-2 $width, $color-2 2 * $width);
+  background-image: repeating-linear-gradient(90deg, $color-1, $color-1 $width, $color-2 $width, $color-2 2 * $width);
 
-  animation: 10s linear infinite loading;
+  animation: 0.3s linear infinite loading;
 
   @keyframes loading {
     from {
-      background-position-x: 0;
+      transform: translateX(-2*$width)
     }
     to {
-      background-position-x: 100vw;
+      transform: translateX(0)
+      // background-position-x: 100vw;
     }
   }
 }
