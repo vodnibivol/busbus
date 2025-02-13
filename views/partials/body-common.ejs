@@ -1,5 +1,6 @@
 <script>
   window.$ = window.$ || ((sel) => document.querySelector(sel));
+  window.addEventListener('pageshow', () => document.body.classList.remove('loading'));
 </script>
 
 <div id="loading-bar"></div>
