@@ -49,10 +49,10 @@ async function refreshBusData() {
     );
 
     return {
-      bus_unit_id: lpp_data.bus_unit_id,
-      bus_name: lpp_data.bus_name,
-      // odo: lpp_data.odo,
-      driver_id: lpp_data.driver_id,
+      bus_unit_id: bus_entry.bus_unit_id,
+      bus_name: bus_entry.bus_name,
+      // odo: bus_entry.odo,
+      driver_id: bus_entry.driver_id,
 
       driver_nickname: db_driver.driver_nickname,
       driver_rating: db_driver.driver_rating,
