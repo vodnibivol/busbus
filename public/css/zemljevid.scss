@@ -10,13 +10,6 @@ button {
   width: 100%;
   position: relative;
 
-  // @media screen and (min-width: 500px) {
-  //   height: 80%;
-  //   width: 80%;
-  //   border: 2px solid;
-  //   // box-shadow: 7px 7px 0 #ddd;
-  // }
-
   #map {
     outline: none;
     width: 100%;
@@ -104,6 +97,10 @@ button {
       span.content {
         color: #aaa;
       }
+
+      .data-age {
+        color: #aaa;
+      }
     }
 
     spacer {
@@ -112,15 +109,8 @@ button {
 
     #editData {
       color: #eee;
-      text-align: right;
-      padding-top: 20px;
+      align-self: flex-end;
       text-decoration: underline;
-
-      &.disabled {
-        opacity: 0.3;
-        pointer-events: none;
-        text-decoration: none;
-      }
     }
   }
 }

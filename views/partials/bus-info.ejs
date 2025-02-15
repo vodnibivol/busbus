@@ -1,0 +1,83 @@
+<div class="bus-info-container">
+  <div class="bg">
+    <div id="closeBtn">[x]</div>
+    <div id="textBox">
+      <!-- <h3>LJ LPP-466</h3> -->
+      <ul>
+        <li class="route">
+          <span class="title">Linija:</span>
+          <span class="content"></span>
+        </li>
+        <li class="direction">
+          <span class="title">Smer:</span>
+          <span class="content">center</span>
+        </li>
+        <li class="bus">
+          <span class="title" data-bus-id="" onclick="alert('BUS: '+this.dataset.busId)">Avtobus:</span>
+          <ul>
+            <li class="registration">
+              <span class="title">Registracija:</span>
+              <span class="content"></span>
+            </li>
+            <li class="description">
+              <span class="title">Opis:</span>
+              <span class="content"></span>
+            </li>
+          </ul>
+        </li>
+        <li class="driver">
+          <span class="title" data-driver-id="" onclick="alert('DR: '+this.dataset.driverId)">Voznik:</span>
+          <ul>
+            <li class="rating">
+              <span class="title">Prijazen?</span>
+              <span class="content"></span>
+            </li>
+            <li class="nickname">
+              <span class="title">Ime:</span>
+              <span class="content"></span>
+            </li>
+            <li class="description">
+              <span class="title">Opis:</span>
+              <span class="content"></span>
+            </li>
+          </ul>
+        </li>
+        <br />
+
+        <p class="data-age">Starost podatkov: <span class="content"></span>s</p>
+      </ul>
+    </div>
+    <spacer></spacer>
+    <a id="editData" href="#">[oceni]</a>
+  </div>
+</div>
+
+<script>
+  function updateBusInfo(bus_data) {
+    const ratings = {
+      1: 'Grozen! (1)',
+      2: 'Neprijazen! (2)',
+      3: 'Meh ... (3)',
+      4: 'Vredu. (4)',
+      5: 'Super! (5)',
+    };
+
+    // populate data
+    $('.bus-info-container .route .content').innerText = `${bus_data.route_number}) ${bus_data.route_name}`;
+    $('.bus-info-container .direction .content').innerText = bus_data.destination;
+
+    $('.bus-info-container .bus > .title').dataset.busId = bus_data.bus_unit_id;
+    $('.bus-info-container .bus .registration .content').innerText = bus_data.bus_name;
+    $('.bus-info-container .bus .description .content').innerText = bus_data.bus_description || 'Ni podatkov.';
+
+    $('.bus-info-container .driver > .title').dataset.driverId = bus_data.driver_id;
+    $('.bus-info-container .driver .nickname .content').innerText = bus_data.driver_nickname || 'Ni podatkov.';
+    $('.bus-info-container .driver .rating .content').innerText = ratings[bus_data.driver_rating] || 'Ni podatkov.';
+    $('.bus-info-container .driver .description .content').innerText = bus_data.driver_description || 'Ni podatkov.';
+
+    $('.bus-info-container .data-age .content').innerText = bus_data.bus_data_age;
+
+    // prettier-ignore
+    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}&driver_id=${bus_data.driver_id}&from_url=${encodeURIComponent(location.href)}`;
+  }
+</script>

@@ -4,7 +4,6 @@ import fs from 'fs';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import 'dotenv/config';
-
 import Datastore from '@seald-io/nedb';
 
 import Store from './js/Store_node.js';
@@ -35,9 +34,7 @@ const DB = {
 };
 
 async function refreshBusData() {
-  // TODO: cache LPP data ...
-
-  const lpp_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details');
+  const lpp_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details', 1000 * 60 * 5);
   const db_bus_data = await DB.buses.findAsync({});
   const db_driver_data = await DB.drivers.findAsync({});
 
@@ -99,7 +96,7 @@ app.get('/objavi', async (req, res) => {
 
 app.post('/objavi', async (req, res) => {
   const { bus_id, bus_description, driver_id, driver_description, driver_nickname, driver_rating, author } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
 
   // update bus & driver data
   await DB.buses.updateAsync({ bus_id }, { bus_id, bus_description, author }, { upsert: true });
@@ -113,33 +110,26 @@ app.post('/objavi', async (req, res) => {
   res.redirect(req.query.from_url);
 });
 
+app.get('/log', async (req, res) => {
+  const db_bus_data = await DB.buses.findAsync({});
+  const db_driver_data = await DB.drivers.findAsync({});
+
+  res.render('log', { data: { buses: db_bus_data, drivers: db_driver_data } });
+});
+
 // --- API
 
 app.get('/api/arrival', async (req, res) => {
-  const data = await fetchLPP('https://data.lpp.si/api/station/arrival?station-code=' + req.query.station_code, 3000);
-
-  // const formatted = {
-  //   '3B': [
-  //     {
-  //       eta_min: 3,
-  //       time: '22:14', // izračunaj
-  //       v_garazo: true,
-  //       trip_id: '12381adasy982e198ad', // za open-map
-  //     },
-  //   ],
-  // };
-
-  // console.log(data);
+  const data = await fetchLPP('https://data.lpp.si/api/station/arrival?station-code=' + req.query.station_code, 1000);
 
   const dataFormatted = data.data.arrivals.reduce((acc, cur) => {
-    const name = cur.route_name;
-    acc[name] = acc[name] || [];
-    acc[name].push({
+    acc[cur.route_name] = acc[cur.route_name] || [];
+    acc[cur.route_name].push({
       key: cur.route_name,
+      trip_id: cur.trip_id,
       minutes: cur.eta_min,
       time: timeAfterMinutes(cur.eta_min),
       v_garazo: !!cur.depot,
-      trip_id: cur.trip_id,
     });
 
     return acc;
@@ -155,7 +145,7 @@ app.get('/api/route-shape/', async (req, res) => {
   const route_id = routeIdFromTripId(trip_id);
 
   // get shape
-  const data = await fetchLPP('https://data.lpp.si/api/route/routes?shape=1&route_id=' + route_id);
+  const data = await fetchLPP('https://data.lpp.si/api/route/routes?shape=1&route_id=' + route_id, 1000 * 3600 * 24);
 
   if (data.success) {
     const trip = data.data.find((r) => r.trip_id === trip_id);
@@ -171,7 +161,8 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
 
   // get bus data
   const bus_data = await fetchLPP(
-    'https://data.lpp.si/api/bus/buses-on-route?specific=1&route-group-number=' + route_name
+    'https://data.lpp.si/api/bus/buses-on-route?specific=1&route-group-number=' + route_name,
+    1000 * 3
   );
 
   if (bus_data.success) {
@@ -180,7 +171,8 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
       .map((bus) => {
         // združi s podatki iz serverja
         const cachedData = BUS_DATA.find((b) => b.bus_unit_id === bus.bus_unit_id);
-        return { ...cachedData, ...bus };
+        const bus_data_age = Math.round((new Date() - new Date(bus.bus_timestamp)) / 1000);
+        return { ...cachedData, ...bus, bus_data_age };
       });
 
     res.json(tripBuses);
@@ -190,6 +182,10 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
 });
 
 // --- ERRORS
+
+app.get('/busbus', (req, res) => {
+  if (req.hostname === 'localhost') res.redirect('/');
+});
 
 app.use((req, res, next) => {
   res.status(404).end('error 404');
@@ -202,11 +198,25 @@ app.use((err, req, res, next) => {
 
 // --- UTILS
 
-async function cachedFetch(url, cacheTime) {
+function timeAfterMinutes(minutes) {
+  const time = new Date();
+  time.setMinutes(time.getMinutes() + minutes);
+
+  const hours = String(time.getHours()).padStart(2, '0');
+  const mins = String(time.getMinutes()).padStart(2, '0');
+
+  return `${hours}:${mins}`;
+}
+
+function routeIdFromTripId(trip_id) {
+  return ROUTES.find((r) => r.trip_id === trip_id)?.route_id;
+}
+
+async function cachedFetch(url, options, cacheTime) {
   try {
     let data = dstore.get(url);
     if (!data) {
-      const r = await fetch(url);
+      const r = await fetch(url, options);
       data = await r.json();
       dstore.set(url, data, cacheTime);
     }
@@ -216,34 +226,15 @@ async function cachedFetch(url, cacheTime) {
   }
 }
 
-function timeAfterMinutes(minutes) {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() + minutes);
-
-  const hours = String(now.getHours()).padStart(2, '0');
-  const mins = String(now.getMinutes()).padStart(2, '0');
-
-  return `${hours}:${mins}`;
-}
-
-function routeIdFromTripId(trip_id) {
-  return ROUTES.find((r) => r.trip_id === trip_id)?.route_id;
-}
-
-async function fetchLPP(url) {
-  const response = await fetch(url, {
+async function fetchLPP(url, cacheTime = 0) {
+  const options = {
     headers: {
       'Content-Type': 'application/json',
       apikey: API_KEY,
       'User-Agent': 'travana/4 CFNetwork/1568.300.101 Darwin/24.2.0',
     },
-  });
+  };
 
-  return response.json();
+  const response = await cachedFetch(url, options, cacheTime);
+  return response; // return response.json();
 }
-
-// DB.buses.updateAsync(
-//   { bus_id: '3BAFA466-FF2F-4FC9-9AEA-88096AD4AC84' },
-//   { $set: { bus_description: 'test4', author: '' } }
-//   // { upsert: true }
-// );

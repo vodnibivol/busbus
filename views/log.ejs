@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" /> -->
+    <style>
+      * {
+        font-family: Menlo, monospace;
+        font-size: 13px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid;
+      }
+
+      table {
+        border-collapse: collapse;
+      }
+    </style>
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+  </head>
+  <body>
+    <h2>Buski</h2>
+    <div id="wrapper1"></div>
+    <br />
+    <h2>Vozniki</h2>
+    <div id="wrapper2"></div>
+
+    <script>
+      const log_data = <%- JSON.stringify(data) %>;
+      const grid1 = new gridjs.Grid({ data: log_data.buses }).render(document.getElementById('wrapper1'));
+      const grid2 = new gridjs.Grid({ data: log_data.drivers }).render(document.getElementById('wrapper2'));
+    </script>
+  </body>
+</html>

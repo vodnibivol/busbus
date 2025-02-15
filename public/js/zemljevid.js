@@ -5,8 +5,6 @@ const Main = {
   routeBusData: {},
   routeBusMarkers: {},
 
-  dataAge: 0,
-
   station_code: null,
   trip_id: null,
 
@@ -69,11 +67,6 @@ const Main = {
 
     this.updateBuses();
     setInterval(this.updateBuses.bind(this), 3000);
-
-    // Data age
-    setInterval(() => {
-      $('#dataAge').innerText = ++this.dataAge;
-    }, 1000);
   },
 
   async updateBuses() {
@@ -85,7 +78,6 @@ const Main = {
     for (let bus of bus_data) {
       this.routeBusData[bus.bus_unit_id] = bus;
 
-      const data_age = (new Date() - new Date(bus.bus_timestamp)) / 1000;
       const latLng = [bus.latitude, bus.longitude];
 
       if (this.routeBusMarkers[bus.bus_unit_id]) {
@@ -97,7 +89,7 @@ const Main = {
           rotationOrigin: 'center center',
           title: bus.bus_name,
           icon: this.determineBusIcon(bus),
-          opacity: data_age > 60 ? 0.5 : 1,
+          opacity: bus.bus_data_age > 60 ? 0.5 : 1,
         })
           .addTo(this.map)
           .on('click', () => this.openInfo(bus.bus_unit_id));
@@ -107,6 +99,13 @@ const Main = {
 
       // set data age text
       this.dataAge = 0;
+    }
+
+    // if bus-info open, update data
+    if ($('.bus-info-container.open')) {
+      const bus_id = $("#textBox .bus > span.title").dataset.busId;
+      const bus_data = this.routeBusData[bus_id];
+      updateBusInfo(bus_data);
     }
   },
 
@@ -125,30 +124,11 @@ const Main = {
     }
   },
 
-  async openInfo(bus_id) {
+  openInfo(bus_id) {
     const bus_data = this.routeBusData[bus_id];
+    updateBusInfo(bus_data);
+
     console.log(bus_data);
-
-    const ratings = {
-      1: 'Grozen! (1)',
-      2: 'Neprijazen! (2)',
-      3: 'Meh ... (3)',
-      4: 'Vredu. (4)',
-      5: 'Super! (5)',
-    };
-
-    // populate data
-    $('.bus-info-container .route .content').innerText = `${bus_data.route_number}) ${bus_data.route_name}`;
-    $('.bus-info-container .direction .content').innerText = bus_data.destination;
-    $('.bus-info-container .bus .registration .content').innerText = bus_data.bus_name;
-
-    $('.bus-info-container .bus .description .content').innerText = bus_data.bus_description || 'Ni podatkov.';
-    $('.bus-info-container .driver .nickname .content').innerText = bus_data.driver_nickname || 'Ni podatkov.';
-    $('.bus-info-container .driver .rating .content').innerText = ratings[bus_data.driver_rating] || 'Ni podatkov.';
-    $('.bus-info-container .driver .description .content').innerText = bus_data.driver_description || 'Ni podatkov.';
-
-    // prettier-ignore
-    $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}&driver_id=${bus_data.driver_id}&from_url=${encodeURIComponent(location.href)}`;
 
     $('.bus-info-container').classList.add('open');
   },

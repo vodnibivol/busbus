@@ -66,6 +66,14 @@
       button.submit {
         margin-bottom: env(safe-area-inset-bottom, 0px);
       }
+
+      .discrete {
+        color: #ccc;
+        font-weight: normal;
+        font-family: Menlo, monospace;
+        font-size: 13px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -78,11 +86,11 @@
 
       <h2>Oceni!</h2>
 
-      <h3>Avtobus</h3>
+      <h3 onclick="alert('BUS: <%- bus_id %>')">Avtobus</h3>
       <p>Opis:</p>
       <input type="text" name="bus_description" placeholder="Povej kaj o busku" value="<%- bus_description %>" />
 
-      <h3>Voznik</h3>
+      <h3 onclick="alert('DR: <%- driver_id %>')">Voznik</h3>
       <p>Ime:</p>
       <input type="text" name="driver_nickname" placeholder="Mirko Mirkić" value="<%- driver_nickname %>" />
 

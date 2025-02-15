@@ -12,56 +12,7 @@
     <div id="mapContainer">
       <button class="back-button">← nazaj</button>
       <div id="map"></div>
-      <div class="data-age-container">starost podatkov: <span id="dataAge">0</span>s</div>
-      <div class="bus-info-container">
-        <div class="bg">
-          <div id="closeBtn">[x]</div>
-          <div id="textBox">
-            <ul>
-              <li class="route">
-                <span class="title">Linija:</span>
-                <span class="content"></span>
-              </li>
-              <li class="direction">
-                <span class="title">Smer:</span>
-                <span class="content">center</span>
-              </li>
-              <li class="bus">
-                <span class="title">Avtobus:</span>
-                <ul>
-                  <li class="registration">
-                    <span class="title">Registracija:</span>
-                    <span class="content"></span>
-                  </li>
-                  <li class="description">
-                    <span class="title">Opis:</span>
-                    <span class="content"></span>
-                  </li>
-                </ul>
-              </li>
-              <li class="driver">
-                <span class="title">Voznik:</span>
-                <ul>
-                  <li class="rating">
-                    <span class="title">Prijazen?</span>
-                    <span class="content"></span>
-                  </li>
-                  <li class="nickname">
-                    <span class="title">Ime:</span>
-                    <span class="content"></span>
-                  </li>
-                  <li class="description">
-                    <span class="title">Opis:</span>
-                    <span class="content"></span>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-          <spacer></spacer>
-          <a id="editData" href="#">[oceni]</a>
-        </div>
-      </div>
+      <%- include('partials/bus-info') %>
     </div>
 
     <div class="live-dot live"></div>
@@ -71,10 +22,8 @@
     </script>
 
     <script src="public/js/vendor/leaflet@1.9.2.js"></script>
-    <!-- <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"></script> -->
     <script src="public/js/vendor/leaflet.rotatedMarker.js"></script>
     <script src="public/js/vendor/L.Control.Locate.min.js"></script>
-    <!-- <script src="public/js/vendor/leaflet.edgebuffer.js"></script> -->
     <script src="public/js/zemljevid.js"></script>
   </body>
 </html>
