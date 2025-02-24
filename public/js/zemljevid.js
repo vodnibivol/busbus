@@ -108,13 +108,10 @@ const Main = {
     }
 
     // iterate through OLD buses
-    const busDataEntries = Object.entries(this.routeBusData);
-    for (let i = busDataEntries.length - 1; i >= 0; --i) {
-      // console.log(busDataEntries[i]);
-      if (busDataEntries[i][1].bus_data_age > 120) {
-        this.map.removeLayer(busDataEntries[i][1].marker);
-        delete this.routeBusData[busDataEntries[i][0]];
-      }
+    const oldBuses = Object.values(this.routeBusData).filter((b) => b.bus_data_age > 120);
+    for (let oldBus of oldBuses) {
+      this.map.removeLayer(oldBus.marker);
+      delete this.routeBusData[oldBus.bus_unit_id];
     }
 
     // if bus-info open, update data
