@@ -43,7 +43,16 @@ const Main = {
     ).addTo(this.map);
 
     // Location marker
-    L.control.locate({ position: 'bottomright', initialZoomLevel: 16 }).addTo(this.map);
+    L.control
+      .locate({
+        position: 'bottomright',
+        initialZoomLevel: 16,
+        showCompass: false,
+        locateOptions: {
+          enableHighAccuracy: true,
+        },
+      })
+      .addTo(this.map);
 
     // Data
     const params = new URLSearchParams(window.location.search);
@@ -75,35 +84,36 @@ const Main = {
     const bus_data = await bus_res.json();
     // console.log(bus_data);
 
+    // iterate through NEW buses
     for (let bus of bus_data) {
       this.routeBusData[bus.bus_unit_id] = bus;
 
       const latLng = [bus.latitude, bus.longitude];
 
-      if (this.routeBusMarkers[bus.bus_unit_id]) {
-        // ON CHANGE
-        this.routeBusMarkers[bus.bus_unit_id].setLatLng(latLng).setIcon(this.determineBusIcon(bus));
-      } else {
+      if (!this.routeBusMarkers[bus.bus_unit_id]) {
         // ON CREATE
         this.routeBusMarkers[bus.bus_unit_id] = L.marker(latLng, {
           rotationOrigin: 'center center',
           title: bus.bus_name,
-          icon: this.determineBusIcon(bus),
-          opacity: bus.bus_data_age > 60 ? 0.5 : 1,
         })
           .addTo(this.map)
           .on('click', () => this.openInfo(bus.bus_unit_id));
       }
 
       this.routeBusMarkers[bus.bus_unit_id].setRotationAngle(bus.cardinal_direction - 90);
+      this.routeBusMarkers[bus.bus_unit_id].setLatLng(latLng); // .setIcon(this.determineBusIcon(bus))
+      this.routeBusMarkers[bus.bus_unit_id].setIcon(this.determineBusIcon(bus));
+      this.routeBusMarkers[bus.bus_unit_id].setOpacity(bus.bus_data_age > 60 ? 0.5 : 1);
 
       // set data age text
       this.dataAge = 0;
     }
 
+    // iterate through OLD buses
+
     // if bus-info open, update data
     if ($('.bus-info-container.open')) {
-      const bus_id = $("#textBox .bus > span.title").dataset.busId;
+      const bus_id = $('#textBox .bus > span.title').dataset.busId;
       const bus_data = this.routeBusData[bus_id];
       updateBusInfo(bus_data);
     }
