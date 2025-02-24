@@ -33,41 +33,9 @@ const DB = {
   buses: new Datastore({ filename: 'db/buses.db', autoload: true, timestampData: true }),
 };
 
-async function refreshBusData() {
-  const lpp_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details', 1000 * 60 * 5);
-  const db_bus_data = await DB.buses.findAsync({});
-  const db_driver_data = await DB.drivers.findAsync({});
-
-  BUS_DATA = lpp_data.data.map((bus_entry) => {
-    const db_driver = db_driver_data.find((d) => d.driver_id === bus_entry.driver_id) || {};
-    const db_bus = db_bus_data.find((d) => d.bus_id === bus_entry.bus_unit_id) || {};
-    const user_edited = ['driver_description', 'driver_nickname', 'driver_rating', 'bus_description'].some(
-      (key) => !!{ ...db_driver, ...db_bus }[key]
-    );
-
-    return {
-      bus_unit_id: bus_entry.bus_unit_id,
-      bus_name: bus_entry.bus_name,
-      // odo: bus_entry.odo,
-      driver_id: bus_entry.driver_id,
-
-      driver_nickname: db_driver.driver_nickname,
-      driver_rating: db_driver.driver_rating,
-      driver_description: db_driver.driver_description,
-
-      bus_description: db_bus.bus_description,
-
-      user_edited,
-    };
-  });
-}
-
-refreshBusData();
-
 // --- ROUTES
 
 app.get('/', (req, res) => {
-  refreshBusData();
   return res.render('iskanje');
 });
 
@@ -96,7 +64,6 @@ app.get('/objavi', async (req, res) => {
 
 app.post('/objavi', async (req, res) => {
   const { bus_id, bus_description, driver_id, driver_description, driver_nickname, driver_rating, author } = req.body;
-  // console.log(req.body);
 
   // update bus & driver data
   await DB.buses.updateAsync({ bus_id }, { bus_id, bus_description, author }, { upsert: true });
@@ -106,7 +73,6 @@ app.post('/objavi', async (req, res) => {
     { upsert: true }
   );
 
-  await refreshBusData();
   res.redirect(req.query.from_url);
 });
 
@@ -157,22 +123,44 @@ app.get('/api/route-shape/', async (req, res) => {
 
 app.get('/api/bus/buses-on-route/', async (req, res) => {
   const trip_id = req.query.trip_id;
-  const route_name = ROUTES.find((r) => r.trip_id === trip_id)?.route_number;
+  const route = ROUTES.find((r) => r.trip_id === trip_id);
 
   // get bus data
-  const bus_data = await fetchLPP(
-    'https://data.lpp.si/api/bus/buses-on-route?specific=1&route-group-number=' + route_name,
-    1000 * 3
-  );
+  const lpp_bus_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?trip-info=1', 1000 * 3);
 
-  if (bus_data.success) {
-    const tripBuses = bus_data.data
+  const db_driver_data = await DB.drivers.findAsync({});
+  const db_bus_data = await DB.buses.findAsync({});
+
+  if (lpp_bus_data.success) {
+    const tripBuses = lpp_bus_data.data
       .filter((bus) => bus.trip_id === trip_id)
       .map((bus) => {
         // združi s podatki iz serverja
-        const cachedData = BUS_DATA.find((b) => b.bus_unit_id === bus.bus_unit_id);
-        const bus_data_age = Math.round((new Date() - new Date(bus.bus_timestamp)) / 1000);
-        return { ...cachedData, ...bus, bus_data_age };
+        const db_bus = db_bus_data.find((b) => b.bus_id === bus.bus_unit_id);
+        const db_driver = db_driver_data.find((b) => b.driver_id === bus.driver_id);
+
+        return {
+          bus_description: db_bus?.bus_description || undefined,
+          driver_description: db_driver?.driver_description || undefined,
+          driver_nickname: db_driver?.driver_nickname || undefined,
+          driver_rating: db_driver?.driver_rating || undefined,
+
+          trip_id: bus.trip_id,
+          bus_unit_id: bus.bus_unit_id,
+          bus_name: bus.name,
+          driver_id: bus.driver_id,
+          latitude: bus.coordinate_y,
+          longitude: bus.coordinate_x,
+          cardinal_direction: bus.cardinal_direction,
+          // odo: bus.odo,
+          // ground_speed: bus.ground_speed,
+
+          route_number: route?.route_number,
+          route_id: route?.route_id,
+          route_name: route?.route_name,
+
+          bus_data_age: Math.round((new Date() - new Date(bus.timestamp)) / 1000),
+        };
       });
 
     res.json(tripBuses);

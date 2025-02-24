@@ -8,10 +8,10 @@
           <span class="title">Linija:</span>
           <span class="content"></span>
         </li>
-        <li class="direction">
+        <!-- <li class="direction">
           <span class="title">Smer:</span>
           <span class="content">center</span>
-        </li>
+        </li> -->
         <li class="bus">
           <span class="title" data-bus-id="" onclick="alert('BUS: '+this.dataset.busId)">Avtobus:</span>
           <ul>
@@ -64,7 +64,7 @@
 
     // populate data
     $('.bus-info-container .route .content').innerText = `${bus_data.route_number}) ${bus_data.route_name}`;
-    $('.bus-info-container .direction .content').innerText = bus_data.destination;
+    // $('.bus-info-container .direction .content').innerText = bus_data.destination;
 
     $('.bus-info-container .bus > .title').dataset.busId = bus_data.bus_unit_id;
     $('.bus-info-container .bus .registration .content').innerText = bus_data.bus_name;

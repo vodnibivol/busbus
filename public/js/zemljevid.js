@@ -108,7 +108,8 @@ const Main = {
     }
 
     // iterate through OLD buses
-    const oldBuses = Object.values(this.routeBusData).filter((b) => b.bus_data_age > 120);
+    // prettier-ignore
+    const oldBuses = Object.values(this.routeBusData).filter((b) => !bus_data.find(i => i.bus_unit_id === b.bus_unit_id));
     for (let oldBus of oldBuses) {
       this.map.removeLayer(oldBus.marker);
       delete this.routeBusData[oldBus.bus_unit_id];
@@ -139,7 +140,7 @@ const Main = {
 
   openInfo(bus_id) {
     const bus_data = this.routeBusData[bus_id];
-    updateBusInfo(bus_data);
+    updateBusInfo(bus_data); // update bus-info panel
 
     console.log(bus_data);
 
@@ -151,8 +152,10 @@ const Main = {
   },
 
   determineBusIcon(bus_data) {
-    if (!bus_data.user_edited) return Icons.bus;
+    // prettier-ignore
+    const user_edited = ['driver_description', 'driver_nickname', 'driver_rating', 'bus_description'].some((key) => !!bus_data[key]);
 
+    if (!user_edited) return Icons.bus;
     if (bus_data.driver_rating && parseInt(bus_data.driver_rating) < 3) return Icons.bus_bad_rating;
     return Icons.bus_user_edited;
   },
