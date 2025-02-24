@@ -1,6 +1,7 @@
 const Main = {
   map: null,
   tileLayer: null,
+  routeShape: null,
 
   routeBusData: {},
 
@@ -87,9 +88,14 @@ const Main = {
     for (let bus of bus_data) {
       this.routeBusData[bus.bus_unit_id] = { ...this.routeBusData[bus.bus_unit_id], ...bus };
 
+      // latitude & longitude
+      const busLatLng = [bus.latitude, bus.longitude];
+      const constrainedPosition = L.GeometryUtil.closestLayer(this.map, this.routeShape?.getLayers(), busLatLng);
+      const latLng = constrainedPosition.distance < 100 ? constrainedPosition.latlng : busLatLng;
+
       // CREATE MARKER
       if (!this.routeBusData[bus.bus_unit_id].marker) {
-        this.routeBusData[bus.bus_unit_id].marker = L.marker([bus.latitude, bus.longitude], {
+        this.routeBusData[bus.bus_unit_id].marker = L.marker(latLng, {
           rotationOrigin: 'center center',
           title: bus.bus_name,
           icon: this.determineBusIcon(bus),
@@ -99,7 +105,7 @@ const Main = {
       }
 
       this.routeBusData[bus.bus_unit_id].marker.setRotationAngle(bus.cardinal_direction - 90);
-      this.routeBusData[bus.bus_unit_id].marker.setLatLng([bus.latitude, bus.longitude]);
+      this.routeBusData[bus.bus_unit_id].marker.setLatLng(latLng);
       this.routeBusData[bus.bus_unit_id].marker.setIcon(this.determineBusIcon(bus));
       this.routeBusData[bus.bus_unit_id].marker.setOpacity(bus.bus_data_age > 60 ? 0.5 : 1);
 
@@ -130,8 +136,8 @@ const Main = {
     // console.log(route_data);
 
     if (route_data.geojson_shape) {
-      L.geoJson(route_data.geojson_shape, {
-        color: '#51504Dcc', // cornflowerblue, dodgerblue, royalblue, rgb(233, 106, 57)
+      this.routeShape = L.geoJson(route_data.geojson_shape, {
+        color: '#51504DCC', // cornflowerblue, dodgerblue, royalblue, rgb(233, 106, 57)
         weight: 3,
         dashArray: '4 10',
       }).addTo(this.map);
