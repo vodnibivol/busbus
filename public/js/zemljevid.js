@@ -3,7 +3,6 @@ const Main = {
   tileLayer: null,
 
   routeBusData: {},
-  routeBusMarkers: {},
 
   station_code: null,
   trip_id: null,
@@ -86,24 +85,23 @@ const Main = {
 
     // iterate through NEW buses
     for (let bus of bus_data) {
-      this.routeBusData[bus.bus_unit_id] = bus;
+      this.routeBusData[bus.bus_unit_id] = {...this.routeBusData[bus.bus_unit_id], ...bus};
 
-      const latLng = [bus.latitude, bus.longitude];
-
-      if (!this.routeBusMarkers[bus.bus_unit_id]) {
-        // ON CREATE
-        this.routeBusMarkers[bus.bus_unit_id] = L.marker(latLng, {
+      // CREATE MARKER
+      if (!this.routeBusData[bus.bus_unit_id].marker) {
+        this.routeBusData[bus.bus_unit_id].marker = L.marker([bus.latitude, bus.longitude], {
           rotationOrigin: 'center center',
           title: bus.bus_name,
+          icon: this.determineBusIcon(bus),
         })
           .addTo(this.map)
           .on('click', () => this.openInfo(bus.bus_unit_id));
       }
 
-      this.routeBusMarkers[bus.bus_unit_id].setRotationAngle(bus.cardinal_direction - 90);
-      this.routeBusMarkers[bus.bus_unit_id].setLatLng(latLng); // .setIcon(this.determineBusIcon(bus))
-      this.routeBusMarkers[bus.bus_unit_id].setIcon(this.determineBusIcon(bus));
-      this.routeBusMarkers[bus.bus_unit_id].setOpacity(bus.bus_data_age > 60 ? 0.5 : 1);
+      this.routeBusData[bus.bus_unit_id].marker.setRotationAngle(bus.cardinal_direction - 90);
+      this.routeBusData[bus.bus_unit_id].marker.setLatLng([bus.latitude, bus.longitude]);
+      this.routeBusData[bus.bus_unit_id].marker.setIcon(this.determineBusIcon(bus));
+      this.routeBusData[bus.bus_unit_id].marker.setOpacity(bus.bus_data_age > 60 ? 0.5 : 1);
 
       // set data age text
       this.dataAge = 0;
