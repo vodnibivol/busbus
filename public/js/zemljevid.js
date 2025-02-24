@@ -85,7 +85,7 @@ const Main = {
 
     // iterate through NEW buses
     for (let bus of bus_data) {
-      this.routeBusData[bus.bus_unit_id] = {...this.routeBusData[bus.bus_unit_id], ...bus};
+      this.routeBusData[bus.bus_unit_id] = { ...this.routeBusData[bus.bus_unit_id], ...bus };
 
       // CREATE MARKER
       if (!this.routeBusData[bus.bus_unit_id].marker) {
@@ -108,6 +108,14 @@ const Main = {
     }
 
     // iterate through OLD buses
+    const busDataEntries = Object.entries(this.routeBusData);
+    for (let i = busDataEntries.length - 1; i >= 0; --i) {
+      // console.log(busDataEntries[i]);
+      if (busDataEntries[i][1].bus_data_age > 120) {
+        this.map.removeLayer(busDataEntries[i][1].marker);
+        delete this.routeBusData[busDataEntries[i][0]];
+      }
+    }
 
     // if bus-info open, update data
     if ($('.bus-info-container.open')) {
