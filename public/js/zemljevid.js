@@ -88,7 +88,7 @@ const Main = {
   async updateBuses() {
     // get buses
     const bus_url = this.bus_name ? '&bus_name=' + this.bus_name : '';
-    const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + this.trip_id + bus_url);
+    const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + (this.trip_id || '') + bus_url);
     const bus_data = await bus_res.json();
     // console.log(bus_data);
 
@@ -98,7 +98,8 @@ const Main = {
 
       // latitude & longitude
       const busLatLng = [bus.latitude, bus.longitude];
-      const constrainedPosition = L.GeometryUtil.closestLayer(this.map, this.routeShape?.getLayers(), busLatLng);
+      // prettier-ignore
+      const constrainedPosition = this.routeShape ? L.GeometryUtil.closestLayer(this.map, this.routeShape.getLayers(), busLatLng) : busLatLng;
       const latLng = constrainedPosition.distance < 100 ? constrainedPosition.latlng : busLatLng;
 
       // CREATE MARKER

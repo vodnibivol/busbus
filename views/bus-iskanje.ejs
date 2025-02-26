@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('partials/head') %>
+    <style>
+      * {
+        font-size: 15px;
+        font-family: Helvetica, Arial, sans-serif;
+      }
+
+      p {
+        margin-bottom: 5px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      h3 {
+        font-size: 17px;
+        margin-bottom: 0;
+      }
+
+      i {
+        color: #ccc;
+      }
+
+      hr {
+        width: 100%;
+      }
+
+      form {
+        padding: 15px;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+      }
+
+      form * {
+        flex-shrink: 0;
+      }
+
+      input[name='driver_nickname'] {
+        font-style: italic;
+      }
+
+      textarea {
+        resize: none;
+      }
+
+      spacer {
+        min-height: 40px;
+        flex-grow: 1;
+      }
+
+      button {
+        /* font-weight: bold; */
+        cursor: pointer;
+      }
+
+      button.back-button {
+        align-self: flex-start;
+      }
+
+      button.submit {
+        margin-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      .discrete {
+        color: #ccc;
+        font-weight: normal;
+        font-family: Menlo, monospace;
+        font-size: 13px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('./partials/body-common'); %>
+
+    <form method="GET" action="zemljevid">
+      <button type="button" class="back-button">← nazaj</button>
+
+      <h2>Iskanje avtobusa</h2>
+
+      <h3>Registrska številka avtobusa</h3>
+      <p>Izberi med trenutno aktivnimi avtobusi</p>
+      <input id="bus_name" name="bus_name" list="bus-select-list" type="text" placeholder="LPP-XXX" required />
+      <datalist id="bus-select-list">
+        <!-- <option value="" selected="">Vpišite linijo</option> -->
+        <% for( let bus of active_buses ) { %>
+        <option
+          data-trip-id="<%- bus.trip_id %>"
+          data-bus-unit-id="<%- bus.bus_unit_id %>"
+          value="<%- bus.name %>"
+        ></option>
+        <% } %>
+      </datalist>
+
+      <spacer></spacer>
+      <button type="submit" class="submit">Iskanje</button>
+    </form>
+
+    <script>
+      $('.back-button').onclick = (e) => {
+        e.preventDefault();
+        window.history.back();
+        document.body.classList.add('loading');
+      };
+
+      $('button.submit').addEventListener('click', submitForm);
+      $('form').addEventListener('submit', submitForm);
+
+      function submitForm(e) {
+        e.preventDefault();
+
+        if ($('form').checkValidity()) {
+          $('.submit').disabled = true;
+          $('form').submit();
+          // const bus_name = $('input#bus_name').value;
+          // const bus_data = $(`#bus-select-list option[value="${bus_name}"]`)?.dataset || {};
+          // window.location.href = `zemljevid?bus_id=${bus_data.busUnitId}`; // &trip_id=${bus_data.tripId}`;
+          // document.body.classList.add('loading');
+        } else {
+          $('form').reportValidity();
+        }
+      }
+    </script>
+  </body>
+</html>

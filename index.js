@@ -40,16 +40,21 @@ app.get('/', (req, res) => {
 
 app.get('/zemljevid', async (req, res) => {
   // IF: BUS_NAME
-  if (!req.query.trip_id && req.query.bus_name) {
-    // will redirect
+  if (req.query.bus_name) {
     const lpp_bus_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?trip-info=1', 1000 * 3);
     const bus = lpp_bus_data.data.find((b) => b.name.includes(req.query.bus_name));
-    return res.redirect(`zemljevid?bus_name=${bus.name}&trip_id=${bus.trip_id}`);
+    if (!bus) return res.redirect('bus');
   }
 
   // ELSE: NORMAL ZEMLJEVID
   const station_loc = STATIONS[req.query.station_code];
   res.render('zemljevid', { station_loc });
+});
+
+app.get('/bus', async (req, res) => {
+  const lpp_bus_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?trip-info=1', 1000 * 60 * 10);
+  const active_buses = lpp_bus_data.data.filter((bus) => bus.trip_id && bus.ignition_value);
+  res.render('bus-iskanje', { active_buses });
 });
 
 app.get('/objavi', async (req, res) => {
@@ -111,10 +116,9 @@ app.get('/api/arrival', async (req, res) => {
   res.json(Object.values(dataFormatted));
 });
 
-// --- zemljevid
-
 app.get('/api/route-shape/', async (req, res) => {
-  const trip_id = req.query.trip_id;
+  const bus_name = req.query.bus_name;
+  const trip_id = req.query.trip_id || (await tripIdFromBusName(bus_name));
   const route_id = routeIdFromTripId(trip_id);
 
   // get shape
@@ -129,8 +133,8 @@ app.get('/api/route-shape/', async (req, res) => {
 });
 
 app.get('/api/bus/buses-on-route/', async (req, res) => {
-  const trip_id = req.query.trip_id;
   const bus_name = req.query.bus_name;
+  const trip_id = req.query.trip_id || (await tripIdFromBusName(bus_name));
   const route = ROUTES.find((r) => r.trip_id === trip_id);
 
   // get bus data
@@ -209,21 +213,27 @@ function routeIdFromTripId(trip_id) {
   return ROUTES.find((r) => r.trip_id === trip_id)?.route_id;
 }
 
-async function cachedFetch(url, options, cacheTime) {
+async function tripIdFromBusName(bus_name) {
+  const lpp_bus_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?trip-info=1', 1000 * 60 * 15); // 10 minutes
+  const bus = lpp_bus_data.data.find((bus) => bus.name === bus_name);
+  return bus?.trip_id;
+}
+
+async function cachedFetch(url, options, maxAge) {
   try {
-    let data = dstore.get(url);
+    let data = dstore.get(url, maxAge);
     if (!data) {
       const r = await fetch(url, options);
       data = await r.json();
-      dstore.set(url, data, cacheTime);
+      dstore.set(url, data);
     }
     return data;
   } catch (error) {
-    return 'ERROR';
+    return 'CACHED FETCH ERROR';
   }
 }
 
-async function fetchLPP(url, cacheTime = 0) {
+async function fetchLPP(url, maxAge = 0) {
   const options = {
     headers: {
       'Content-Type': 'application/json',
@@ -232,6 +242,6 @@ async function fetchLPP(url, cacheTime = 0) {
     },
   };
 
-  const response = await cachedFetch(url, options, cacheTime);
+  const response = await cachedFetch(url, options, maxAge);
   return response; // return response.json();
 }
