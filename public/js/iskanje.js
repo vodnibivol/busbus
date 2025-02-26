@@ -140,6 +140,12 @@ const config = {
       window.location.href = `zemljevid?station_code=${this.selectedStop.ref_id}&trip_id=${data.trip_id}`;
       document.body.classList.add('loading');
     },
+
+    openPrompt() {
+      const busName = prompt('Številka avtobusa (LPP-XXX):');
+      if (!busName) return;
+      window.location.href = `zemljevid?bus_name=${busName}`;
+    },
   },
 
   mounted() {

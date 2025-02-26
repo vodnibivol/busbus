@@ -112,7 +112,6 @@ button {
     border: 2px solid black;
     border-radius: 3px;
 
-
     &:hover {
       background: darken(#ccc, 5);
     }
@@ -183,7 +182,7 @@ button {
       cursor: pointer;
       background: white;
       border: 2px solid black;
-      
+
       span {
         padding: 3px 5px;
         user-select: none;
@@ -191,7 +190,7 @@ button {
         display: flex;
 
         &:not(:last-of-type)::after {
-          content: ",";
+          content: ',';
         }
 
         &.garaza {
@@ -199,6 +198,56 @@ button {
         }
       }
     }
+  }
+}
+
+// --- NAV
+
+.tracker-shortcut {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+
+  img {
+    width: 20px;
+    cursor: pointer;
+  }
+}
+
+.live-dot-container {
+  // border: 1px solid violet;
+  z-index: 1000;
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  padding: 10px;
+
+  display: flex;
+  align-items: center;
+
+  border-radius: 50%;
+  cursor: pointer;
+
+  .live-dot {
+    width: 12px;
+    height: 12px;
+    background: #eee;
+    border: 2px solid black;
+    border-radius: 50%;
+    opacity: 0.9;
+
+    &.live {
+      animation: blink 1.5s ease-in infinite alternate;
+    }
+  }
+}
+
+@keyframes blink {
+  from {
+    background: rgb(253, 52, 52);
+  }
+  to {
+    background: rgb(150, 52, 52);
   }
 }
 

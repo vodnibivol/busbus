@@ -20,7 +20,7 @@ const Main = {
 
     // --- MAP
     this.map = L.map('map', {
-      center: window.station_loc, // [46.05, 14.507] <= LJUBLJANA
+      center: window.station_loc || [46.05, 14.507], // [46.05, 14.507] <= LJUBLJANA
       zoom: 14,
       zoomControl: false,
     });
@@ -58,15 +58,18 @@ const Main = {
     const params = new URLSearchParams(window.location.search);
     this.station_code = params.get('station_code');
     this.trip_id = params.get('trip_id');
+    this.bus_name = params.get('bus_name');
 
     // --- POSTAJA
 
-    L.marker(window.station_loc, {
-      icon: Icons.station,
-      // zIndexOffset: -1000,
-    })
-      .addTo(this.map)
-      .on('click', () => this.map.setView(window.station_loc, 15));
+    if (this.station_code) {
+      L.marker(window.station_loc, {
+        icon: Icons.station,
+        // zIndexOffset: -1000,
+      })
+        .addTo(this.map)
+        .on('click', () => this.map.setView(window.station_loc, 15));
+    }
 
     // --- OBLIKA
 
@@ -74,13 +77,18 @@ const Main = {
 
     // --- UPDATE BUSES
 
-    this.updateBuses();
+    this.updateBuses().then(() => {
+      const bus_data = Object.values(this.routeBusData);
+      if (bus_data.length === 1) this.map.setView([bus_data[0].latitude, bus_data[0].longitude]);
+    });
+
     setInterval(this.updateBuses.bind(this), 3000);
   },
 
   async updateBuses() {
     // get buses
-    const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + this.trip_id);
+    const bus_url = this.bus_name ? '&bus_name=' + this.bus_name : '';
+    const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + this.trip_id + bus_url);
     const bus_data = await bus_res.json();
     // console.log(bus_data);
 
@@ -131,7 +139,8 @@ const Main = {
 
   async drawRouteShape() {
     // get shape
-    const route_res = await fetch(`api/route-shape?trip_id=${this.trip_id}`);
+    const url = this.trip_id ? `api/route-shape?trip_id=${this.trip_id}` : `api/route-shape?bus_name=${this.bus_name}`;
+    const route_res = await fetch(url);
     const route_data = await route_res.json();
     // console.log(route_data);
 

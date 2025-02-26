@@ -26,7 +26,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const ROUTES = JSON.parse(fs.readFileSync('db/routes.json'));
 const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
-let BUS_DATA = []; // bus data with driver ids; has to be updated whenever /zemljevid or / is launched
 
 const DB = {
   drivers: new Datastore({ filename: 'db/drivers.db', autoload: true, timestampData: true }),
@@ -39,9 +38,17 @@ app.get('/', (req, res) => {
   return res.render('iskanje');
 });
 
-app.get('/zemljevid', (req, res) => {
-  const station_loc = STATIONS[req.query.station_code];
+app.get('/zemljevid', async (req, res) => {
+  // IF: BUS_NAME
+  if (!req.query.trip_id && req.query.bus_name) {
+    // will redirect
+    const lpp_bus_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?trip-info=1', 1000 * 3);
+    const bus = lpp_bus_data.data.find((b) => b.name.includes(req.query.bus_name));
+    return res.redirect(`zemljevid?bus_name=${bus.name}&trip_id=${bus.trip_id}`);
+  }
 
+  // ELSE: NORMAL ZEMLJEVID
+  const station_loc = STATIONS[req.query.station_code];
   res.render('zemljevid', { station_loc });
 });
 
@@ -123,6 +130,7 @@ app.get('/api/route-shape/', async (req, res) => {
 
 app.get('/api/bus/buses-on-route/', async (req, res) => {
   const trip_id = req.query.trip_id;
+  const bus_name = req.query.bus_name;
   const route = ROUTES.find((r) => r.trip_id === trip_id);
 
   // get bus data
@@ -132,7 +140,7 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
   const db_bus_data = await DB.buses.findAsync({});
 
   if (lpp_bus_data.success) {
-    const tripBuses = lpp_bus_data.data
+    let tripBuses = lpp_bus_data.data
       .filter((bus) => bus.trip_id === trip_id)
       .map((bus) => {
         // združi s podatki iz serverja
@@ -163,6 +171,7 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
         };
       });
 
+    if (bus_name) tripBuses = tripBuses.filter((b) => b.bus_name === bus_name);
     res.json(tripBuses);
   } else {
     res.status(400).json({ success: false });
