@@ -38,11 +38,15 @@ app.get('/', (req, res) => {
   return res.render('iskanje');
 });
 
+app.get('/test', (req, res) => {
+  res.render('test');
+});
+
 app.get('/zemljevid', async (req, res) => {
   // IF: BUS_NAME
   if (req.query.bus_name) {
     const lpp_bus_data = await fetchLPP('https://data.lpp.si/api/bus/bus-details?trip-info=1', 1000 * 3);
-    const bus = lpp_bus_data.data.find((b) => b.name.includes(req.query.bus_name));
+    const bus = lpp_bus_data.data.find((b) => b.name === req.query.bus_name);
     if (!bus) return res.redirect('bus');
   }
 

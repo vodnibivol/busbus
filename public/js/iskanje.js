@@ -137,14 +137,13 @@ const config = {
     },
 
     showMap(data) {
-      window.location.href = `zemljevid?station_code=${this.selectedStop.ref_id}&trip_id=${data.trip_id}`;
       document.body.classList.add('loading');
+      window.location.href = `zemljevid?station_code=${this.selectedStop.ref_id}&trip_id=${data.trip_id}`;
     },
 
-    openPrompt() {
-      const busName = prompt('Številka avtobusa (LPP-XXX):');
-      if (!busName) return;
-      window.location.href = `zemljevid?bus_name=${busName}`;
+    openBusSearch() {
+      document.body.classList.add('loading');
+      window.location.href = 'bus';
     },
   },
 

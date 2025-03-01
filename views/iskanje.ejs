@@ -13,9 +13,7 @@
         <div class="live-dot" :class="{live: autoRefresh}"></div>
       </div>
       <div class="tracker-shortcut">
-        <a href="bus">
-          <img src="public/img/gps-cursor.png" alt="Iskanje avtobusa" />
-        </a>
+        <img @click="openBusSearch" src="public/img/gps-cursor.png" alt="Iskanje avtobusa" />
       </div>
 
       <div class="block">
@@ -95,8 +93,7 @@
       setTimeout(izletek, random(100_000, 300_000));
     </script>
 
-    <!-- <script src="public/js/vue.global.js"></script> -->
-    <script src="public/js/vendor/vue.global.js"></script>
+    <script src="public/js/vendor/vue.global.prod.js"></script>
     <script src="public/js/stops.js"></script>
     <script src="public/js/iskanje.js"></script>
     <script src="public/js/pwa/pwa.js"></script>

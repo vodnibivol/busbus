@@ -9,3 +9,4 @@ db/drivers.db
 /refs
 request.rest
 vars.txt
+test*

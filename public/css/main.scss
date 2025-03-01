@@ -28,6 +28,10 @@ body.loading {
   align-items: center;
 }
 
+button[disabled] {
+  cursor: default;
+}
+
 a.home {
   position: absolute;
   z-index: 1000;
