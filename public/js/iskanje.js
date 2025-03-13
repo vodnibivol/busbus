@@ -90,7 +90,6 @@ const config = {
     selectStop(stopId) {
       this.selectedStop = this.stopOptions.find((s) => s.ref_id === stopId);
       this.stopHistory = [this.selectedStop.ref_id, ...this.stopHistory];
-      // this.updateUserData(); // TODO: only if userId in cookie storage
       this.getData();
     },
 

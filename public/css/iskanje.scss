@@ -1,20 +1,33 @@
-// TODO: naredi classe samo .zima, .pomlad, .poletje, .jesen in notri vse definiraj
+body {
+  --color-primary: #d4e4e9;
+  --color-secondary: #d4e4e9;
 
-:root {
-  // --bg-image: url('public/img/sakura.jpeg');
-  // --bg-image: url('../img/JESEN/jesen3.jpg');
-  // ZIMA
-  --bg-image: url('../img/ZIMA/1.jpeg');
+  &.pomlad {
+    --bg-image: url('../img/bg/pomlad.png'); // pomlad-2.jpeg (sakura)
+    --color-primary: #d4e4e9; // pomlad 1
+    --color-secondary: #d4e4e9; // pomlad 2
+    // --color-primary: #f5c3d5; // sakura 1
+    // --color-secondary: #e7d8ed; // sakura 2
+  }
+
+  &.poletje {
+    --bg-image: url('../img/bg/poletje.jpg'); // pomlad-2.jpeg (sakura)
+    --color-primary: #f2c5d1; // pomlad 1
+    --color-secondary: #dbf9cd; // pomlad 2
+  }
+
+  &.jesen {
+    --bg-image: url('../img/bg/jesen.jpg'); // pomlad-2.jpeg (sakura)
+    --color-primary: #f2dab7; // jesen 1
+    --color-secondary: #e8e8e8; // jesen 2
+  }
+
+  &.zima {
+    --bg-image: url('../img/bg/zima.jpeg'); // pomlad-2.jpeg (sakura)
+    --color-primary: lightcoral; // christmas 1
+    --color-secondary: hsl(173, 35%, 82%); // christmas 2
+  }
 }
-
-// $color-primary: #f5c3d5;
-// $color-secondary: #e7d8ed;
-// JESEN:
-// $color-primary: #f2dab7;
-// $color-secondary: #e8e8e8;
-$color-primary: lightcoral;
-$color-secondary: hsl(173, 35%, 82%);
-// christmas: lightcoral (primary); hsl(173, 35%, 82%) (secondary)
 
 * {
   font-family: Menlo, Consolas, monospace;
@@ -113,7 +126,7 @@ button {
     border-radius: 3px;
 
     &:hover {
-      background: darken(#ccc, 5);
+      filter: brightness(95%);
     }
   }
 }
@@ -136,15 +149,11 @@ button {
     text-align: center;
 
     &:hover {
-      background: darken(#ccc, 5);
+      filter: brightness(95%);
     }
 
     &.selected {
-      background: $color-primary;
-
-      &:hover {
-        background: darken($color-primary, 5);
-      }
+      background: var(--color-primary);
     }
   }
 }
@@ -166,13 +175,13 @@ button {
       min-width: 30px; // 30 px "19I"
       text-align: center;
 
-      background: $color-secondary;
+      background: var(--color-secondary);
       border: 2px solid black;
 
       cursor: pointer;
 
       &:hover {
-        background: darken($color-secondary, 5);
+        filter: brightness(95%);
       }
     }
 
@@ -182,6 +191,7 @@ button {
       cursor: pointer;
       background: white;
       border: 2px solid black;
+      white-space: nowrap;
 
       span {
         padding: 3px 5px;
