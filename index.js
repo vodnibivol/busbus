@@ -5,6 +5,7 @@ import compression from 'compression';
 import bodyParser from 'body-parser';
 import 'dotenv/config';
 import Datastore from '@seald-io/nedb';
+import path from 'path';
 
 import Store from './js/Store_node.js';
 const dstore = new Store();
@@ -184,6 +185,12 @@ app.get('/api/bus/buses-on-route/', async (req, res) => {
   } else {
     res.status(400).json({ success: false });
   }
+});
+
+// --- SW
+
+app.get('/sw.js', (req, res) => {
+  res.sendFile(path.resolve('sw.js'));
 });
 
 // --- ERRORS
