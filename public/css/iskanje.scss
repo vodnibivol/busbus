@@ -1,29 +1,45 @@
+// -- -mixins
+
+@mixin button {
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(95%);
+  }
+
+  &:active {
+    filter: brightness(90%);
+  }
+}
+
+// --- body styles
+
 body {
   --color-primary: #d4e4e9;
   --color-secondary: #d4e4e9;
 
   &.pomlad {
-    --bg-image: url('../img/bg/pomlad.png'); // pomlad-2.jpeg (sakura)
+    --bg-image: url('../img/bg/pomlad.png');
     --color-primary: #d4e4e9; // pomlad 1
-    --color-secondary: #d4e4e9; // pomlad 2
+    --color-secondary: #daf2d3; // pomlad 2 // #ddf7d6 (zelena) #f4dfe4 (roza)
     // --color-primary: #f5c3d5; // sakura 1
     // --color-secondary: #e7d8ed; // sakura 2
   }
 
   &.poletje {
-    --bg-image: url('../img/bg/poletje.jpg'); // pomlad-2.jpeg (sakura)
+    --bg-image: url('../img/bg/poletje.jpg');
     --color-primary: #f2c5d1; // pomlad 1
     --color-secondary: #dbf9cd; // pomlad 2
   }
 
   &.jesen {
-    --bg-image: url('../img/bg/jesen.jpg'); // pomlad-2.jpeg (sakura)
+    --bg-image: url('../img/bg/jesen.jpg');
     --color-primary: #f2dab7; // jesen 1
     --color-secondary: #e8e8e8; // jesen 2
   }
 
   &.zima {
-    --bg-image: url('../img/bg/zima.jpeg'); // pomlad-2.jpeg (sakura)
+    --bg-image: url('../img/bg/zima.jpeg');
     --color-primary: lightcoral; // christmas 1
     --color-secondary: hsl(173, 35%, 82%); // christmas 2
   }
@@ -34,6 +50,7 @@ body {
   font-size: 12px;
   font-weight: bold;
   box-sizing: border-box;
+  user-select: none;
 }
 
 body {
@@ -114,20 +131,14 @@ button {
   }
 
   div.reset {
-    // position: relative;
-    // right: 0;
-    // top: 0;
+    @include button;
+
     height: 100%;
     width: 23px;
     padding: 3px;
-    cursor: pointer;
     background: #ccc;
     border: 2px solid black;
     border-radius: 3px;
-
-    &:hover {
-      filter: brightness(95%);
-    }
   }
 }
 
@@ -136,21 +147,16 @@ button {
   flex-wrap: wrap;
   gap: 6px;
 
-  user-select: none;
-
   .postaja {
+    @include button;
+
     min-width: 15px;
     padding: 3px 7px;
     background: #ccc;
     border: 2px solid black;
     border-radius: 50px;
 
-    cursor: pointer;
     text-align: center;
-
-    &:hover {
-      filter: brightness(95%);
-    }
 
     &.selected {
       background: var(--color-primary);
@@ -171,18 +177,14 @@ button {
     gap: 6px;
 
     .stevilka {
+      @include button;
+
       padding: 3px;
-      min-width: 30px; // 30 px "19I"
+      min-width: 30px;
       text-align: center;
 
       background: var(--color-secondary);
       border: 2px solid black;
-
-      cursor: pointer;
-
-      &:hover {
-        filter: brightness(95%);
-      }
     }
 
     .prihodi {
@@ -214,18 +216,21 @@ button {
 // --- NAV
 
 .tracker-shortcut {
+  @include button;
+
   position: fixed;
   top: 14px;
   left: 14px;
 
   img {
     width: 15px;
-    cursor: pointer;
+
   }
 }
 
 .live-dot-container {
-  // border: 1px solid violet;
+  @include button;
+
   z-index: 1000;
   position: fixed;
   top: 5px;
@@ -236,7 +241,6 @@ button {
   align-items: center;
 
   border-radius: 50%;
-  cursor: pointer;
 
   .live-dot {
     width: 12px;
