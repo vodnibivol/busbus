@@ -44,19 +44,26 @@ const config = {
     filteredSearch() {
       // used in a) searchResults (displayed results); and b) stopOptions
       if (this.input.length < 3) return [];
-
       return this.stops.filter((s) => simplify(s.name).includes(simplify(this.input)));
     },
 
     searchResults() {
       // displayed results
-      const count = arrayCount(this.stopHistory.slice(0, 30));
+      const counted = arrayCount(this.stopHistory.slice(0, 30));
 
       const exactMatch = this.filteredSearch.find((r) => r.name === this.input);
       if (exactMatch) return [exactMatch.name];
 
+      /**
+       * // TODO - prioriteta:
+       * 1. natančno ujemanje ("Log"):            vrni samo to besedo
+       * 2. je v filtered history:                 +20
+       * 3. začne se na ta način ("kol.."):       +10
+       * 4. ujemanje cele besede (".. pri .."):   +5
+       * 5. delno ujemanje ("..avarski")          +1
+       */
       return deduplicate(
-        this.filteredSearch.sort((a, b) => count[b.ref_id] || 0 - count[a.ref_id] || 0).map((r) => r.name)
+        this.filteredSearch.sort((a, b) => (counted[b.ref_id] || 0) - (counted[a.ref_id] || 0)).map((r) => r.name)
       );
     },
 

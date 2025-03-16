@@ -9,11 +9,11 @@
 
     <div id="bg"></div>
     <div id="main" class="hidden">
-      <div class="live-dot-container" @click="autoRefresh = !autoRefresh">
-        <div class="live-dot" :class="{live: autoRefresh}"></div>
+      <div class="live-dot-container" @click="autoRefresh=!autoRefresh" touchy>
+        <div class="live-dot" :class="{live:autoRefresh}"></div>
       </div>
-      <div class="tracker-shortcut">
-        <img @click="openBusSearch" src="public/img/gps-cursor.png" alt="Iskanje avtobusa" />
+      <div class="tracker-shortcut" @click="openBusSearch" touchy>
+        <img src="public/img/gps-cursor.png" alt="Iskanje avtobusa" />
       </div>
 
       <div class="block">
@@ -28,12 +28,12 @@
             v-model="input"
             @input="onInput"
           />
-          <div class="reset flex-center" @click="resetInput">×</div>
+          <div class="reset flex-center" @click="resetInput" touchy>×</div>
         </div>
 
         <!-- NEDAVNA ISKANJA SECTION -->
         <div class="section postaje" v-if="!input && filteredHistory.length">
-          <div class="postaja" v-for="stop in filteredHistory" @click="input = stop.name">{{ stop.name }}</div>
+          <div class="postaja" v-for="stop in filteredHistory" @click="input=stop.name" touchy>{{ stop.name }}</div>
         </div>
 
         <!-- ISKANJE FILTER SECTION -->
@@ -42,7 +42,8 @@
             class="postaja"
             :class="{selected: input === stopName}"
             v-for="stopName in searchResults"
-            @click="onInput() || (input = stopName)"
+            @click="onInput()||(input=stopName)"
+            touchy
           >
             {{ stopName }}
           </div>
@@ -55,6 +56,7 @@
             class="postaja"
             @click="selectStop(option.ref_id)"
             :class="{selected: selectedStop.ref_id === option.ref_id}"
+            touchy
           >
             {{ option.text }}
           </div>
@@ -63,8 +65,8 @@
         <!-- LINIJE SECTION -->
         <div class="section" id="linije" v-if="!loading && arrivals.length">
           <div class="linija" v-for="r in arrivals">
-            <div class="stevilka" @click="showMap(r[0])">{{ r[0].key }}</div>
-            <div class="prihodi" @click="eta=!eta" :style="{'text-decoration':dataExpired?'line-through':''}">
+            <div class="stevilka" @click="showMap(r[0])" touchy>{{ r[0].key }}</div>
+            <div class="prihodi" @click="eta=!eta" :style="{'text-decoration':dataExpired?'line-through':''}" touchy>
               <span v-for="arrival in r.slice(0,3)" :class="{garaza:arrival.v_garazo}">{{
                 eta ? arrival.minutes + ' min' : arrival.time
               }}</span>
@@ -94,6 +96,7 @@
     </script>
 
     <script src="public/js/vendor/vue.global.prod.js"></script>
+    <script src="public/js/vendor/touchy.js"></script>
     <script src="public/js/stops.js"></script>
     <script src="public/js/iskanje.js"></script>
     <script src="public/js/pwa/pwa.js"></script>

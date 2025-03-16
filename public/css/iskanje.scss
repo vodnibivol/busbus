@@ -3,11 +3,14 @@
 @mixin button {
   cursor: pointer;
 
-  &:hover {
-    filter: brightness(95%);
+  @media (any-hover: hover) {
+    &:hover {
+      filter: brightness(95%);
+    }
   }
 
-  &:active {
+  &:active,
+  &[data-touched] {
     filter: brightness(90%);
   }
 }
@@ -224,7 +227,6 @@ button {
 
   img {
     width: 15px;
-
   }
 }
 
