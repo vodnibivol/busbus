@@ -15,10 +15,20 @@
     box-shadow: inset 0 2px #00000033;
   }
 
-  box-shadow: inset 0 -2px #00000033;
+  box-shadow: $shadow-pixelart;
 }
 
-$shadow-pixelart: inset 0 -2px #00000033;
+@mixin polka-dot($bg-color: #e5e5f7) {
+  $color-primary: darken($bg-color, 10);
+  background-color: $bg-color;
+  opacity: 1;
+  background-image: radial-gradient($color-primary 1px, transparent 1px),
+    radial-gradient($color-primary 1px, $bg-color 1px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+$shadow-pixelart: inset -2px -2px #00000033, inset 2px 2px #ffffffbb;
 
 // --- body styles
 
@@ -108,7 +118,8 @@ button {
 // --- BLOCK = glavna reč na sredini
 
 .block {
-  background: #eee;
+  // background: #eee;
+  @include polka-dot(#eee);
 
   width: 250px;
 
@@ -205,6 +216,8 @@ button {
       border: 2px solid black;
       white-space: nowrap;
 
+      @include button();
+
       span {
         padding: 3px 5px;
         user-select: none;
@@ -226,6 +239,9 @@ button {
 // --- NAV
 
 .tracker-shortcut {
+  @include button;
+  box-shadow: none !important;
+
   position: fixed;
   top: 14px;
   left: 14px;
@@ -246,6 +262,9 @@ button {
   align-items: center;
 
   border-radius: 50%;
+
+  @include button;
+  box-shadow: none !important;
 
   .live-dot {
     width: 12px;
