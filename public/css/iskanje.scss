@@ -78,7 +78,7 @@ body {
 #bg {
   background: var(--bg-image);
   background-size: 300px;
-  background-position: top center;
+  // background-position: top center;
   background-repeat: repeat;
   width: 100%;
   height: 100%;
@@ -102,7 +102,7 @@ body {
 input,
 button {
   border: 2px solid black;
-  padding: 3px 5px;
+  padding: 4px 7px;
   outline: none;
   border-radius: 0;
 }
@@ -118,44 +118,52 @@ button {
 // --- BLOCK = glavna reč na sredini
 
 .block {
-  // background: #eee;
+  background: #eee;
   @include polka-dot(#eee);
+  // background: var(--bg-image);
+  // background-size: 300px;
 
-  width: 250px;
+  width: 260px;
 
   border: 2px solid;
-  padding: 1.25rem;
+  padding: 17px;
 
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 15px;
 
   border-radius: 10px;
-  box-shadow: 6px 6px 0 #00000033, $shadow-pixelart;
+  box-shadow: 6px 6px 0 #00000033, inset -4px -4px #00000033, inset 4px 4px #ffffffbb;
 }
 
 // --- SECTIONS
 
 #input {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
 
   gap: 3px;
 
   input {
-    width: calc(100% - 23px);
+    // width: calc(100% - 23px);
+    width: 100%;
     border-radius: 3px;
-  }
 
+    box-shadow: inset 2px 2px #00000033;
+  }
+  
   div.reset {
     @include button;
 
+    position: absolute;
+    right: 0;
+    top: 0;
+
     height: 100%;
-    width: 23px;
-    padding: 3px;
-    background: #ccc;
+    width: 25px;
+    background: #ffa89c;
     border: 2px solid black;
     border-radius: 3px;
   }
@@ -170,12 +178,14 @@ button {
     @include button;
 
     min-width: 15px;
-    padding: 3px 7px;
+    padding: 4px 7px;
     background: #ccc;
     border: 2px solid black;
     border-radius: 50px;
 
     text-align: center;
+
+
 
     // box-shadow: inset 0 -2px #00000033;
 
@@ -216,7 +226,7 @@ button {
       border: 2px solid black;
       white-space: nowrap;
 
-      @include button();
+      @include button;
 
       span {
         padding: 3px 5px;
