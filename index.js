@@ -196,7 +196,7 @@ app.get('/sw.js', (req, res) => {
 // --- ERRORS
 
 app.get('/busbus', (req, res) => {
-  if (req.hostname === 'localhost') res.redirect('/');
+  if (/localhost|192\.168/.test(req.hostname)) res.redirect('/');
 });
 
 app.use((req, res, next) => {

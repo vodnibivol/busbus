@@ -28,7 +28,7 @@
   background-position: 0 0, 10px 10px;
 }
 
-$shadow-pixelart: inset -2px -2px #00000033, inset 2px 2px #ffffffbb;
+$shadow-pixelart: inset 0 -2px #00000033;
 
 // --- body styles
 
@@ -78,11 +78,11 @@ body {
 #bg {
   background: var(--bg-image);
   background-size: 300px;
-  // background-position: top center;
+  background-position: top center;
   background-repeat: repeat;
-  width: 100%;
-  height: 100%;
-  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
   z-index: -10;
   // overflow: hidden;
 
@@ -119,7 +119,7 @@ button {
 
 .block {
   background: #eee;
-  @include polka-dot(#eee);
+  // @include polka-dot(#eee);
   // background: var(--bg-image);
   // background-size: 300px;
 
@@ -133,7 +133,7 @@ button {
   gap: 15px;
 
   border-radius: 10px;
-  box-shadow: 6px 6px 0 #00000033, inset -4px -4px #00000033, inset 4px 4px #ffffffbb;
+  box-shadow: 6px 6px 0 #00000033;
 }
 
 // --- SECTIONS
@@ -151,9 +151,9 @@ button {
     width: 100%;
     border-radius: 3px;
 
-    box-shadow: inset 2px 2px #00000033;
+    // box-shadow: inset 2px 2px #00000033;
   }
-  
+
   div.reset {
     @include button;
 
@@ -165,7 +165,7 @@ button {
     width: 25px;
     background: #ffa89c;
     border: 2px solid black;
-    border-radius: 3px;
+    border-radius: 0 3px 3px 0;
   }
 }
 
@@ -184,8 +184,6 @@ button {
     border-radius: 50px;
 
     text-align: center;
-
-
 
     // box-shadow: inset 0 -2px #00000033;
 
@@ -226,7 +224,7 @@ button {
       border: 2px solid black;
       white-space: nowrap;
 
-      @include button;
+      // @include button;
 
       span {
         padding: 3px 5px;
@@ -248,13 +246,21 @@ button {
 
 // --- NAV
 
+.nav-top {
+  position: absolute;
+  top: env(safe-area-inset-top);
+  left: 0;
+  z-index: 1000;
+
+  width: 100vw;
+  justify-content: space-between;
+
+  padding: 14px;
+}
+
 .tracker-shortcut {
   @include button;
   box-shadow: none !important;
-
-  position: fixed;
-  top: 14px;
-  left: 14px;
 
   img {
     width: 15px;
@@ -262,17 +268,6 @@ button {
 }
 
 .live-dot-container {
-  z-index: 1000;
-  position: fixed;
-  top: 5px;
-  right: 5px;
-  padding: 10px;
-
-  display: flex;
-  align-items: center;
-
-  border-radius: 50%;
-
   @include button;
   box-shadow: none !important;
 
