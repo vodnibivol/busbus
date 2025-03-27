@@ -4,12 +4,13 @@ import fs from 'fs';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import 'dotenv/config';
-import Datastore from '@seald-io/nedb';
+// import Datastore from '@seald-io/nedb';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 
-import { identifyUser, collectData } from './js/collectData.js'
+import { identifyUser, collectData } from './js/collectData.js';
 import Store from './js/Store_node.js';
+import DB from './js/db.js';
 const dstore = new Store();
 
 const app = express();
@@ -32,10 +33,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const ROUTES = JSON.parse(fs.readFileSync('db/routes.json'));
 const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
 
-const DB = {
-  drivers: new Datastore({ filename: 'db/drivers.db', autoload: true, timestampData: true }),
-  buses: new Datastore({ filename: 'db/buses.db', autoload: true, timestampData: true }),
-};
+// const DB = {
+//   drivers: new Datastore({ filename: 'db/drivers.db', autoload: true, timestampData: true }),
+//   buses: new Datastore({ filename: 'db/buses.db', autoload: true, timestampData: true }),
+//   users: new Datastore({ filename: 'db/users.db', autoload: true, timestampData: true }),
+// };
 
 // --- ROUTES
 
@@ -97,11 +99,17 @@ app.post('/objavi', async (req, res) => {
   res.redirect(req.query.from_url);
 });
 
-app.get('/log', async (req, res) => {
+app.get('/log/objave', async (req, res) => {
   const db_bus_data = await DB.buses.findAsync({});
   const db_driver_data = await DB.drivers.findAsync({});
 
-  res.render('log', { data: { buses: db_bus_data, drivers: db_driver_data } });
+  res.render('log-objave', { data: { buses: db_bus_data, drivers: db_driver_data } });
+});
+
+app.get('/log/users', async (req, res) => {
+  const db_user_data = await DB.users.findAsync({});
+
+  res.render('log-users', { data: { users: db_user_data } });
 });
 
 // --- API

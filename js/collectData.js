@@ -1,9 +1,5 @@
 import { randomUUID } from 'crypto';
-import Datastore from '@seald-io/nedb';
-
-const DB = {
-  users: new Datastore({ filename: 'db/users.db', autoload: true, timestampData: true }),
-};
+import DB from './db.js';
 
 export function identifyUser(req, res, next) {
   const userIdentifiers = {
