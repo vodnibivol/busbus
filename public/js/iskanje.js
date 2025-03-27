@@ -15,8 +15,6 @@ const config = {
       tick: 0,
 
       stopHistory: [],
-
-      version: '0.2', // after updating .. clears history etc.
     };
   },
   computed: {
@@ -149,12 +147,6 @@ const config = {
   },
 
   mounted() {
-    // version
-    if (localStorage.version && localStorage.version !== this.version) {
-      localStorage.removeItem('stopHistory');
-      localStorage.setItem('version', this.version);
-    }
-
     // init
     this.stops = stops;
     setInterval(this.checkTime.bind(this), 1000);
@@ -162,16 +154,16 @@ const config = {
 
     $('#main').classList.remove('hidden');
 
-    // localStorage: BIND HISTORY
-    if (localStorage.stopHistory) {
-      this.stopHistory = localStorage.stopHistory.split(',');
+    // cookieStorage: BIND HISTORY
+    if (cookieStorage.getItem('BUSBUS_STOP_HISTORY')) {
+      this.stopHistory = cookieStorage.getItem('BUSBUS_STOP_HISTORY').split(',');
     }
   },
 
   watch: {
-    // localStorage: BIND HISTORY
+    // cookieStorage: BIND HISTORY
     stopHistory(newHistory) {
-      localStorage.stopHistory = newHistory.join(',');
+      cookieStorage.setItem('BUSBUS_STOP_HISTORY', newHistory.join(','), { expires: { years: 1 } });
     },
   },
 };

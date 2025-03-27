@@ -3,8 +3,7 @@ old.*
 *.psd
 .env
 
-db/buses.db
-db/drivers.db
+*.db
 
 /refs
 request.rest

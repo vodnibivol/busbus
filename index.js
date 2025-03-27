@@ -6,7 +6,9 @@ import bodyParser from 'body-parser';
 import 'dotenv/config';
 import Datastore from '@seald-io/nedb';
 import path from 'path';
+import cookieParser from 'cookie-parser';
 
+import { identifyUser, collectData } from './js/collectData.js'
 import Store from './js/Store_node.js';
 const dstore = new Store();
 
@@ -15,12 +17,14 @@ const app = express();
 const PORT = process.env.PORT || 2200;
 const API_KEY = process.env.API_KEY;
 
-app.listen(PORT, () => console.log('http://localhost:' + PORT + '/'));
+app.listen(PORT, () => console.log('server running on: http://localhost:' + PORT + '/'));
 
 app.use(compression());
 app.use('/public/', express.static('public'));
 app.set('view engine', 'ejs');
+app.set('trust proxy', true); // NOTE: necessary?
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // --- DATA
@@ -35,7 +39,7 @@ const DB = {
 
 // --- ROUTES
 
-app.get('/', (req, res) => {
+app.get('/', identifyUser, (req, res) => {
   return res.render('iskanje');
 });
 
@@ -102,7 +106,7 @@ app.get('/log', async (req, res) => {
 
 // --- API
 
-app.get('/api/arrival', async (req, res) => {
+app.get('/api/arrival', collectData, async (req, res) => {
   const data = await fetchLPP('https://data.lpp.si/api/station/arrival?station-code=' + req.query.station_code, 1000);
 
   const dataFormatted = data.data.arrivals.reduce((acc, cur) => {
