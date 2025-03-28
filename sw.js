@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cache-v1.17';
+const CACHE_NAME = 'cache-v1.18';
 
 // install
 self.addEventListener('install', (event) => {

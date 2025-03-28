@@ -3,6 +3,7 @@ import DB from './db.js';
 import { users } from './userscripts.js';
 // import DeviceDetector from 'node-device-detector';
 // import ClientHints from 'node-device-detector/client-hints.js';
+import { UAParser } from 'ua-parser-js';
 import fs from 'fs';
 
 const STATION_DATA = JSON.parse(fs.readFileSync('db/stations.json'));
@@ -50,11 +51,15 @@ export function parseUserData(dbEntry) {
   //     maxUserAgentSize: 500,
   //   }).detect(dbEntry.userAgent);
 
+  const uaData = UAParser(dbEntry.userAgent);
+
   return {
-    userId: dbEntry.userId,
-    ip: dbEntry.ip,
-    stopHistory: countStops(dbEntry.stopHistory),
-    userAgent: dbEntry.userAgent,
+    userName: users.find((u) => u.ids.includes(dbEntry.userId))?.name || null,
+    userId: dbEntry.userId || null,
+    ip: dbEntry.ip || null,
+    stopHistory: JSON.stringify(countStops(dbEntry.stopHistory) || null),
+    // userAgent: dbEntry.userAgent || null,
+    userAgent: uaData ? `${uaData.device.vendor} ${uaData.device.model} (${uaData.browser.name})` : null,
     // userData: userData && {
     //   os: `${userData.os.name} v${userData.os.version}`,
     //   client: `${userData.client.name} v${userData.client.version}`,

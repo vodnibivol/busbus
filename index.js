@@ -105,9 +105,9 @@ app.get('/log/users', async (req, res) => {
 
   const data = db_user_data.map((user) => parseUserData(user));
 
-  // res.render('log-users', { data: { users: db_user_data } });
+  res.render('log-users', { data: { users: data } });
   // res.json(data);
-  res.send('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
+  // res.send('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
 });
 
 // --- API

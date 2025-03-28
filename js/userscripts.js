@@ -13,8 +13,9 @@ export const users = [
   {
     name: 'filip',
     ids: [
-      '7893693e-2e04-477f-afbb-e1460443bbe6', // mac
+      '7893693e-2e04-477f-afbb-e1460443bbe6', // mac chrome
       '5290aa95-43cb-43ca-8fbc-ec6e5e2b0c98', // iphone?
+      'a756086e-53c6-446a-a595-ed53e5328cb1', // mac safari
     ],
     script: function () {
       console.log('filip script');
