@@ -26,10 +26,7 @@
       const log_data = <%- JSON.stringify(data) %>;
       const grid1 = new gridjs.Grid({
         columns: ['userId', 'ip', 'stopHistory', 'userAgent'],
-        data: log_data.users.map(u => {
-          u.stopHistory = u.stopHistory.split(',').join(', ');
-          return u;
-        })
+        data: log_data.users
       }).render(document.getElementById('wrapper1'));
     </script>
   </body>

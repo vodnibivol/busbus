@@ -4,11 +4,10 @@ import fs from 'fs';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import 'dotenv/config';
-// import Datastore from '@seald-io/nedb';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 
-import { identifyUser, collectData } from './js/collectData.js';
+import { identifyUser, collectData, parseUserData } from './js/collectData.js';
 import Store from './js/Store_node.js';
 import DB from './js/db.js';
 const dstore = new Store();
@@ -32,12 +31,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const ROUTES = JSON.parse(fs.readFileSync('db/routes.json'));
 const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
-
-// const DB = {
-//   drivers: new Datastore({ filename: 'db/drivers.db', autoload: true, timestampData: true }),
-//   buses: new Datastore({ filename: 'db/buses.db', autoload: true, timestampData: true }),
-//   users: new Datastore({ filename: 'db/users.db', autoload: true, timestampData: true }),
-// };
 
 // --- ROUTES
 
@@ -109,7 +102,11 @@ app.get('/log/objave', async (req, res) => {
 app.get('/log/users', async (req, res) => {
   const db_user_data = await DB.users.findAsync({});
 
-  res.render('log-users', { data: { users: db_user_data } });
+  const data = db_user_data.map((user) => parseUserData(user));
+
+  // res.render('log-users', { data: { users: db_user_data } });
+  // res.json(data);
+  res.send('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
 });
 
 // --- API
@@ -208,7 +205,7 @@ app.get('/sw.js', (req, res) => {
 // --- ERRORS
 
 app.get('/busbus', (req, res) => {
-  if (/localhost|192\.168/.test(req.hostname)) res.redirect('/');
+  if (/localhost|192|172/.test(req.hostname)) res.redirect('/');
 });
 
 app.use((req, res, next) => {
