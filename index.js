@@ -35,7 +35,8 @@ const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
 // --- ROUTES
 
 app.get('/', identifyUser, (req, res) => {
-  return res.render('iskanje');
+  const { userscript } = req;
+  return res.render('iskanje', { userscript });
 });
 
 app.get('/test', (req, res) => {

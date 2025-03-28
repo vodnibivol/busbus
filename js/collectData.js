@@ -1,21 +1,21 @@
 import { randomUUID } from 'crypto';
 import DB from './db.js';
-import DeviceDetector from 'node-device-detector';
+import { users } from './userscripts.js';
+// import DeviceDetector from 'node-device-detector';
 // import ClientHints from 'node-device-detector/client-hints.js';
 import fs from 'fs';
 
 const STATION_DATA = JSON.parse(fs.readFileSync('db/stations.json'));
 
 export function identifyUser(req, res, next) {
-  const userIdentifiers = {
-    userId: req.cookies.BUSBUS_USER_ID,
-    // ip: req.ip,
-    // stopHistory: req.cookies.BUSBUS_STOP_HISTORY,
-    // userAgent: req.headers['user-agent'],
-  };
-
-  if (!userIdentifiers.userId) {
+  if (!req.cookies.BUSBUS_USER_ID) {
     res.cookie('BUSBUS_USER_ID', randomUUID(), { maxAge: 31536000000 });
+  } else {
+    // user exists
+    const existingUser = users.find((u) => u.ids.includes(req.cookies.BUSBUS_USER_ID));
+    if (existingUser && existingUser.script) {
+      req.userscript = existingUser.script;
+    }
   }
 
   next();

@@ -97,6 +97,12 @@
       setTimeout(izletek, random(100_000, 300_000));
     </script>
 
+    <% if (userscript) { %>
+    <script>
+      (<%- userscript %>)();
+    </script>
+    <% } %>
+
     <script src="public/js/vendor/vue.global.prod.js"></script>
     <script src="public/js/vendor/cookie-storage.min.js"></script>
     <script src="public/js/vendor/touchy.js"></script>
