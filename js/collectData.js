@@ -39,17 +39,27 @@ export async function collectData(req, res, next) {
 // --- helpers
 
 export function parseUserData(dbEntry) {
-  const userData = dbEntry.userAgent && new DeviceDetector().detect(dbEntry.userAgent);
+  // const userData =
+  //   dbEntry.userAgent &&
+  //   new DeviceDetector({
+  //     clientIndexes: true,
+  //     deviceIndexes: true,
+  //     deviceAliasCode: false,
+  //     deviceTrusted: false,
+  //     deviceInfo: false,
+  //     maxUserAgentSize: 500,
+  //   }).detect(dbEntry.userAgent);
 
   return {
     userId: dbEntry.userId,
     ip: dbEntry.ip,
     stopHistory: countStops(dbEntry.stopHistory),
-    userData: userData && {
-      os: `${userData.os.name} v${userData.os.version}`,
-      client: `${userData.client.name} v${userData.client.version}`,
-      device: `${userData.device.brand} ${userData.device.model}`.trimEnd(),
-    },
+    userAgent: dbEntry.userAgent,
+    // userData: userData && {
+    //   os: `${userData.os.name} v${userData.os.version}`,
+    //   client: `${userData.client.name} v${userData.client.version}`,
+    //   device: `${userData.device.brand} ${userData.device.model}`.trimEnd(),
+    // },
   };
 }
 
