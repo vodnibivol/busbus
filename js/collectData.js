@@ -27,6 +27,7 @@ export function collectData(req, res, next) {
     ip: req.ip,
     stopHistory: req.cookies.BUSBUS_STOP_HISTORY,
     userAgent: req.headers['user-agent'],
+    resolution: req.cookies.SCREEN_RESOLUTION,
     APN: null,
   };
 
@@ -59,6 +60,8 @@ export function parseUserData(dbEntry) {
     userAgentData: uaData
       ? `${uaData.device.model} (${uaData.os.name} ${uaData.os.version}; ${uaData.browser.name})`
       : null, // ${uaData.device.vendor}
+    APN: dbEntry.APN || null,
+    resolution: dbEntry.resolution || null,
   };
 
   return data;
