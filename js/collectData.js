@@ -22,6 +22,8 @@ export function identifyUser(req, res, next) {
 }
 
 export function collectData(req, res, next) {
+  if (!req.query.log) return next();
+
   const userIdentifiers = {
     userId: req.cookies.BUSBUS_USER_ID,
     ip: req.ip,

@@ -113,10 +113,7 @@
       $('form').addEventListener('submit', submitForm);
       $('input#bus_name').oninput = (e) => {
         const isValid = $(`datalist option[value="${e.target.value}"]`);
-        // if (!isValid) {
         $('button.submit').disabled = isValid ? '' : '1';
-        console.log(isValid);
-        // }
       };
 
       function submitForm(e) {

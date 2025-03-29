@@ -88,22 +88,22 @@ const config = {
 
       const arrivalsDisplayed = !this.loading && this.arrivals.length;
       if (arrivalsDisplayed && this.dataExpired && this.autoRefresh) {
-        this.getData();
+        this.getData(false);
       }
     },
 
     selectStop(stopId) {
       this.selectedStop = this.stopOptions.find((s) => s.ref_id === stopId);
       this.stopHistory = [this.selectedStop.ref_id, ...this.stopHistory];
-      this.getData();
+      this.getData(true);
     },
 
-    async getData() {
+    async getData(log = false) {
       this.loading = true;
       this.error = false;
 
       try {
-        const res = await fetch('api/arrival?station_code=' + this.selectedStop.ref_id);
+        const res = await fetch('api/arrival?station_code=' + this.selectedStop.ref_id + (log ? '&log=1' : ''));
         const data = await res.json();
         console.log(data);
         this.arrivals = data.sort((route1, route2) => {
@@ -160,10 +160,7 @@ const config = {
     }
 
     // save screen dimensions
-    cookieStorage.setItem(
-      'SCREEN_RESOLUTION',
-      `${window.screen.width}x${window.screen.height}`
-    );
+    cookieStorage.setItem('SCREEN_RESOLUTION', `${window.screen.width}x${window.screen.height}`);
   },
 
   watch: {
