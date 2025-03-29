@@ -11,7 +11,7 @@ export const users = [
       'f5078f7c-fcdf-4a1c-9a8a-7c4e969d8024', // iphone localhost (pwa?)
     ],
     script: function () {
-      document.querySelector('#input .reset').style.background = 'lightpink';
+      document.querySelector('#input .reset').style.background = 'lightblue';
     },
   },
   // actual data on strojcek.ftp.sh
@@ -20,7 +20,7 @@ export const users = [
     name: 'lara?',
     ids: ['35da7902-93a2-4b82-b5f3-c518f392eb2f'],
     script: function () {
-      document.querySelector('#input .reset').style.background = 'lightblue';
+      document.querySelector('#input .reset').style.background = 'lightpink';
     },
   },
   {
@@ -32,7 +32,7 @@ export const users = [
       '7893693e-2e04-477f-afbb-e1460443bbe6', // mac chrome
     ],
     script: function () {
-      document.querySelector('#input .reset').style.background = 'lightpink';
+      document.querySelector('#input .reset').style.background = 'lightblue';
     },
   },
 ];
