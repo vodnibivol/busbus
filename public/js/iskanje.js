@@ -158,6 +158,12 @@ const config = {
     if (cookieStorage.getItem('BUSBUS_STOP_HISTORY')) {
       this.stopHistory = cookieStorage.getItem('BUSBUS_STOP_HISTORY').split(',');
     }
+
+    // save screen dimensions
+    cookieStorage.setItem(
+      'SCREEN_RESOLUTION',
+      `${window.screen.width}x${window.screen.height}`
+    );
   },
 
   watch: {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cache-v1.18';
+const CACHE_NAME = 'cache-v1.19';
 
 // install
 self.addEventListener('install', (event) => {
@@ -7,7 +7,7 @@ self.addEventListener('install', (event) => {
       .open(CACHE_NAME)
       .then((cache) =>
         cache.addAll([
-          '/',
+          // '/', // NOTE: NE!! zaradi server-side rendering
           // '/bus', // NOTE: NE!! zaradi server-side rendering
           // '/zemljevid', // NOTE: NE!! zaradi server-side rendering
           '/public/js/stops.js',

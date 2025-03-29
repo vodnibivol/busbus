@@ -1,10 +1,9 @@
 import { randomUUID } from 'crypto';
 import DB from './db.js';
 import { users } from './userscripts.js';
-// import DeviceDetector from 'node-device-detector';
-// import ClientHints from 'node-device-detector/client-hints.js';
 import { UAParser } from 'ua-parser-js';
 import fs from 'fs';
+import dns from 'dns';
 
 const STATION_DATA = JSON.parse(fs.readFileSync('db/stations.json'));
 
@@ -22,17 +21,26 @@ export function identifyUser(req, res, next) {
   next();
 }
 
-export async function collectData(req, res, next) {
+export function collectData(req, res, next) {
   const userIdentifiers = {
     userId: req.cookies.BUSBUS_USER_ID,
     ip: req.ip,
     stopHistory: req.cookies.BUSBUS_STOP_HISTORY,
     userAgent: req.headers['user-agent'],
+    APN: null,
   };
 
-  if (userIdentifiers.userId) {
-    await DB.users.updateAsync({ userId: userIdentifiers.userId }, userIdentifiers, { upsert: true });
-  }
+  dns.reverse(req.ip, (err, domains) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    if (domains.length) userIdentifiers.APN = domains.join('+');
+    if (userIdentifiers.userId) {
+      DB.users.update({ userId: userIdentifiers.userId }, userIdentifiers, { upsert: true });
+    }
+  });
 
   next();
 }
@@ -40,32 +48,20 @@ export async function collectData(req, res, next) {
 // --- helpers
 
 export function parseUserData(dbEntry) {
-  // const userData =
-  //   dbEntry.userAgent &&
-  //   new DeviceDetector({
-  //     clientIndexes: true,
-  //     deviceIndexes: true,
-  //     deviceAliasCode: false,
-  //     deviceTrusted: false,
-  //     deviceInfo: false,
-  //     maxUserAgentSize: 500,
-  //   }).detect(dbEntry.userAgent);
-
   const uaData = UAParser(dbEntry.userAgent);
 
-  return {
+  const data = {
     userName: users.find((u) => u.ids.includes(dbEntry.userId))?.name || null,
     userId: dbEntry.userId || null,
     ip: dbEntry.ip || null,
     stopHistory: JSON.stringify(countStops(dbEntry.stopHistory) || null),
     // userAgent: dbEntry.userAgent || null,
-    userAgent: uaData ? `${uaData.device.vendor} ${uaData.device.model} (${uaData.browser.name})` : null,
-    // userData: userData && {
-    //   os: `${userData.os.name} v${userData.os.version}`,
-    //   client: `${userData.client.name} v${userData.client.version}`,
-    //   device: `${userData.device.brand} ${userData.device.model}`.trimEnd(),
-    // },
+    userAgentData: uaData
+      ? `${uaData.device.model} (${uaData.os.name} ${uaData.os.version}; ${uaData.browser.name})`
+      : null, // ${uaData.device.vendor}
   };
+
+  return data;
 }
 
 function countStops(stopHistory) {

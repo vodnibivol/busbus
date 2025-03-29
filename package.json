@@ -19,7 +19,6 @@
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
-    "node-device-detector": "^2.2.0",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.7",
     "npm-check-updates": "^17.1.6",
