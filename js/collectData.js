@@ -33,6 +33,13 @@ export function collectData(req, res, next) {
     APN: null,
   };
 
+  const requestData = {
+    userId: userIdentifiers.userId,
+    ip: userIdentifiers.ip,
+    stationCode: req.query.station_code,
+    timestamp: new Date().valueOf(),
+  };
+
   dns.reverse(req.ip, (err, domains) => {
     if (err) {
       console.error(err);
@@ -41,6 +48,7 @@ export function collectData(req, res, next) {
 
     if (domains.length) userIdentifiers.APN = domains.join('+');
     if (userIdentifiers.userId) {
+      DB.requests.insert(requestData);
       DB.users.update({ userId: userIdentifiers.userId }, userIdentifiers, { upsert: true });
     }
   });
