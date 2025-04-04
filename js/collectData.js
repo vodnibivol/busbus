@@ -4,8 +4,16 @@ import { users } from './userscripts.js';
 import { UAParser } from 'ua-parser-js';
 import fs from 'fs';
 import dns from 'dns';
+import TimeAgo from 'javascript-time-ago';
+
+// --- DATA
 
 const STATION_DATA = JSON.parse(fs.readFileSync('db/stations.json'));
+import en from 'javascript-time-ago/locale/en';
+TimeAgo.addDefaultLocale(en);
+const timeAgo = new TimeAgo('sl-SI');
+
+// --- FUNCTIONS
 
 export function identifyUser(req, res, next) {
   if (!req.cookies.BUSBUS_USER_ID) {
@@ -43,7 +51,7 @@ export function collectData(req, res, next) {
   dns.reverse(req.ip, (err, domains) => {
     if (err) {
       console.error(err);
-      return;
+      // return;
     }
 
     if (domains.length) userIdentifiers.APN = domains.join('+');
@@ -70,11 +78,50 @@ export function parseUserData(dbEntry) {
     userAgentData: uaData
       ? `${uaData.device.model} (${uaData.os.name} ${uaData.os.version}; ${uaData.browser.name})`
       : null, // ${uaData.device.vendor}
-    APN: dbEntry.APN || null,
+    apn: dbEntry.APN || null,
     resolution: dbEntry.resolution || null,
   };
 
   return data;
+}
+
+export function parseReqData(data) {
+  const instances = {};
+
+  for (let req of data) {
+    const instanceId = req.userId;
+    instances[instanceId] = instances[instanceId] || { ips: [], stations: [], lastRequest: [] };
+    instances[instanceId].ips.push(req.ip);
+    instances[instanceId].stations.push(req.stationCode);
+    instances[instanceId].lastRequest.push(req.timestamp);
+  }
+  
+  
+  for (let instanceId in instances) {
+    instances[instanceId].ips = [...new Set(instances[instanceId].ips)]; // remove duplicates
+    instances[instanceId].stations = countStops(instances[instanceId].stations.join(','));
+    instances[instanceId].lastRequest = Math.max(...instances[instanceId].lastRequest);
+  }
+
+  let text = '';
+  for (let instanceId in instances) {
+    text += instanceId;
+    text += '\n\n';
+
+    text += instances[instanceId].ips.join('\n');
+    text += '\n\n';
+
+    text += Object.entries(instances[instanceId].stations)
+      .sort((a, b) => b[1] - a[1])
+      .map((e) => `${e[1]}x ${e[0]}`)
+      .join('\n');
+    text += '\n\n';
+
+    text += timeAgo.format(instances[instanceId].lastRequest);
+    text += '\n\n------------------------------------\n\n';
+  }
+
+  return text;
 }
 
 function countStops(stopHistory) {
