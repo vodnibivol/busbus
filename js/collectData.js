@@ -1,14 +1,16 @@
 import { randomUUID } from 'crypto';
-import DB from './db.js';
-import { users } from './userscripts.js';
 import { UAParser } from 'ua-parser-js';
 import fs from 'fs';
 import dns from 'dns';
 import TimeAgo from 'javascript-time-ago';
 
+import DB from './db.js';
+import { users } from './userscripts.js';
+
 // --- DATA
 
 const STATION_DATA = JSON.parse(fs.readFileSync('db/stations.json'));
+
 import en from 'javascript-time-ago/locale/en';
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('sl-SI');
@@ -67,13 +69,14 @@ export function collectData(req, res, next) {
 // --- helpers
 
 export function parseUserData(dbEntry) {
+  // used in "/log/users"
   const uaData = UAParser(dbEntry.userAgent);
 
   const data = {
     userName: users.find((u) => u.ids.includes(dbEntry.userId))?.name || null,
     userId: dbEntry.userId || null,
     ip: dbEntry.ip || null,
-    stopHistory: JSON.stringify(countStops(dbEntry.stopHistory) || null),
+    stopHistory: JSON.stringify(countStops(dbEntry.stopHistory?.split(',')) || null),
     // userAgent: dbEntry.userAgent || null,
     userAgentData: uaData
       ? `${uaData.device.model} (${uaData.os.name} ${uaData.os.version}; ${uaData.browser.name})`
@@ -86,52 +89,96 @@ export function parseUserData(dbEntry) {
 }
 
 export function parseReqData(data) {
-  const instances = {};
+  const groups = groupRequests(data, ['userId', 'ip']).map((requests, index) => {
+    const existingUser = users.find((u) => u.ids.includes(requests[0].userId));
 
-  for (let req of data) {
-    const instanceId = req.userId;
-    instances[instanceId] = instances[instanceId] || { ips: [], stations: [], lastRequest: [] };
-    instances[instanceId].ips.push(req.ip);
-    instances[instanceId].stations.push(req.stationCode);
-    instances[instanceId].lastRequest.push(req.timestamp);
-  }
-  
-  
-  for (let instanceId in instances) {
-    instances[instanceId].ips = [...new Set(instances[instanceId].ips)]; // remove duplicates
-    instances[instanceId].stations = countStops(instances[instanceId].stations.join(','));
-    instances[instanceId].lastRequest = Math.max(...instances[instanceId].lastRequest);
-  }
+    return {
+      user: existingUser?.name || 'USER-' + (index + 1),
+      instances: [...new Set(requests.map((r) => r.userId))],
+      ips: [...new Set(requests.map((r) => r.ip))],
+      stations: countStops(requests.map((r) => r.stationCode)),
+      lastRequest: Math.max(...requests.map((r) => r.timestamp)),
+    };
+  });
 
-  let text = '';
-  for (let instanceId in instances) {
-    text += instanceId;
-    text += '\n\n';
+  return groups
+    .map((g) => {
+      let text = '';
+      text += g.user;
+      text += '\n\n';
 
-    text += instances[instanceId].ips.join('\n');
-    text += '\n\n';
+      text += g.instances.join('\n');
+      text += '\n\n';
 
-    text += Object.entries(instances[instanceId].stations)
-      .sort((a, b) => b[1] - a[1])
-      .map((e) => `${e[1]}x ${e[0]}`)
-      .join('\n');
-    text += '\n\n';
+      text += g.ips.join('\n');
+      text += '\n\n';
 
-    text += timeAgo.format(instances[instanceId].lastRequest);
-    text += '\n\n------------------------------------\n\n';
-  }
+      text += Object.entries(g.stations)
+        .sort((a, b) => b[1] - a[1])
+        .map((e) => `${e[1]}x ${e[0]}`)
+        .join('\n');
+      text += '\n\n';
 
-  return text;
+      text += timeAgo.format(g.lastRequest);
+      text += '\n\n------------------------------------\n\n';
+      return text;
+    })
+    .join('');
 }
 
-function countStops(stopHistory) {
-  // stopHistory: "802011,802011,802011,..."
-  const stops = stopHistory?.split(',').reduce((acc, cur) => {
+function countStops(stopHistory = []) {
+  const stops = stopHistory.reduce((acc, cur) => {
     const stopName = STATION_DATA.find((s) => s.ref_id === cur)?.name;
-    acc[stopName] = acc[stopName] || 0;
-    acc[stopName]++;
+    if (!stopName) return acc;
+
+    acc[stopName] = (acc[stopName] || 0) + 1;
     return acc;
   }, {});
 
   return stops;
+}
+
+// --- request grouping
+
+class UnionFind {
+  constructor() {
+    this.parent = new Map();
+  }
+
+  find(x) {
+    if (!this.parent.has(x)) this.parent.set(x, x);
+    if (this.parent.get(x) !== x) {
+      this.parent.set(x, this.find(this.parent.get(x)));
+    }
+    return this.parent.get(x);
+  }
+
+  union(x, y) {
+    const rootX = this.find(x);
+    const rootY = this.find(y);
+    if (rootX !== rootY) this.parent.set(rootY, rootX);
+  }
+}
+
+function groupRequests(requests, keysToCompare = ['userId', 'ip']) {
+  const uf = new UnionFind();
+
+  // Step 1: Union all values that appear together in the same request
+  for (const req of requests) {
+    for (let i = 0; i < keysToCompare.length; i++) {
+      for (let j = i + 1; j < keysToCompare.length; j++) {
+        uf.union(req[keysToCompare[i]], req[keysToCompare[j]]);
+      }
+    }
+  }
+
+  // Step 2: Assign each request to a group ID based on any of its values
+  const groups = new Map();
+  for (const req of requests) {
+    const groupKey = uf.find(req[keysToCompare[0]]); // You could also hash all keys
+    if (!groups.has(groupKey)) groups.set(groupKey, []);
+    groups.get(groupKey).push(req);
+  }
+
+  return [...groups.values()];
 }

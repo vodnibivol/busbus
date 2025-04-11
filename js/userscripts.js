@@ -17,7 +17,7 @@ export const users = [
   // actual data on strojcek.ftp.sh
   { name: 'jakob', ids: ['3b049f92-a2c7-48e4-ab21-b6d5f9d4cafe'] },
   {
-    name: 'lara?',
+    name: 'lara',
     ids: ['35da7902-93a2-4b82-b5f3-c518f392eb2f'],
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightpink';
@@ -34,5 +34,11 @@ export const users = [
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightblue';
     },
+  },
+  {
+    name: 'ana',
+    ids: [
+      '6a4fb73c-bacd-4ff5-87fb-a0061af05534',
+    ],
   },
 ];
