@@ -35,7 +35,8 @@ const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
 // --- ROUTES
 
 app.get('/', identifyUser, (req, res) => {
-  const { userscript } = req;
+  const { userscript, stopHistory } = req;
+  // if (stopHistory) res.cookie('BUSBUS_STOP_HISTORY', stopHistory);
   return res.render('iskanje', { userscript });
 });
 
@@ -101,11 +102,11 @@ app.get('/log/objave', async (req, res) => {
 });
 
 app.get('/log/users', async (req, res) => {
-    const db_users_data = await DB.users.findAsync({});
-    const data = (db_users_data.map(d => parseUserData(d)));
-    res.render('log-users', { data: { users: data } });
-    // res.json(data);
-    // res.send('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
+  const db_users_data = await DB.users.findAsync({});
+  const data = db_users_data.map((d) => parseUserData(d));
+  res.render('log-users', { data: { users: data } });
+  // res.json(data);
+  // res.send('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
 });
 
 app.get('/log/requests', async (req, res) => {

@@ -12,7 +12,6 @@ export const users = [
     ],
     script: function () {
       // document.querySelector('#input .reset').style.background = 'lightgreen';
-      console.log('test userscripts');
 
       // const isMorning = new Date().getHours() < 12;
       // if (isMorning) {
@@ -39,7 +38,6 @@ export const users = [
     ],
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightblue';
-      openModal('Dobro jutro, draga moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
     },
   },
   {
