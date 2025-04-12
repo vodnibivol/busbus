@@ -39,7 +39,7 @@ export const users = [
     ],
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightblue';
-      console.log('test userscript filip');
+      openModal('dobro jutroo');
     },
   },
   {
