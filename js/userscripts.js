@@ -39,7 +39,7 @@ export const users = [
     ],
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightblue';
-      openModal('dobro jutroo');
+      openModal('Dobro jutro, draga moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
     },
   },
   {
