@@ -17,11 +17,13 @@ const timeAgo = new TimeAgo('sl-SI');
 
 // --- FUNCTIONS
 
-export function identifyUser(req, res, next) {
+export async function identifyUser(req, res, next) {
   if (!req.cookies.BUSBUS_USER_ID) {
     res.cookie('BUSBUS_USER_ID', randomUUID(), { maxAge: 31536000000 });
   } else {
     // user exists
+    const { users } = await import(`./userscripts.js?update=${Date.now()}`);
+
     const existingUser = users.find((u) => u.ids.includes(req.cookies.BUSBUS_USER_ID));
     if (existingUser && existingUser.script) {
       req.userscript = existingUser.script;
