@@ -1,6 +1,6 @@
-// manually created
+// NOTE: skripti, ki se injectajo uporabnikom + njihova imena
 
-export const users = [
+export const userscripts = [
   {
     name: 'filip_localhost',
     ids: [
@@ -12,10 +12,9 @@ export const users = [
     ],
     script: function () {
       // document.querySelector('#input .reset').style.background = 'lightgreen';
-
       // const isMorning = new Date().getHours() < 12;
       // if (isMorning) {
-      //   openModal('Dobro jutro, draga moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
+      //   openModal('Dobro jutro, moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
       // }
     },
   },
@@ -26,6 +25,11 @@ export const users = [
     ids: ['35da7902-93a2-4b82-b5f3-c518f392eb2f'],
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightpink';
+
+      const isMorning = new Date().getHours() < 12;
+      if (isMorning) {
+        openModal('Dobro jutro, moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
+      }
     },
   },
   {

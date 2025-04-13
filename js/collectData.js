@@ -1,32 +1,39 @@
 import { randomUUID } from 'crypto';
-import { UAParser } from 'ua-parser-js';
+// import { UAParser } from 'ua-parser-js';
 import fs from 'fs';
 import dns from 'dns';
 import TimeAgo from 'javascript-time-ago';
 
 import DB from './db.js';
-import { users as USERS } from './userscripts.js';
-
-// --- DATA
-
+import { userscripts } from './userscripts.js';
 const STATION_DATA = JSON.parse(fs.readFileSync('db/stations.json'));
 
 import en from 'javascript-time-ago/locale/en';
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('sl-SI');
 
+const INSTANCE_ID_COOKIE = 'BUSBUS_USER_ID';
+
 // --- FUNCTIONS
 
 export async function identifyUser(req, res, next) {
-  if (!req.cookies.BUSBUS_USER_ID) {
-    res.cookie('BUSBUS_USER_ID', randomUUID(), { maxAge: 31536000000 });
+  if (!req.cookies[INSTANCE_ID_COOKIE]) {
+    // create new instance id for user tracking
+    res.cookie(INSTANCE_ID_COOKIE, randomUUID(), { maxAge: 31536000000 });
   } else {
-    // user exists
-    const { users } = await import(`./userscripts.js?update=${Date.now()}`);
+    // user exists => import custom userscript; TODO: sync history
+    const { userscripts } = await import(`./userscripts.js?update=${Date.now()}`);
 
-    const existingUser = users.find((u) => u.ids.includes(req.cookies.BUSBUS_USER_ID));
+    const existingUser = userscripts.find((u) => u.ids.includes(req.cookies[INSTANCE_ID_COOKIE]));
     if (existingUser && existingUser.script) {
       req.userscript = existingUser.script;
+    }
+
+    // history
+    const users = await getUsers();
+    const user = users.find((u) => u.instances.includes(req.cookies[INSTANCE_ID_COOKIE]));
+    if (user) {
+      res.cookie('BUSBUS_STOP_HISTORY', user.stationHistory, { maxAge: 31536000000 });
     }
   }
 
@@ -37,7 +44,7 @@ export function collectData(req, res, next) {
   if (!req.query.log) return next();
 
   const userIdentifiers = {
-    instanceId: req.cookies.BUSBUS_USER_ID,
+    instanceId: req.cookies[INSTANCE_ID_COOKIE],
     ip: req.ip,
     stopHistory: req.cookies.BUSBUS_STOP_HISTORY,
     userAgent: req.headers['user-agent'],
@@ -68,45 +75,33 @@ export function collectData(req, res, next) {
   next();
 }
 
-export async function getUserData() {
-  // used in "/log/users"
-  const users = await DB.users.findAsync({});
+// export async function getUserData() {
+//   // used in "/log/users"
+//   const users = await DB.users.findAsync({});
 
-  return users.map((user) => {
-    const uaData = UAParser(user.userAgent);
+//   return users.map((user) => {
+//     const uaData = UAParser(user.userAgent);
 
-    const data = {
-      userName: USERS.find((u) => u.ids.includes(user.instanceId))?.name || null,
-      instanceId: user.instanceId || null,
-      ip: user.ip || null,
-      stopHistory: JSON.stringify(countStops(user.stopHistory?.split(',')) || null),
-      // userAgent: user.userAgent || null,
-      userAgentData: uaData
-        ? `${uaData.device.model} (${uaData.os.name} ${uaData.os.version}; ${uaData.browser.name})`
-        : null, // ${uaData.device.vendor}
-      apn: user.APN || null,
-      resolution: user.resolution || null,
-    };
+//     const data = {
+//       userName: userscripts.find((u) => u.ids.includes(user.instanceId))?.name || null,
+//       instanceId: user.instanceId || null,
+//       ip: user.ip || null,
+//       stopHistory: JSON.stringify(countStops(user.stopHistory?.split(',')) || null),
+//       // userAgent: user.userAgent || null,
+//       userAgentData: uaData
+//         ? `${uaData.device.model} (${uaData.os.name} ${uaData.os.version}; ${uaData.browser.name})`
+//         : null, // ${uaData.device.vendor}
+//       apn: user.APN || null,
+//       resolution: user.resolution || null,
+//     };
 
-    return data;
-  });
-}
+//     return data;
+//   });
+// }
 
 export async function getRequestData() {
   // used in "/log/requests"
-  const data = await DB.requests.findAsync({});
-
-  const users = groupObjectsByValue(data, ['instanceId', 'ip']).map((requests, index) => {
-    const existingUser = USERS.find((u) => u.ids.includes(requests[0].instanceId));
-
-    return {
-      name: existingUser?.name || 'USER-' + (index + 1),
-      instances: [...new Set(requests.map((r) => r.instanceId))],
-      ips: [...new Set(requests.map((r) => r.ip))],
-      stations: countStops(requests.map((r) => r.stationCode)),
-      lastRequest: Math.max(...requests.map((r) => r.timestamp)),
-    };
-  });
+  const users = await getUsers();
 
   return users
     .map((user) => {
@@ -120,7 +115,7 @@ export async function getRequestData() {
       text += user.ips.join('\n');
       text += '\n\n';
 
-      text += Object.entries(user.stations)
+      text += Object.entries(user.stationHistoryCounted)
         .sort((a, b) => b[1] - a[1])
         .map((e) => `${e[1]}x ${e[0]}`)
         .join('\n');
@@ -146,19 +141,23 @@ function countStops(stopHistory = []) {
 
 // --- request grouping
 
-// function getUsers() {
-//   const groups = groupObjectsByValue(data, ['instanceId', 'ip']).map((requests, index) => {
-//     const existingUser = users.find((u) => u.ids.includes(requests[0].instanceId));
+async function getUsers() {
+  const data = await DB.requests.findAsync({});
+  const users = groupObjectsByValue(data, ['instanceId', 'ip']).map((requests, index) => {
+    const existingUser = userscripts.find((u) => u.ids.includes(requests[0].instanceId));
 
-//     return {
-//       user: existingUser?.name || 'USER-' + (index + 1),
-//       instances: [...new Set(requests.map((r) => r.instanceId))],
-//       ips: [...new Set(requests.map((r) => r.ip))],
-//       stations: countStops(requests.map((r) => r.stationCode)),
-//       lastRequest: Math.max(...requests.map((r) => r.timestamp)),
-//     };
-//   });
-// }
+    return {
+      name: existingUser?.name || 'USER-' + (index + 1),
+      instances: [...new Set(requests.map((r) => r.instanceId))],
+      ips: [...new Set(requests.map((r) => r.ip))],
+      stationHistory: requests.map((r) => r.stationCode).join(','),
+      stationHistoryCounted: countStops(requests.map((r) => r.stationCode)),
+      lastRequest: Math.max(...requests.map((r) => r.timestamp)),
+    };
+  });
+
+  return users;
+}
 
 function groupObjectsByValue(requests, keysToCompare) {
   const uf = new UnionFind();

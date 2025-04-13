@@ -7,7 +7,7 @@ import 'dotenv/config';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 
-import { identifyUser, collectData, getUserData, getRequestData } from './js/collectData.js';
+import { identifyUser, collectData, getRequestData } from './js/collectData.js';
 import Store from './js/Store_node.js';
 import DB from './js/db.js';
 const dstore = new Store();
@@ -35,8 +35,7 @@ const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
 // --- ROUTES
 
 app.get('/', identifyUser, (req, res) => {
-  const { userscript, stopHistory } = req;
-  // if (stopHistory) res.cookie('BUSBUS_STOP_HISTORY', stopHistory);
+  const { userscript } = req;
   return res.render('iskanje', { userscript });
 });
 
@@ -101,12 +100,10 @@ app.get('/log/objave', async (req, res) => {
   res.render('log-objave', { data: { buses: db_bus_data, drivers: db_driver_data } });
 });
 
-app.get('/log/users', async (req, res) => {
-  const data = await getUserData();
-  res.render('log-users', { data: { users: data } });
-  // res.json(data);
-  // res.send('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
-});
+// app.get('/log/users', async (req, res) => {
+//   const data = await getUserData();
+//   res.render('log-users', { data: { users: data } });
+// });
 
 app.get('/log/requests', async (req, res) => {
   const data = await getRequestData();
