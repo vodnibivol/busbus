@@ -7,7 +7,7 @@ import 'dotenv/config';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 
-import { identifyUser, collectData, parseUserData, parseReqData } from './js/collectData.js';
+import { identifyUser, collectData, getUserData, getRequestData } from './js/collectData.js';
 import Store from './js/Store_node.js';
 import DB from './js/db.js';
 const dstore = new Store();
@@ -22,7 +22,7 @@ app.listen(PORT, () => console.log('server running on: http://localhost:' + PORT
 app.use(compression());
 app.use('/public/', express.static('public'));
 app.set('view engine', 'ejs');
-app.set('trust proxy', true); // NOTE: necessary?
+app.set('trust proxy', true);
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -102,16 +102,14 @@ app.get('/log/objave', async (req, res) => {
 });
 
 app.get('/log/users', async (req, res) => {
-  const db_users_data = await DB.users.findAsync({});
-  const data = db_users_data.map((d) => parseUserData(d));
+  const data = await getUserData();
   res.render('log-users', { data: { users: data } });
   // res.json(data);
   // res.send('<pre>' + JSON.stringify(data, null, 2) + '</pre>');
 });
 
 app.get('/log/requests', async (req, res) => {
-  const db_requests_data = await DB.requests.findAsync({});
-  const data = parseReqData(db_requests_data);
+  const data = await getRequestData();
   res.send('<pre>' + data + '</pre>');
 });
 
