@@ -161,6 +161,7 @@ const config = {
 
     // save screen dimensions
     cookieStorage.setItem('SCREEN_RESOLUTION', `${window.screen.width}x${window.screen.height}`);
+    window.fp.generate().then((fingerprint) => cookieStorage.setItem('DEVICE_FINGERPRINT', fingerprint));
   },
 
   watch: {

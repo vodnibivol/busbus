@@ -7,7 +7,7 @@ import 'dotenv/config';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 
-import { identifyUser, collectData, getRequestData } from './js/collectData.js';
+import { identifyUser, collectData, getRequestDataString } from './js/collectData.js';
 import Store from './js/Store_node.js';
 import DB from './js/db.js';
 const dstore = new Store();
@@ -35,8 +35,9 @@ const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
 // --- ROUTES
 
 app.get('/', identifyUser, (req, res) => {
-  const { userscript } = req;
-  return res.render('iskanje', { userscript });
+  if (req.user) res.cookie('BUSBUS_STOP_HISTORY', req.user.stationHistory, { maxAge: 31536000000 });
+
+  return res.render('iskanje', { userscript: res.userscript });
 });
 
 app.get('/test', (req, res) => {
@@ -106,7 +107,7 @@ app.get('/log/objave', async (req, res) => {
 // });
 
 app.get('/log/requests', async (req, res) => {
-  const data = await getRequestData();
+  const data = await getRequestDataString();
   res.send('<pre>' + data + '</pre>');
 });
 

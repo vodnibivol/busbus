@@ -11,7 +11,7 @@ export const userscripts = [
       'f5078f7c-fcdf-4a1c-9a8a-7c4e969d8024', // iphone localhost (pwa?)
     ],
     script: function () {
-      // document.querySelector('#input .reset').style.background = 'lightgreen';
+      document.querySelector('#input .reset').style.background = 'lightgreen';
       // const isMorning = new Date().getHours() < 12;
       // if (isMorning) {
       //   openModal('Dobro jutro, moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
