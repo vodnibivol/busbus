@@ -12,10 +12,6 @@ export const userscripts = [
     ],
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightgreen';
-      // const isMorning = new Date().getHours() < 12;
-      // if (isMorning) {
-      //   openModal('Dobro jutro, moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
-      // }
     },
   },
   // actual data on strojcek.ftp.sh
@@ -29,6 +25,8 @@ export const userscripts = [
       const isMorning = new Date().getHours() < 12;
       if (isMorning) {
         openModal('Dobro jutro, moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
+      } else {
+        openModal('Rad te imam miska 🐌');
       }
     },
   },
