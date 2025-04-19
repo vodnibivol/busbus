@@ -39,6 +39,7 @@ export function collectData(req, res, next) {
     stopHistory: req.cookies.BUSBUS_STOP_HISTORY,
     userAgent: req.headers['user-agent'],
     resolution: req.cookies.SCREEN_RESOLUTION,
+    deviceFingerprint: req.cookies.DEVICE_FINGERPRINT,
     APN: null,
   };
 
@@ -46,8 +47,8 @@ export function collectData(req, res, next) {
     instanceId: req.cookies[INSTANCE_ID_COOKIE],
     ip: req.ip,
     stationCode: req.query.station_code,
+    deviceFingerprint: req.cookies.DEVICE_FINGERPRINT,
     timestamp: new Date().valueOf(),
-    // deviceFingerprint: req.cookies.DEVICE_FINGERPRINT,
   };
 
   dns.reverse(req.ip, (err, domains) => {
@@ -141,7 +142,7 @@ async function getUser({ ip, instanceId }) {
 
 async function getUsers() {
   const requestData = await DB.requests.findAsync({});
-  const users = groupObjectsByValue(requestData, ['instanceId', 'ip'])
+  const users = groupObjectsByValue(requestData, ['instanceId'])
     .map((requests) => {
       const username = userscripts.find((u) => u.ids.includes(requests[0].instanceId))?.name;
       const oldestRequest = requests.reduce((acc, cur) => (acc.timestamp > cur.timestamp ? cur : acc));
@@ -169,9 +170,15 @@ function groupObjectsByValue(requests, keysToCompare) {
 
   // Step 1: Union all values that appear together in the same request
   for (const req of requests) {
-    for (let i = 0; i < keysToCompare.length; i++) {
-      for (let j = i + 1; j < keysToCompare.length; j++) {
-        uf.union(req[keysToCompare[i]], req[keysToCompare[j]]);
+    // for (let i = 0; i < keysToCompare.length; i++) {
+    //   for (let j = i + 1; j < keysToCompare.length; j++) {
+    //     uf.union(req[keysToCompare[i]], req[keysToCompare[j]]);
+    //   }
+    // }
+    const values = keysToCompare.map((key) => req[key]).filter((v) => v !== undefined);
+    for (let i = 0; i < values.length; i++) {
+      for (let j = i + 1; j < values.length; j++) {
+        uf.union(values[i], values[j]);
       }
     }
   }
@@ -179,7 +186,12 @@ function groupObjectsByValue(requests, keysToCompare) {
   // Step 2: Assign each request to a group ID based on any of its values
   const groups = new Map();
   for (const req of requests) {
-    const groupKey = uf.find(req[keysToCompare[0]]); // You could also hash all keys
+    const validKey = keysToCompare.map((k) => req[k]).find((v) => v !== undefined);
+    if (validKey === undefined) {
+      continue;
+    }
+    const groupKey = uf.find(validKey);
+    // const groupKey = uf.find(req[keysToCompare[0]]); // You could also hash all keys
     if (!groups.has(groupKey)) groups.set(groupKey, []);
     groups.get(groupKey).push(req);
   }
