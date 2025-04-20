@@ -136,7 +136,7 @@ function countStops(stopHistory = []) {
 
 async function getUser({ ip, instanceId }) {
   const users = await getUsers();
-  const user = users.find((u) => u.instances.includes(instanceId) || u.ips.includes(ip)) || null;
+  const user = users.find((u) => u.instances.includes(instanceId)) || null;
   return user;
 }
 
