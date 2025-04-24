@@ -7,12 +7,14 @@ export const userscripts = [
     name: 'lara',
     ids: ['35da7902-93a2-4b82-b5f3-c518f392eb2f'],
     script: function () {
-      const isMorning = new Date().getHours() < 12;
+      const time = new Date().getHours();
 
-      if (isMorning) {
-        openModal('Dobro jutro, moja larika:) Upam da si dobro in da ne zamujas prevec na busek!\n\nskratek 🐛');
+      if (time < 12) {
+        openModal('Dobro jutro, miska! Zelim ti lep lep danek:)\n\nCrvek 🪱');
+      } else if (time < 20) {
+        openModal('🐛✨🌸');
       } else {
-        openModal('Rad te imam miska 🐌');
+        openModal('Upam da se peljes domov na cartke! :)');
       }
     },
   },
