@@ -44,6 +44,8 @@ export const userscripts = [
       '51d24fa8-ab6e-4342-8e2a-4fc689d57124', // mac safari localhost
       'f5078f7c-fcdf-4a1c-9a8a-7c4e969d8024', // iphone localhost (pwa?)
     ],
-    script: function () {},
+    script: function () {
+      document.querySelector('#input .reset').style.background = 'orchid';
+    },
   },
 ];

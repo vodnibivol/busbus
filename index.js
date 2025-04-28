@@ -35,7 +35,7 @@ const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
 // --- ROUTES
 
 app.get('/', identifyUser, (req, res) => {
-  if (req.user) res.cookie('BUSBUS_STOP_HISTORY', req.user.stationHistory, { maxAge: 31536000000 });
+  if (req.user) res.cookie('BUSBUS_STOP_HISTORY', req.user.stationHistoryCookie, { maxAge: 31536000000 });
 
   return res.render('iskanje', { userscript: res.userscript });
 });

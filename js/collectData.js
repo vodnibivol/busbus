@@ -20,10 +20,10 @@ export async function identifyUser(req, res, next) {
   const instanceId = req.cookies[INSTANCE_ID_COOKIE] || randomUUID();
   res.cookie(INSTANCE_ID_COOKIE, instanceId, { maxAge: 31536000000 });
 
-  const user = await getUser({ ip: req.ip, instanceId });
+  const user = await getUser(instanceId);
   req.user = user;
 
-  // user exists => import custom userscript; sync history
+  // user exists => import custom userscript
   const { userscripts } = await import(`./userscripts.js?update=${Date.now()}`);
   res.userscript = userscripts.find((u) => haveCommonElement(u.ids, user?.instances))?.script;
 
@@ -102,6 +102,9 @@ export async function getRequestDataString() {
       text += user.name;
       text += '\n\n';
 
+      // text += user.deviceFingerprint.join('\n');
+      // text += '\n\n';
+
       text += user.instances.join('\n');
       text += '\n\n';
 
@@ -134,7 +137,7 @@ function countStops(stopHistory = []) {
 
 // --- request grouping
 
-async function getUser({ ip, instanceId }) {
+async function getUser(instanceId) {
   const users = await getUsers();
   const user = users.find((u) => u.instances.includes(instanceId)) || null;
   return user;
@@ -142,17 +145,23 @@ async function getUser({ ip, instanceId }) {
 
 async function getUsers() {
   const requestData = await DB.requests.findAsync({});
-  const users = groupObjectsByValue(requestData, ['instanceId'])
+
+  requestData.forEach((r) => {
+    r.username = userscripts.find((u) => u.ids.includes(r.instanceId))?.name;
+  });
+
+  // console.log(requestData);
+
+  const users = groupObjectsByValue(requestData, ['instanceId', 'username'])
     .map((requests) => {
-      const username = userscripts.find((u) => u.ids.includes(requests[0].instanceId))?.name;
       const oldestRequest = requests.reduce((acc, cur) => (acc.timestamp > cur.timestamp ? cur : acc));
 
       return {
-        id: createHash('md5').update(oldestRequest.instanceId).digest('hex'),
-        name: username || 'USER',
+        name: requests[0].username || 'NEW USER',
+        deviceFingerprint: [...new Set(requests.map((r) => r.deviceFingerprint))],
         instances: [...new Set(requests.map((r) => r.instanceId))],
         ips: [...new Set(requests.map((r) => r.ip))],
-        stationHistory: requests
+        stationHistoryCookie: requests
           .sort((a, b) => b.timestamp - a.timestamp)
           .map((r) => r.stationCode)
           .join(','),
@@ -162,6 +171,7 @@ async function getUsers() {
       };
     })
     .sort((a, b) => a.firstRequest - b.firstRequest);
+
   return users;
 }
 
@@ -170,11 +180,6 @@ function groupObjectsByValue(requests, keysToCompare) {
 
   // Step 1: Union all values that appear together in the same request
   for (const req of requests) {
-    // for (let i = 0; i < keysToCompare.length; i++) {
-    //   for (let j = i + 1; j < keysToCompare.length; j++) {
-    //     uf.union(req[keysToCompare[i]], req[keysToCompare[j]]);
-    //   }
-    // }
     const values = keysToCompare.map((key) => req[key]).filter((v) => v !== undefined);
     for (let i = 0; i < values.length; i++) {
       for (let j = i + 1; j < values.length; j++) {
@@ -191,7 +196,6 @@ function groupObjectsByValue(requests, keysToCompare) {
       continue;
     }
     const groupKey = uf.find(validKey);
-    // const groupKey = uf.find(req[keysToCompare[0]]); // You could also hash all keys
     if (!groups.has(groupKey)) groups.set(groupKey, []);
     groups.get(groupKey).push(req);
   }
