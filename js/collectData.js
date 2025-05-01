@@ -1,7 +1,7 @@
 import { randomUUID, createHash } from 'crypto';
 // import { UAParser } from 'ua-parser-js';
 import fs from 'fs';
-import dns from 'dns';
+// import dns from 'dns';
 import TimeAgo from 'javascript-time-ago';
 
 import DB from './db.js';
@@ -51,18 +51,18 @@ export function collectData(req, res, next) {
     timestamp: new Date().valueOf(),
   };
 
-  dns.reverse(req.ip, (err, domains) => {
-    if (err) {
-      console.error(err);
-      // return;
-    }
+  if (userIdentifiers.instanceId) {
+    DB.requests.insert(requestData);
+    DB.users.update({ instanceId: userIdentifiers.instanceId }, userIdentifiers, { upsert: true });
+  }
+  // dns.reverse(req.ip, (err, domains) => {
+  //   if (err) {
+  //     console.error(err);
+  //     // return;
+  //   }
 
-    if (domains.length) userIdentifiers.APN = domains.join('+');
-    if (userIdentifiers.instanceId) {
-      DB.requests.insert(requestData);
-      DB.users.update({ instanceId: userIdentifiers.instanceId }, userIdentifiers, { upsert: true });
-    }
-  });
+  //   if (domains.length) userIdentifiers.APN = domains.join('+');
+  // });
 
   next();
 }
