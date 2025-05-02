@@ -119,6 +119,31 @@ app.get('/log/requests', identifyUser, async (req, res) => {
   res.send('<pre>' + data + '</pre>');
 });
 
+// --- MSG
+
+// TODO: make routes ... tega izvozi posebej v nek file
+
+app.get('/sendmsg', identifyUser, async (req, res) => {
+  const messages = await DB.messages.findAsync({});
+
+  res.render('send-msg', { messages });
+});
+
+app.post('/sendmsg', async (req, res) => {
+  const { recipient, content } = req.body;
+
+  const msg = { recipient, content, timestamp: new Date().valueOf() };
+  await DB.messages.insertAsync(msg);
+
+  res.redirect('sendmsg');
+});
+
+app.get('/api/deletemsg', async (req, res) => {
+  const count = await DB.messages.removeAsync({ _id: req.query.id });
+
+  res.send(`<pre>izbrisal ${count} sporočil.\n\n<a href="/sendmsg">nazaj</a></pre>`);
+});
+
 // --- API
 
 app.get('/api/arrival', collectData, async (req, res) => {

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      * {
+        font-family: Menlo, monospace;
+        font-size: 12px;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+      }
+
+      i {
+        opacity: 0.3;
+      }
+
+      #msgForm {
+        width: 100%;
+        background: #ccc;
+        padding: 10px;
+
+        margin-bottom: 10px;
+      }
+
+      #msgForm form {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      #messages {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      #messages .message {
+        position: relative;
+        padding: 10px;
+        border: 1px solid;
+        background: ivory;
+      }
+
+      pre {
+        font-weight: bold;
+        background: white;
+        border: 1px solid;
+        display: inline-block;
+      }
+
+      #delete {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="msgForm">
+      <form action="/sendmsg" method="post">
+        <input type="text" name="recipient" id="recipient" placeholder="prejemnik" />
+        <textarea name="content" id="content" rows="4">tvoje sporočilo</textarea>
+        <button type="submit">pošlji</button>
+      </form>
+    </div>
+
+    <div id="messages">
+      <% for( let msg of messages ) { %>
+      <div class="message">
+        <a id="delete" href="#" onclick="deleteMsg('<%- msg._id %>')">[x]</a>
+        <i><%- new Date(msg.timestamp).toLocaleString() %></i>
+        <p><%- msg.recipient %></p>
+        <pre><%- msg.content %></pre>
+        <hr />
+        <i>ID: <%- msg._id %></i>
+      </div>
+      <% } %>
+    </div>
+
+    <script>
+      function deleteMsg(id) {
+        if (confirm('izbriši "' + id + '"?')) {
+          location.href = '/api/deletemsg?id=' + id;
+        }
+      }
+    </script>
+  </body>
+</html>
