@@ -93,6 +93,7 @@ export function collectData(req, res, next) {
 
 export async function getRequestDataString() {
   // used in "/log/requests"
+
   const users = await getUsers();
   // return JSON.stringify(users, null, 2);
 
@@ -102,7 +103,7 @@ export async function getRequestDataString() {
       text += user.name;
       text += '\n\n';
 
-      // text += user.deviceFingerprint.join('\n');
+      // text += user.deviceFingerprint.map((s) => trimString(s, 36)).join('\n');
       // text += '\n\n';
 
       text += user.instances.join('\n');
@@ -144,6 +145,7 @@ async function getUser(instanceId) {
 }
 
 async function getUsers() {
+  // used in: "request data string"; "identify user"
   const requestData = await DB.requests.findAsync({});
 
   requestData.forEach((r) => {
@@ -158,7 +160,7 @@ async function getUsers() {
 
       return {
         name: requests[0].username || 'NEW USER',
-        deviceFingerprint: [...new Set(requests.map((r) => r.deviceFingerprint))],
+        deviceFingerprint: [...new Set(requests.map((r) => r.deviceFingerprint))].filter((v) => !!v),
         instances: [...new Set(requests.map((r) => r.instanceId))],
         ips: [...new Set(requests.map((r) => r.ip))],
         stationHistoryCookie: requests
@@ -228,4 +230,13 @@ class UnionFind {
 function haveCommonElement(arr1, arr2) {
   if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false;
   return arr1.some((el) => arr2.includes(el));
+}
+
+function trimString(str, maxLength) {
+  try {
+    if (str.length <= maxLength) return str;
+    return str.slice(0, maxLength - 8) + '..' + str.slice(str.length - 6);
+  } catch (error) {
+    return null;
+  }
 }

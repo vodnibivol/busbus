@@ -94,7 +94,11 @@ app.post('/objavi', async (req, res) => {
   res.redirect(req.query.from_url);
 });
 
-app.get('/log/objave', async (req, res) => {
+app.get('/log/objave', identifyUser, async (req, res) => {
+  if (req.user?.name !== 'filip') {
+    return res.status(401).render('error', { msg: 'ERROR 401: UNAUTHORIZED ACCESS' });
+  }
+
   const db_bus_data = await DB.buses.findAsync({});
   const db_driver_data = await DB.drivers.findAsync({});
 
@@ -106,7 +110,11 @@ app.get('/log/objave', async (req, res) => {
 //   res.render('log-users', { data: { users: data } });
 // });
 
-app.get('/log/requests', async (req, res) => {
+app.get('/log/requests', identifyUser, async (req, res) => {
+  if (req.user?.name !== 'filip') {
+    return res.status(401).render('error', { msg: 'ERROR 401: UNAUTHORIZED ACCESS' });
+  }
+
   const data = await getRequestDataString();
   res.send('<pre>' + data + '</pre>');
 });
@@ -211,7 +219,7 @@ app.get('/busbus', (req, res) => {
 });
 
 app.use((req, res, next) => {
-  res.status(404).end('error 404');
+  res.status(404).render('error', { msg: 'ERROR 404: NOT FOUND' });
 });
 
 app.use((err, req, res, next) => {

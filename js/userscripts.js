@@ -36,7 +36,7 @@ export const userscripts = [
   },
   // ---------------------------------------------
   {
-    name: 'filip_localhost',
+    name: 'filip', // LOCALHOST
     ids: [
       'b32fa828-ad7f-4fcc-9c82-19953ba567a1',
       'e52c983b-e573-430e-bd16-3ba146fda6c4',
