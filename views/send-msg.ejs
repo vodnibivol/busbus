@@ -19,20 +19,26 @@
       }
 
       #msgForm {
-        width: 100%;
         background: #ccc;
         padding: 10px;
+        margin: auto;
 
         margin-bottom: 10px;
       }
 
       #msgForm form {
+        max-width: 380px;
+        margin: auto;
+
         display: flex;
         flex-direction: column;
         gap: 5px;
       }
 
       #messages {
+        max-width: 400px;
+        margin: auto;
+
         padding: 10px;
         display: flex;
         flex-direction: column;
@@ -70,7 +76,7 @@
     </div>
 
     <div id="messages">
-      <% for( let msg of messages ) { %>
+      <% for (let msg of messages) { %>
       <div class="message">
         <a id="delete" href="#" onclick="deleteMsg('<%- msg._id %>')">[x]</a>
         <i><%- new Date(msg.timestamp).toLocaleString() %></i>
