@@ -79,7 +79,7 @@
   <body>
     <%- include('./partials/body-common'); %>
 
-    <form method="POST" action="objavi">
+    <form method="POST" action="api/objavi">
       <input type="hidden" name="bus_id" value="<%- bus_id %>" />
       <input type="hidden" name="driver_id" value="<%- driver_id %>" />
       <button type="button" class="back-button">← nazaj</button>
@@ -120,7 +120,7 @@
     </form>
 
     <script>
-      $('form').setAttribute('action', location.pathname+location.search);
+      $('form').setAttribute('action', 'api/objavi' + location.search);
       $('.back-button').onclick = (e) => {
         e.preventDefault();
         window.location.href = '<%- from_url %>';

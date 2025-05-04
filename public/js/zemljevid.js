@@ -88,7 +88,7 @@ const Main = {
   async updateBuses() {
     // get buses
     const bus_url = this.bus_name ? '&bus_name=' + this.bus_name : '';
-    const bus_res = await fetch('api/bus/buses-on-route?trip_id=' + (this.trip_id || '') + bus_url);
+    const bus_res = await fetch('api/buses-on-route?trip_id=' + (this.trip_id || '') + bus_url);
     const bus_data = await bus_res.json();
     // console.log(bus_data);
 

@@ -1,11 +1,8 @@
-// API
-
 import express from 'express';
 import fs from 'fs';
 
 import DB from '../js/db.js';
 import Store from '../js/Store_node.js';
-
 import { collectData } from '../js/collectData.js';
 
 const router = express.Router();
@@ -51,7 +48,7 @@ router.get('/route-shape/', async (req, res) => {
   }
 });
 
-router.get('/bus/buses-on-route/', async (req, res) => {
+router.get('/buses-on-route/', async (req, res) => {
   const bus_name = req.query.bus_name;
   const trip_id = req.query.trip_id || (await tripIdFromBusName(bus_name));
   const route = ROUTES.find((r) => r.trip_id === trip_id);
@@ -101,13 +98,23 @@ router.get('/bus/buses-on-route/', async (req, res) => {
   }
 });
 
-// --- MESSAGES
+// --- OBJAVE
 
-router.get('/deletemsg', async (req, res) => {
-  const count = await DB.messages.removeAsync({ _id: req.query.id });
+router.post('/objavi', async (req, res) => {
+  const { bus_id, bus_description, driver_id, driver_description, driver_nickname, driver_rating, author } = req.body;
 
-  res.send(`<pre>izbrisal ${count} sporočil.\n\n<a href="/sendmsg">nazaj</a></pre>`);
+  // update bus & driver data
+  await DB.buses.updateAsync({ bus_id }, { bus_id, bus_description, author }, { upsert: true });
+  await DB.drivers.updateAsync(
+    { driver_id },
+    { driver_id, driver_description, driver_nickname, driver_rating, author },
+    { upsert: true }
+  );
+
+  res.redirect(req.query.from_url);
 });
+
+// --- MESSAGES
 
 router.post('/sendmsg', async (req, res) => {
   const { recipient, content } = req.body;
@@ -116,6 +123,12 @@ router.post('/sendmsg', async (req, res) => {
   await DB.messages.insertAsync(msg);
 
   res.redirect('/sendmsg');
+});
+
+router.get('/deletemsg', async (req, res) => {
+  const count = await DB.messages.removeAsync({ _id: req.query.id });
+
+  res.send(`<pre>izbrisal ${count} sporočil.\n\n<a href="/sendmsg">nazaj</a></pre>`);
 });
 
 // --- UTILS
