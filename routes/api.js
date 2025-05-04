@@ -122,13 +122,13 @@ router.post('/sendmsg', async (req, res) => {
   const msg = { recipient, content, timestamp: new Date().valueOf() };
   await DB.messages.insertAsync(msg);
 
-  res.redirect('sendmsg');
+  res.redirect('/busbus/sendmsg');
 });
 
 router.get('/deletemsg', async (req, res) => {
   const count = await DB.messages.removeAsync({ _id: req.query.id });
 
-  res.send(`<pre>izbrisal ${count} sporočil.\n\n<a href="/sendmsg">nazaj</a></pre>`);
+  res.send(`<pre>izbrisal ${count} sporočil.\n\n<a href="/busbus/sendmsg">nazaj</a></pre>`);
 });
 
 // --- UTILS
