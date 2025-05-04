@@ -1,5 +1,5 @@
 import { randomUUID, createHash } from 'crypto';
-// import { UAParser } from 'ua-parser-js';
+import { UAParser } from 'ua-parser-js';
 import fs from 'fs';
 // import dns from 'dns';
 import TimeAgo from 'javascript-time-ago';
@@ -67,29 +67,29 @@ export function collectData(req, res, next) {
   next();
 }
 
-// export async function getUserData() {
-//   // used in "/log/users"
-//   const users = await DB.users.findAsync({});
+export async function getUserData() {
+  // used in "/log/users"
+  const users = await DB.users.findAsync({});
 
-//   return users.map((user) => {
-//     const uaData = UAParser(user.userAgent);
+  return users.map((user) => {
+    const uaData = UAParser(user.userAgent);
 
-//     const data = {
-//       userName: userscripts.find((u) => u.ids.includes(user.instanceId))?.name || null,
-//       instanceId: user.instanceId || null,
-//       ip: user.ip || null,
-//       stopHistory: JSON.stringify(countStops(user.stopHistory?.split(',')) || null),
-//       // userAgent: user.userAgent || null,
-//       userAgentData: uaData
-//         ? `${uaData.device.model} (${uaData.os.name} ${uaData.os.version}; ${uaData.browser.name})`
-//         : null, // ${uaData.device.vendor}
-//       apn: user.APN || null,
-//       resolution: user.resolution || null,
-//     };
+    const data = {
+      userName: userscripts.find((u) => u.ids.includes(user.instanceId))?.name || null,
+      instanceId: user.instanceId || null,
+      ip: user.ip || null,
+      stopHistory: JSON.stringify(countStops(user.stopHistory?.split(',')) || null),
+      // userAgent: user.userAgent || null,
+      userAgentData: uaData
+        ? `${uaData.device.model} (${uaData.os.name} ${uaData.os.version}; ${uaData.browser.name})`
+        : null, // ${uaData.device.vendor}
+      apn: user.APN || null,
+      resolution: user.resolution || null,
+    };
 
-//     return data;
-//   });
-// }
+    return data;
+  });
+}
 
 export async function getRequestDataString() {
   // used in "/log/requests"
