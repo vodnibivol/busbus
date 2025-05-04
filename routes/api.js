@@ -122,7 +122,7 @@ router.post('/sendmsg', async (req, res) => {
   const msg = { recipient, content, timestamp: new Date().valueOf() };
   await DB.messages.insertAsync(msg);
 
-  res.redirect('/sendmsg');
+  res.redirect('sendmsg');
 });
 
 router.get('/deletemsg', async (req, res) => {

@@ -103,8 +103,8 @@ export async function getRequestDataString() {
       text += user.name;
       text += '\n\n';
 
-      // text += user.deviceFingerprint.map((s) => trimString(s, 36)).join('\n');
-      // text += '\n\n';
+      text += user.deviceFingerprint.map((s) => trimString(s, 36)).join('\n');
+      text += '\n\n';
 
       text += user.instances.join('\n');
       text += '\n\n';

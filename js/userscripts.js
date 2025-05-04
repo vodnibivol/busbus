@@ -21,10 +21,9 @@ export const userscripts = [
   {
     name: 'filip',
     ids: [
+      '020f66c0-8a02-419e-9ba1-3e3bfdfc74c2', // iphone safari/pwa
       '5290aa95-43cb-43ca-8fbc-ec6e5e2b0c98', // iphone pwa
-      '020f66c0-8a02-419e-9ba1-3e3bfdfc74c2', // iphone safari
       'a756086e-53c6-446a-a595-ed53e5328cb1', // mac safari
-      '7893693e-2e04-477f-afbb-e1460443bbe6', // mac chrome
     ],
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightblue';
@@ -38,9 +37,6 @@ export const userscripts = [
   {
     name: 'filip', // LOCALHOST
     ids: [
-      'b32fa828-ad7f-4fcc-9c82-19953ba567a1',
-      'e52c983b-e573-430e-bd16-3ba146fda6c4',
-      '125424e1-2bff-4ed7-823e-c2fcb0bdfe8f', // mac chrome localhost
       '51d24fa8-ab6e-4342-8e2a-4fc689d57124', // mac safari localhost
       'f5078f7c-fcdf-4a1c-9a8a-7c4e969d8024', // iphone localhost (pwa?)
     ],
