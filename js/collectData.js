@@ -23,10 +23,6 @@ export async function identifyUser(req, res, next) {
   const user = await getUser(instanceId);
   req.user = user;
 
-  // user exists => import custom userscript
-  const { userscripts } = await import(`./userscripts.js?update=${Date.now()}`);
-  res.userscript = userscripts.find((u) => haveCommonElement(u.ids, user?.instances))?.script;
-
   next();
 }
 
@@ -226,11 +222,6 @@ class UnionFind {
 }
 
 // --- utils
-
-function haveCommonElement(arr1, arr2) {
-  if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false;
-  return arr1.some((el) => arr2.includes(el));
-}
 
 function trimString(str, maxLength) {
   try {

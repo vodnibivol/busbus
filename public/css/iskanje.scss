@@ -285,6 +285,11 @@ button {
   }
 }
 
+#paketek {
+  @include button;
+  box-shadow: none !important;
+}
+
 @keyframes blink {
   from {
     background: rgb(253, 52, 52);

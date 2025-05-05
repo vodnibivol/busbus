@@ -53,11 +53,16 @@
         background: ivory;
       }
 
+      #messages .message.opened {
+        background: #eee;
+      }
+
       pre {
         font-weight: bold;
         background: white;
         border: 1px solid;
         display: inline-block;
+        white-space: pre-line;
       }
 
       #delete {
@@ -69,16 +74,16 @@
   </head>
   <body>
     <div id="msgForm">
-      <form action="api/sendmsg" method="post">
+      <form action="../api/msg/send" method="post">
         <input type="text" name="recipient" id="recipient" placeholder="prejemnik" />
-        <textarea name="content" id="content" rows="4">tvoje sporočilo</textarea>
+        <textarea name="content" id="content" rows="4" placeholder="tvoje sporočilo"></textarea>
         <button type="submit">pošlji</button>
       </form>
     </div>
 
     <div id="messages">
       <% for (let msg of messages) { %>
-      <div class="message">
+      <div class="message<%- msg.openedOn !== 0 ? ' opened' : '' %>">
         <a id="delete" href="#" onclick="deleteMsg('<%- msg._id %>')">[x]</a>
         <i><%- new Date(msg.timestamp).toLocaleString() %></i>
         <p><%- msg.recipient %></p>
@@ -92,7 +97,7 @@
     <script>
       function deleteMsg(id) {
         if (confirm('izbriši "' + id + '"?')) {
-          location.href = 'api/deletemsg?id=' + id;
+          location.href = '../api/msg/delete?id=' + id;
         }
       }
     </script>

@@ -37,8 +37,11 @@ app.get('/sw.js', (req, res) => {
 
 // --- ERRORS
 
-app.get('/busbus', (req, res) => {
-  if (/localhost|192|172/.test(req.hostname)) res.redirect('/');
+app.get('/busbus/*', (req, res) => {
+  if (/localhost|192|172/.test(req.hostname)) {
+    const trimmedUrl = req.url.replace('/busbus', '');
+    res.redirect(trimmedUrl);
+  }
 });
 
 app.use((req, res, next) => {

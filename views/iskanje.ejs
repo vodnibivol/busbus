@@ -104,6 +104,10 @@
     </script>
     <% } %>
 
+    <% if (msg) { %>
+      <%- include('./partials/paketek') %>
+    <% } %>
+
     <script src="public/js/vendor/fingerprint.js"></script>
     <script src="public/js/vendor/vue.global.prod.js"></script>
     <script src="public/js/vendor/cookie-storage.min.js"></script>

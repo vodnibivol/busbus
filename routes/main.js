@@ -16,10 +16,24 @@ const API_KEY = process.env.API_KEY;
 
 const router = express.Router();
 
-router.get('/', identifyUser, (req, res) => {
-  if (req.user) res.cookie('BUSBUS_STOP_HISTORY', req.user.stationHistoryCookie, { maxAge: 31536000000 });
+router.get('/', identifyUser, async (req, res) => {
+  let userscript, msg;
 
-  return res.render('iskanje', { userscript: res.userscript });
+  if (req.user) {
+    res.cookie('BUSBUS_STOP_HISTORY', req.user.stationHistoryCookie, { maxAge: 31536000000 });
+
+    // userscript
+    const { userscripts } = await import(`../js/userscripts.js?update=${Date.now()}`);
+    userscript = userscripts.find((u) => haveCommonElement(u.ids, req.user.instances))?.script;
+
+    // message
+    const messages = await DB.messages.findAsync({ recipient: req.user.name, openedOn: 0 });
+    msg = messages.sort((m) => m.timestamp)[0];
+
+    // console.log(msg);
+  }
+
+  return res.render('iskanje', { userscript, msg });
 });
 
 router.get('/zemljevid', async (req, res) => {
@@ -58,9 +72,12 @@ router.get('/objavi', async (req, res) => {
   });
 });
 
-router.get('/sendmsg', identifyUser, async (req, res) => {
-  const messages = await DB.messages.findAsync({});
+router.get('/msg/send', identifyUser, async (req, res) => {
+  if (req.user?.name !== 'filip') {
+    return res.status(401).render('error', { msg: 'ERROR 401: UNAUTHORIZED ACCESS' });
+  }
 
+  const messages = await DB.messages.findAsync({});
   res.render('send-msg', { messages });
 });
 
@@ -95,6 +112,11 @@ async function fetchLPP(url, maxAge = 0) {
 
   const response = await cachedFetch(url, options, maxAge);
   return response; // return response.json();
+}
+
+function haveCommonElement(arr1, arr2) {
+  if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false;
+  return arr1.some((el) => arr2.includes(el));
 }
 
 // --- EXPORT
