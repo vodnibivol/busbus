@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get('/requests', identifyUser, grantAccess, async (req, res) => {
   const data = await getRequestDataString();
-  res.send('<pre>' + data + '</pre>');
+  res.render('partials/pre', { content: data });
 });
 
 router.get('/users', identifyUser, grantAccess, async (req, res) => {

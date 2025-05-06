@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <%- include('./partials/head'); %>
-    <link rel="stylesheet" href="public/css/iskanje.css" />
+    <link rel="stylesheet" href="/busbus/public/css/iskanje.css" />
   </head>
   <body class="flex-center pomlad">
     <%- include('./partials/body-common'); %> <%- include('./partials/modal'); %>
@@ -11,7 +11,7 @@
     <div id="main" class="hidden">
       <div class="nav-top flex-center">
         <div class="tracker-shortcut" @click="openBusSearch" touchy>
-          <img src="public/img/gps-cursor.png" alt="Iskanje avtobusa" />
+          <img src="/busbus/public/img/gps-cursor.png" alt="Iskanje avtobusa" />
         </div>
         <div class="live-dot-container" @click="autoRefresh=!autoRefresh" touchy>
           <div class="live-dot" :class="{live:autoRefresh}"></div>
@@ -83,7 +83,7 @@
       </div>
     </div>
 
-    <img src="public/img/busek.png" id="busek" />
+    <img src="/busbus/public/img/busek.png" id="busek" />
 
     <script>
       // --- IZLETEK (BUSEK)
@@ -106,12 +106,12 @@
     
     <% if (msg) { %><%- include('./partials/msg') %><% } %>
 
-    <script src="public/js/vendor/fingerprint.js"></script>
-    <script src="public/js/vendor/vue.global.prod.js"></script>
-    <script src="public/js/vendor/cookie-storage.min.js"></script>
-    <script src="public/js/vendor/touchy.js"></script>
-    <script src="public/js/stops.js"></script>
-    <script src="public/js/iskanje.js"></script>
-    <script src="public/js/pwa/pwa.js"></script>
+    <script src="/busbus/public/js/vendor/fingerprint.js"></script>
+    <script src="/busbus/public/js/vendor/vue.global.prod.js"></script>
+    <script src="/busbus/public/js/vendor/cookie-storage.min.js"></script>
+    <script src="/busbus/public/js/vendor/touchy.js"></script>
+    <script src="/busbus/public/js/stops.js"></script>
+    <script src="/busbus/public/js/iskanje.js"></script>
+    <script src="/busbus/public/js/pwa/pwa.js"></script>
   </body>
 </html>

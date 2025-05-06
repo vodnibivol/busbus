@@ -79,7 +79,7 @@
   <body>
     <%- include('./partials/body-common'); %>
 
-    <form method="POST" action="api/objavi">
+    <form method="POST" action="/busbus/api/objavi">
       <input type="hidden" name="bus_id" value="<%- bus_id %>" />
       <input type="hidden" name="driver_id" value="<%- driver_id %>" />
       <button type="button" class="back-button">← nazaj</button>
@@ -123,8 +123,7 @@
       $('form').setAttribute('action', 'api/objavi' + location.search);
       $('.back-button').onclick = (e) => {
         e.preventDefault();
-        window.location.href = '<%- from_url %>';
-        document.body.classList.add('loading');
+        navigateTo('<%- from_url %>');
       };
 
       $('button.submit').addEventListener('click', submitForm);
@@ -136,7 +135,7 @@
         if ($('form').checkValidity()) {
           $('.submit').disabled = true;
           $('form').submit();
-          document.body.classList.add('loading');
+          showLoadingBar();
         } else {
           $('form').reportValidity();
         }

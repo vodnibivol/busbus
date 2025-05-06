@@ -130,8 +130,8 @@ const config = {
 
     onEnter() {
       console.log(this.input);
-      if (this.input === '@log') location.href = './log/requests';
-      if (this.input === '@msg') location.href = './msg/send';
+      if (this.input === '@log') navigateTo('./log/requests');
+      if (this.input === '@msg') navigateTo('./msg/send');
     },
 
     resetInput() {
@@ -142,13 +142,11 @@ const config = {
     },
 
     showMap(data) {
-      document.body.classList.add('loading');
-      window.location.href = `zemljevid?station_code=${this.selectedStop.ref_id}&trip_id=${data.trip_id}`;
+      navigateTo(`zemljevid?station_code=${this.selectedStop.ref_id}&trip_id=${data.trip_id}`);
     },
 
     openBusSearch() {
-      document.body.classList.add('loading');
-      window.location.href = 'bus';
+      navigateTo('bus');
     },
   },
 
@@ -156,7 +154,7 @@ const config = {
     // init
     this.stops = stops;
     setInterval(this.checkTime.bind(this), 1000);
-    $('input').select();
+    this.resetInput();
 
     $('#main').classList.remove('hidden');
 

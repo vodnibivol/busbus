@@ -79,7 +79,7 @@
   <body>
     <%- include('./partials/body-common'); %>
 
-    <form method="GET" action="zemljevid">
+    <form method="GET" action="/busbus/zemljevid">
       <button type="button" class="back-button">← nazaj</button>
 
       <h2>Iskanje avtobusa</h2>
@@ -106,7 +106,7 @@
       $('.back-button').onclick = (e) => {
         e.preventDefault();
         window.history.back();
-        document.body.classList.add('loading');
+        showLoadingBar();
       };
 
       $('button.submit').addEventListener('click', submitForm);
@@ -125,7 +125,7 @@
           // const bus_name = $('input#bus_name').value;
           // const bus_data = $(`#bus-select-list option[value="${bus_name}"]`)?.dataset || {};
           // window.location.href = `zemljevid?bus_id=${bus_data.busUnitId}`; // &trip_id=${bus_data.tripId}`;
-          document.body.classList.add('loading');
+          showLoadingBar();
         } else {
           $('form').reportValidity();
         }

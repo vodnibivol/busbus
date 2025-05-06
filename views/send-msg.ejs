@@ -73,6 +73,8 @@
     </style>
   </head>
   <body>
+    <%- include('partials/body-common') %>
+
     <div id="msgForm">
       <form action="send" method="post">
         <input type="text" name="recipient" id="recipient" placeholder="prejemnik" />
@@ -97,7 +99,7 @@
     <script>
       function deleteMsg(id) {
         if (confirm('izbriši "' + id + '"?')) {
-          location.href = 'delete?id=' + id;
+          navigateTo('delete?id=' + id);
         }
       }
     </script>

@@ -11,13 +11,15 @@ const PORT = process.env.PORT || 2200;
 
 app.listen(PORT, () => console.log('server running on: http://localhost:' + PORT + '/'));
 
-app.use(compression());
-app.use('/public/', express.static('public'));
 app.set('view engine', 'ejs');
 app.set('trust proxy', true);
+app.use(compression());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.all('/busbus/*', editLocalhost);
+app.use('/public/', express.static('public'));
 
 // --- ROUTES
 
@@ -37,14 +39,21 @@ app.get('/sw.js', (req, res) => {
   res.sendFile(path.resolve('sw.js'));
 });
 
-// --- ERRORS
+// --- FUNCTIONS
 
-app.get('/busbus/*', (req, res) => {
-  if (/localhost|192|172/.test(req.hostname)) {
-    const trimmedUrl = req.url.replace('/busbus', '');
-    res.redirect(trimmedUrl);
+function editLocalhost(req, res, next) {
+  if (isLocalhost(req.hostname)) {
+    req.url = req.url.replace('busbus/', '');
   }
-});
+
+  next();
+}
+
+function isLocalhost(hostname) {
+  return /localhost|192|172/.test(hostname);
+}
+
+// --- ERRORS
 
 app.use((req, res, next) => {
   res.status(404).render('error', { msg: 'ERROR 404: NOT FOUND' });

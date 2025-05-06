@@ -11,11 +11,8 @@ const Main = {
   async init() {
     // --- EVENTS
     $('.bus-info-container #closeBtn').onclick = this.closeInfo;
-    $('.back-button').onclick = () => {
-      document.body.classList.add('loading');
-      window.location = '/busbus/'; // () => history.back()
-    };
-    $('#editData').onclick = () => document.body.classList.add('loading');
+    $('.back-button').onclick = () => navigateTo('/busbus/');
+    $('#editData').onclick = showLoadingBar;
     $('spacer').onclick = this.closeInfo;
 
     // --- MAP
