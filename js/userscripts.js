@@ -7,15 +7,7 @@ export const userscripts = [
     name: 'lara',
     ids: ['35da7902-93a2-4b82-b5f3-c518f392eb2f'],
     script: function () {
-      const time = new Date().getHours();
-
-      if (time < 12) {
-        openModal('Dobro jutro, miska! Zelim ti lep lep danek:)\n\nCrvek 🪱');
-      } else if (time < 20) {
-        openModal('🐛✨🌸');
-      } else {
-        openModal('Upam da se peljes domov na cartke! :)');
-      }
+      document.querySelector('#input .reset').style.background = 'lightpink';
     },
   },
   {
