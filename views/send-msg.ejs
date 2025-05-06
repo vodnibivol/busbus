@@ -74,7 +74,7 @@
   </head>
   <body>
     <div id="msgForm">
-      <form action="../api/msg/send" method="post">
+      <form action="send" method="post">
         <input type="text" name="recipient" id="recipient" placeholder="prejemnik" />
         <textarea name="content" id="content" rows="4" placeholder="tvoje sporočilo"></textarea>
         <button type="submit">pošlji</button>
@@ -97,7 +97,7 @@
     <script>
       function deleteMsg(id) {
         if (confirm('izbriši "' + id + '"?')) {
-          location.href = '../api/msg/delete?id=' + id;
+          location.href = 'delete?id=' + id;
         }
       }
     </script>

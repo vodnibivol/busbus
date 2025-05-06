@@ -30,7 +30,7 @@ router.get('/', identifyUser, async (req, res) => {
     const messages = await DB.messages.findAsync({ recipient: req.user.name, openedOn: 0 });
     msg = messages.sort((m) => m.timestamp)[0];
 
-    // console.log(msg);
+    console.log(msg);
   }
 
   return res.render('iskanje', { userscript, msg });

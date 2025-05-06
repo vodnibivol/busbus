@@ -1,67 +1,31 @@
 <style>
-  #msg-modal {
-    cursor: pointer;
-    user-select: none;
-
-    display: none;
+  #paketek {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
   }
 
-  #msg-modal.open {
-    display: contents;
-  }
-
-  #msg-modal #bg {
-    z-index: 99;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    /* filter: blur(10px); */
-    background: #ffffffdd;
-  }
-
-  #msg-modal #window {
-    z-index: 100;
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 240px;
-
-    background: #eee;
-    border: 2px solid;
-    padding: 17px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-
-    border-radius: 10px;
-    box-shadow: 6px 6px 0 #00000033;
-    overflow: hidden;
-
-    line-height: 1.6;
+  #paketek img {
+    width: 18px;
   }
 </style>
 
-<div id="msg-modal">
-  <div id="bg"></div>
-  <div id="window">
-    <div class="text"></div>
-  </div>
+<div id="paketek">
+  <img src="public/img/paketek.png" alt="paketek" />
 </div>
 
 <script>
-  $('#msg-modal').addEventListener('click', closeModal);
+  const msg = <%- JSON.stringify(msg) %>;
+  // console.log(msg);
 
-  function closeModal() {
-    $('#msg-modal').classList.remove('open');
-  }
+  $('#paketek').onclick = () => {
+    // open message
+    openModal(msg.content);
 
-  function openModal(text) {
-    if (!text) return;
-    $('#msg-modal .text').innerText = text;
-    $('#msg-modal').classList.add('open');
+    // mark as read
+    fetch('msg/open?id=' + msg._id).then((r) => r.json()).then((j) => console.log(j));
+
+    // hide paketek
+    $('#paketek').classList.add('hidden');
   }
 </script>

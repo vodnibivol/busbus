@@ -24,10 +24,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 import mainRoutes from './routes/main.js';
 import apiRoutes from './routes/api.js';
 import logRoutes from './routes/log.js';
+import msgRoutes from './routes/msg.js';
 
 app.use('/', mainRoutes);
 app.use('/api', apiRoutes);
 app.use('/log', logRoutes);
+app.use('/msg', msgRoutes);
 
 // --- SW
 

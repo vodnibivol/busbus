@@ -5,8 +5,7 @@
     <link rel="stylesheet" href="public/css/iskanje.css" />
   </head>
   <body class="flex-center pomlad">
-    <%- include('./partials/body-common'); %>
-    <%- include('./partials/msg'); %>
+    <%- include('./partials/body-common'); %> <%- include('./partials/modal'); %>
 
     <div id="bg"></div>
     <div id="main" class="hidden">
@@ -30,6 +29,7 @@
             spellcheck="false"
             v-model="input"
             @input="onInput"
+            @keydown.enter="onEnter"
           />
           <div class="reset flex-center" @click="resetInput" touchy>×</div>
         </div>
@@ -103,10 +103,8 @@
       (<%- userscript %>)();
     </script>
     <% } %>
-
-    <% if (msg) { %>
-      <%- include('./partials/paketek') %>
-    <% } %>
+    
+    <% if (msg) { %><%- include('./partials/msg') %><% } %>
 
     <script src="public/js/vendor/fingerprint.js"></script>
     <script src="public/js/vendor/vue.global.prod.js"></script>

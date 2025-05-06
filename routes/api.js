@@ -114,28 +114,6 @@ router.post('/objavi', async (req, res) => {
   res.redirect(req.query.from_url);
 });
 
-// --- MESSAGES
-
-router.post('/msg/send', async (req, res) => {
-  const { recipient, content } = req.body;
-
-  const msg = { recipient, content, timestamp: new Date().valueOf(), openedOn: 0 };
-  await DB.messages.insertAsync(msg);
-
-  res.redirect('/busbus/msg/send');
-});
-
-router.get('/msg/delete', async (req, res) => {
-  const count = await DB.messages.removeAsync({ _id: req.query.id });
-
-  res.send(`<pre>izbrisal ${count} sporočil.\n\n<a href="/busbus/msg/send">nazaj</a></pre>`);
-});
-
-router.get('/msg/read', async (req, res) => {
-  const updated = await DB.messages.updateAsync({ _id: req.query.id }, { $set: { openedOn: new Date().valueOf() } });
-  res.json({ updated });
-});
-
 // --- UTILS
 
 async function cachedFetch(url, options, maxAge) {

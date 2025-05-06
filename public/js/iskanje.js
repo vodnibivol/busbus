@@ -128,6 +128,12 @@ const config = {
       this.selectedStop = {};
     },
 
+    onEnter() {
+      console.log(this.input);
+      if (this.input === '@log') location.href = './log/requests';
+      if (this.input === '@msg') location.href = './msg/send';
+    },
+
     resetInput() {
       this.arrivals = [];
       this.selectedStop = {};
