@@ -26,7 +26,7 @@ export async function identifyUser(req, res, next) {
   next();
 }
 
-export function collectData(req, res, next) {
+export async function collectData(req, res, next) {
   if (!req.query.log) return next();
 
   const userIdentifiers = {
@@ -51,14 +51,14 @@ export function collectData(req, res, next) {
     DB.requests.insert(requestData);
     DB.users.update({ instanceId: userIdentifiers.instanceId }, userIdentifiers, { upsert: true });
   }
-  // dns.reverse(req.ip, (err, domains) => {
-  //   if (err) {
-  //     console.error(err);
-  //     // return;
-  //   }
 
-  //   if (domains.length) userIdentifiers.APN = domains.join('+');
-  // });
+  const user = await getUser(instanceId);
+  if (user) {
+    fetch('https://ntfy.sh/busbus-admin-log', {
+      method: 'POST',
+      body: JSON.stringify(user),
+    });
+  }
 
   next();
 }
