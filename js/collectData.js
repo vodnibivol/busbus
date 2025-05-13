@@ -52,7 +52,7 @@ export async function collectData(req, res, next) {
     DB.users.update({ instanceId: userIdentifiers.instanceId }, userIdentifiers, { upsert: true });
   }
 
-  const user = await getUser(instanceId);
+  const user = await getUser(userIentifiers.instanceId);
   if (user) {
     fetch('https://ntfy.sh/busbus-admin-log', {
       method: 'POST',
