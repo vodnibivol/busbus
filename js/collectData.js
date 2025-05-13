@@ -52,11 +52,16 @@ export async function collectData(req, res, next) {
     DB.users.update({ instanceId: userIdentifiers.instanceId }, userIdentifiers, { upsert: true });
   }
 
-  const user = await getUser(userIentifiers.instanceId);
-  if (user) {
+  const username = ((await getUser(userIdentifiers.instanceId))?.name || 'someone')?.toUpperCase();
+  const stopName = getStopName(requestData.stationCode);
+  const time = new Date(requestData.timestamp).toTimeString().match(/\d+:\d+/)[0];
+  if (username) {
     fetch('https://ntfy.sh/busbus-admin-log', {
       method: 'POST',
-      body: JSON.stringify(user),
+      body: `${username}: ${stopName} (${time})`,
+      headers: {
+        Title: 'New Search',
+      },
     });
   }
 
@@ -122,7 +127,7 @@ export async function getRequestDataString() {
 
 function countStops(stopHistory = []) {
   const stops = stopHistory.reduce((acc, cur) => {
-    const stopName = STATION_DATA.find((s) => s.ref_id === cur)?.name;
+    const stopName = getStopName(cur);
     if (!stopName) return acc;
 
     acc[stopName] = (acc[stopName] || 0) + 1;
@@ -130,6 +135,10 @@ function countStops(stopHistory = []) {
   }, {});
 
   return stops;
+}
+
+function getStopName(stopId) {
+  return STATION_DATA.find((s) => s.ref_id === stopId)?.name;
 }
 
 // --- request grouping
