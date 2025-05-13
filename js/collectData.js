@@ -61,6 +61,7 @@ export async function collectData(req, res, next) {
       body: `${username}: ${stopName} (${time})`,
       headers: {
         Title: 'New Search',
+        Priority: 'low',
       },
     });
   }
