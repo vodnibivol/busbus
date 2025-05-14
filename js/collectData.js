@@ -52,16 +52,16 @@ export async function collectData(req, res, next) {
     DB.users.update({ instanceId: userIdentifiers.instanceId }, userIdentifiers, { upsert: true });
   }
 
-  const username = ((await getUser(userIdentifiers.instanceId))?.name || 'someone')?.toUpperCase();
+  const username = (await getUser(userIdentifiers.instanceId))?.name || 'nekdo';
   const stopName = getStopName(requestData.stationCode);
-  const time = new Date(requestData.timestamp).toTimeString().match(/\d+:\d+/)[0];
-  if (username) {
+  const time = new Date().getHours() + '.' + ('' + new Date().getMinutes()).padStart(2, '0');
+  if (username && username !== 'frilip') {
     fetch('https://ntfy.sh/busbus-admin-log', {
       method: 'POST',
-      body: `${username}: ${stopName} (${time})`,
+      body: `${time}: ${capitalize(username)} se odpravlja na postajo ${stopName}`,
       headers: {
-        Title: 'New Search',
-        Priority: 'low',
+        Title: 'Popotnik!',
+        // Priority: 'low',
       },
     });
   }
@@ -240,4 +240,8 @@ function trimString(str, maxLength) {
   } catch (error) {
     return null;
   }
+}
+
+function capitalize(str) {
+  return str[0].toUpperCase() + str.slice(1);
 }

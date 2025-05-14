@@ -88,7 +88,7 @@
       <div class="message<%- msg.openedOn !== 0 ? ' opened' : '' %>">
         <a id="delete" href="#" onclick="deleteMsg('<%- msg._id %>')">[x]</a>
         <i><%- new Date(msg.timestamp).toLocaleString() %></i>
-        <p><%- msg.recipient %></p>
+        <p>&lt;<%- msg.recipient %>&gt;</p>
         <pre><%- msg.content %></pre>
         <hr />
         <i>ID: <%- msg._id %></i>
