@@ -2,17 +2,16 @@
   window.$ = window.$ || ((sel) => document.querySelector(sel));
   window.addEventListener('pageshow', () => document.body.classList.remove('loading'));
 
-  document.addEventListener('click', (e) => {
-    const anchor = e.target.closest('a');
-    if (anchor && anchor.href) {
-      e.preventDefault();
-      navigateTo(anchor.href);
-    }
-  });
+  // document.addEventListener('click', (e) => {
+  //   const anchor = e.target.closest('a');
+  //   if (anchor && anchor.href && anchor.href !== '#') {
+  //     e.preventDefault();
+  //     navigateTo(anchor.href);
+  //   }
+  // });
 
   function navigateTo(url) {
     showLoadingBar();
-    // setTimeout(() => (window.location.href = url), 500);
     window.location.href = url;
   }
 

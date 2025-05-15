@@ -29,7 +29,6 @@ export const userscripts = [
     name: 'anina babica',
     ids: ['661a93e4-acec-4268-b5d2-d4884178771e'],
   },
-  // ---------------------------------------------
   {
     name: 'filip', // LOCALHOST
     ids: [

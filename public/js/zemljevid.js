@@ -136,10 +136,15 @@ const Main = {
   },
 
   async drawRouteShape() {
-    if (!this.bus_name) return;
-    
+    let url = 'api/route-shape?';
+
+    if (this.trip_id) {
+      url += 'trip_id=' + this.trip_id;
+    } else if (this.bus_name) {
+      url += 'bus_name=' + this.bus_name;
+    } else return;
+
     // get shape
-    const url = this.trip_id ? `api/route-shape?trip_id=${this.trip_id}` : `api/route-shape?bus_name=${this.bus_name}`;
     const route_res = await fetch(url);
     const route_data = await route_res.json();
     // console.log(route_data);

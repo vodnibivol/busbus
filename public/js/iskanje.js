@@ -130,8 +130,8 @@ const config = {
 
     onEnter() {
       console.log(this.input);
-      if (this.input === '@log') navigateTo('./log/requests');
-      if (this.input === '@msg') navigateTo('./msg/send');
+      if (this.input === '@log') navigateTo('/busbus/log/requests');
+      if (this.input === '@msg') navigateTo('/busbus/msg/send');
     },
 
     resetInput() {

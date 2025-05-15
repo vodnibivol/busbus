@@ -76,7 +76,7 @@
     <%- include('partials/body-common') %>
 
     <div id="msgForm">
-      <form action="send" method="post">
+      <form action="/busbus/msg/send" method="post">
         <input type="text" name="recipient" id="recipient" placeholder="prejemnik" />
         <textarea name="content" id="content" rows="4" placeholder="tvoje sporočilo"></textarea>
         <button type="submit">pošlji</button>
@@ -86,7 +86,7 @@
     <div id="messages">
       <% for (let msg of messages) { %>
       <div class="message<%- msg.openedOn !== 0 ? ' opened' : '' %>">
-        <a id="delete" href="#" onclick="deleteMsg('<%- msg._id %>')">[x]</a>
+        <a id="delete" href="#" data-id="<%- msg._id %>">[x]</a>
         <i><%- new Date(msg.timestamp).toLocaleString() %></i>
         <p>&lt;<%- msg.recipient %>&gt;</p>
         <pre><%- msg.content %></pre>
@@ -97,9 +97,16 @@
     </div>
 
     <script>
+      document.addEventListener('click', (e) => {
+        if (e.target.matches('a[data-id]')) {
+          e.preventDefault();
+          deleteMsg(e.target.dataset.id);
+        }
+      });
+
       function deleteMsg(id) {
         if (confirm('izbriši "' + id + '"?')) {
-          navigateTo('delete?id=' + id);
+          navigateTo('/busbus/msg/delete?id=' + id);
         }
       }
     </script>

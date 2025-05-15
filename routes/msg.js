@@ -17,7 +17,7 @@ router.post('/send', async (req, res) => {
 router.get('/delete', async (req, res) => {
   const count = await DB.messages.removeAsync({ _id: req.query.id });
 
-  res.render('partials/pre', { content: `izbrisal ${count} sporočil.\n\n<a href="send">nazaj</a>` });
+  res.render('partials/pre', { content: `izbrisal ${count} sporočil.\n\n<a href="/busbus/msg/send">nazaj</a>` });
 });
 
 router.get('/open', async (req, res) => {
