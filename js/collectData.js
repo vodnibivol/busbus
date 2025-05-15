@@ -55,12 +55,14 @@ export async function collectData(req, res, next) {
   const username = (await getUser(userIdentifiers.instanceId))?.name || 'nekdo';
   const stopName = getStopName(requestData.stationCode);
   const time = new Date().getHours() + '.' + ('' + new Date().getMinutes()).padStart(2, '0');
-  if (username && username !== 'frilip') {
+  const centerMsg = parseInt(requestData.stationCode.at(-1)) % 2 ? 'proti centru' : 'iz centra'; // 0 ali 1
+  if (username && username !== 'filip') {
     fetch('https://ntfy.sh/busbus-admin-log', {
       method: 'POST',
-      body: `${time}: ${capitalize(username)} se odpravlja na postajo ${stopName}`,
+      body: `${time}: ${capitalize(username)} se odpravlja ${centerMsg} s postaje ${stopName}.`,
       headers: {
         Title: 'Popotnik!',
+        Click: 'https://strojcek.ftp.sh/busbus/zemljevid?station_code=' + requestData.stationCode,
         // Priority: 'low',
       },
     });
@@ -124,22 +126,6 @@ export async function getRequestDataString() {
       return text;
     })
     .join('\n\n------------------------------------\n\n');
-}
-
-function countStops(stopHistory = []) {
-  const stops = stopHistory.reduce((acc, cur) => {
-    const stopName = getStopName(cur);
-    if (!stopName) return acc;
-
-    acc[stopName] = (acc[stopName] || 0) + 1;
-    return acc;
-  }, {});
-
-  return stops;
-}
-
-function getStopName(stopId) {
-  return STATION_DATA.find((s) => s.ref_id === stopId)?.name;
 }
 
 // --- request grouping
@@ -244,4 +230,20 @@ function trimString(str, maxLength) {
 
 function capitalize(str) {
   return str[0].toUpperCase() + str.slice(1);
+}
+
+function countStops(stopHistory = []) {
+  const stops = stopHistory.reduce((acc, cur) => {
+    const stopName = getStopName(cur);
+    if (!stopName) return acc;
+
+    acc[stopName] = (acc[stopName] || 0) + 1;
+    return acc;
+  }, {});
+
+  return stops;
+}
+
+function getStopName(stopId) {
+  return STATION_DATA.find((s) => s.ref_id === stopId)?.name;
 }

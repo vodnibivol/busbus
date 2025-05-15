@@ -9,7 +9,7 @@ const dstore = new Store();
 
 // --- DATA
 
-const STATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
+const STATION_LOCATIONS = JSON.parse(fs.readFileSync('db/station_locations.json'));
 const API_KEY = process.env.API_KEY;
 
 // --- ROUTES
@@ -45,7 +45,7 @@ router.get('/zemljevid', async (req, res) => {
   }
 
   // ELSE: NORMAL ZEMLJEVID
-  const station_loc = STATIONS[req.query.station_code];
+  const station_loc = STATION_LOCATIONS[req.query.station_code];
   res.render('zemljevid', { station_loc });
 });
 
