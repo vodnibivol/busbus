@@ -19,6 +19,15 @@
         opacity: 0.3;
       }
 
+      .top {
+        background: #ccc;
+      }
+
+      button.back-button {
+        margin: 10px;
+        cursor: pointer;
+      }
+
       #msgForm {
         background: #ccc;
         padding: 10px;
@@ -74,15 +83,17 @@
   </head>
   <body>
     <%- include('partials/body-common') %>
+    <div class="top">
+      <button type="button" class="back-button">← domov</button>
 
-    <div id="msgForm">
-      <form action="/busbus/msg/send" method="post">
-        <input type="text" name="recipient" id="recipient" placeholder="prejemnik" />
-        <textarea name="content" id="content" rows="4" placeholder="tvoje sporočilo"></textarea>
-        <button type="submit">pošlji</button>
-      </form>
+      <div id="msgForm">
+        <form action="/busbus/msg/send" method="post">
+          <input type="text" name="recipient" id="recipient" placeholder="prejemnik" />
+          <textarea name="content" id="content" rows="4" placeholder="tvoje sporočilo"></textarea>
+          <button type="submit">pošlji</button>
+        </form>
+      </div>
     </div>
-
     <div id="messages">
       <% for (let msg of messages) { %>
       <div class="message<%- msg.openedOn !== 0 ? ' opened' : '' %>">
@@ -101,6 +112,10 @@
         if (e.target.matches('a[data-id]')) {
           e.preventDefault();
           deleteMsg(e.target.dataset.id);
+        }
+
+        if (e.target.matches('.back-button')) {
+          navigateTo('/busbus/');
         }
       });
 

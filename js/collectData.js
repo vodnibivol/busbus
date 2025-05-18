@@ -62,7 +62,7 @@ export async function collectData(req, res, next) {
       body: `${time}: ${capitalize(username)} se odpravlja ${centerMsg} s postaje ${stopName}.`,
       headers: {
         Title: 'Popotnik!',
-        Click: 'https://strojcek.ftp.sh/busbus/zemljevid?station_code=' + requestData.stationCode,
+        // Click: 'https://strojcek.ftp.sh/busbus/zemljevid?station_code=' + requestData.stationCode,
         // Priority: 'low',
       },
     });

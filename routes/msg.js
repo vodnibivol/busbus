@@ -1,9 +1,20 @@
 import express from 'express';
 import DB from '../js/db.js';
+import { identifyUser } from '../js/collectData.js';
+
 
 const router = express.Router();
 
 // --- MESSAGES
+
+router.get('/send', identifyUser, async (req, res) => {
+  if (req.user?.name !== 'filip') {
+    return res.status(401).render('error', { msg: 'ERROR 401: UNAUTHORIZED ACCESS' });
+  }
+
+  const messages = (await DB.messages.findAsync({})).sort((m) => -m.timestamp);
+  res.render('send-msg', { messages });
+});
 
 router.post('/send', async (req, res) => {
   const { recipient, content } = req.body;
@@ -20,10 +31,10 @@ router.get('/delete', async (req, res) => {
   res.render('partials/pre', { content: `izbrisal ${count} sporočil.\n\n<a href="/busbus/msg/send">nazaj</a>` });
 });
 
-router.get('/open', async (req, res) => {
+router.post('/open', async (req, res) => {
   const updated = await DB.messages.updateAsync(
     { _id: req.query.id },
-    { $set: { openedOn: new Date().valueOf() } },
+    { $set: { openedOn: parseInt(req.query.ts) } },
     { returnUpdatedDocs: true }
   );
 
@@ -51,14 +62,14 @@ function capitalize(str) {
   return str[0].toUpperCase() + str.slice(1);
 }
 
-function trimString(str, maxLength) {
-  try {
-    if (str.length <= maxLength) return str;
-    return str.slice(0, maxLength - 8) + '..' + str.slice(str.length - 6);
-  } catch (error) {
-    return null;
-  }
-}
+// function trimString(str, maxLength) {
+//   try {
+//     if (str.length <= maxLength) return str;
+//     return str.slice(0, maxLength - 8) + '..' + str.slice(str.length - 6);
+//   } catch (error) {
+//     return null;
+//   }
+// }
 
 function encodeBase64(str) {
   return '=?UTF-8?B?' + Buffer.from(str).toString('base64') + '?=';

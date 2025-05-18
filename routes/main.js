@@ -72,15 +72,6 @@ router.get('/objavi', async (req, res) => {
   });
 });
 
-router.get('/msg/send', identifyUser, async (req, res) => {
-  if (req.user?.name !== 'filip') {
-    return res.status(401).render('error', { msg: 'ERROR 401: UNAUTHORIZED ACCESS' });
-  }
-
-  const messages = await DB.messages.findAsync({});
-  res.render('send-msg', { messages });
-});
-
 router.get('/test', (req, res) => {
   res.render('test');
 });

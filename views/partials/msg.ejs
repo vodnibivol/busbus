@@ -23,7 +23,7 @@
     openModal(msg.content);
 
     // mark as read
-    fetch('/busbus/msg/open?id=' + msg._id).then((r) => r.json()).then((j) => console.log(j));
+    fetch(`/busbus/msg/open?id=${msg._id}&ts=${new Date().valueOf()}`, { method: 'POST' });
 
     // hide paketek
     $('#paketek').classList.add('hidden');
