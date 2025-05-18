@@ -11,15 +11,17 @@ const PORT = process.env.PORT || 2200;
 
 app.listen(PORT, () => console.log('server running on: http://localhost:' + PORT + '/'));
 
+app.use(compression());
 app.set('view engine', 'ejs');
 app.set('trust proxy', true);
-app.use(compression());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.all('/busbus/*', editLocalhost);
-app.use('/public/', express.static('public'));
+app.use('/public/', express.static('public', {
+  maxAge: '30d',
+}));
 
 // --- ROUTES
 
