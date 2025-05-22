@@ -89,7 +89,7 @@
       <input id="bus_name" name="bus_name" list="bus-select-list" type="text" placeholder="LPP-XXX" required />
       <datalist id="bus-select-list">
         <!-- <option value="" selected="">Vpišite linijo</option> -->
-        <% for( let bus of active_buses ) { %>
+        <% for (let bus of active_buses) { %>
         <option
           data-trip-id="<%- bus.trip_id %>"
           data-bus-unit-id="<%- bus.bus_unit_id %>"

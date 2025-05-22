@@ -79,6 +79,10 @@
         top: 5px;
         right: 5px;
       }
+
+      button[type='submit']:not(:disabled) {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -90,7 +94,7 @@
         <form action="/busbus/msg/send" method="post">
           <input type="text" name="recipient" id="recipient" placeholder="prejemnik" />
           <textarea name="content" id="content" rows="4" placeholder="tvoje sporočilo"></textarea>
-          <button type="submit">pošlji</button>
+          <button type="submit" disabled>pošlji</button>
         </form>
       </div>
     </div>
@@ -123,6 +127,27 @@
         if (confirm('izbriši "' + id + '"?')) {
           navigateTo('/busbus/msg/delete?id=' + id);
         }
+      }
+
+      // submitting the form
+
+      $('form button[type="submit"]').addEventListener('click', submitForm);
+      $('form').addEventListener('submit', submitForm);
+      $('input#recipient').oninput = checkForContent;
+      $('textarea#content').oninput = checkForContent;
+
+      function checkForContent(e) {
+        const isValid = $('input#recipient').value && $('textarea#content').value;
+        $('form button[type="submit"]').disabled = isValid ? '' : '1';
+      }
+
+      function submitForm(e) {
+        e.preventDefault();
+
+        // submit
+        showLoadingBar();
+        $('form button[type="submit"]').disabled = true;
+        $('form').submit();
       }
     </script>
   </body>

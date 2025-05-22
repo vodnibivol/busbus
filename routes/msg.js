@@ -12,7 +12,7 @@ router.get('/send', identifyUser, async (req, res) => {
     return res.status(401).render('error', { msg: 'ERROR 401: UNAUTHORIZED ACCESS' });
   }
 
-  const messages = (await DB.messages.findAsync({})).sort((m) => -m.timestamp);
+  const messages = (await DB.messages.findAsync({})).sort((a, b) => b.timestamp - a.timestamp);
   res.render('send-msg', { messages });
 });
 
