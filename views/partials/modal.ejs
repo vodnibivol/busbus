@@ -10,7 +10,7 @@
     display: contents;
   }
 
-  #msg-modal #bg {
+  #msg-modal .bg {
     z-index: 99;
     position: absolute;
     left: 0;
@@ -21,7 +21,7 @@
     background: #ffffffdd;
   }
 
-  #msg-modal #window {
+  #msg-modal .window {
     z-index: 100;
     position: absolute;
     top: 40%;
@@ -46,8 +46,8 @@
 </style>
 
 <div id="msg-modal">
-  <div id="bg"></div>
-  <div id="window">
+  <div class="bg"></div>
+  <div class="window">
     <div class="text"></div>
   </div>
 </div>
