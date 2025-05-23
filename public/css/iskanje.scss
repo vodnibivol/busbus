@@ -297,6 +297,8 @@ button {
   // background: red;
   display: flex;
   padding: 5px;
+
+  animation: shake 13s ease-in-out infinite 3s;
 }
 
 @keyframes blink {
@@ -306,6 +308,16 @@ button {
   to {
     background: rgb(150, 52, 52);
   }
+}
+
+@keyframes shake {
+  0%   { transform: translateX(0px); }
+  1%   { transform: translateX(7px); }
+  2%   { transform: translateX(-5px); }
+  3%   { transform: translateX(3px); }
+  4%   { transform: translateX(-1px); }
+  5%   { transform: translateX(0px); }
+  100% { transform: translateX(0px); }
 }
 
 // --- BUSEK

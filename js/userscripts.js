@@ -6,13 +6,14 @@ export const userscripts = [
   {
     name: 'jakob',
     ids: ['3b049f92-a2c7-48e4-ab21-b6d5f9d4cafe'],
-    // script: birthday,
+    script: birthday,
   },
   {
     name: 'lara',
     ids: ['35da7902-93a2-4b82-b5f3-c518f392eb2f'],
-    // document.querySelector('#input .reset').style.background = 'lightpink';
-    script: birthday,
+    script: function () {
+      document.querySelector('#input .reset').style.background = 'lightpink';
+    },
   },
   {
     name: 'filip',
@@ -21,8 +22,9 @@ export const userscripts = [
       '5290aa95-43cb-43ca-8fbc-ec6e5e2b0c98', // iphone pwa
       'a756086e-53c6-446a-a595-ed53e5328cb1', // mac safari
     ],
-    // document.querySelector('#input .reset').style.background = 'lightblue';
-    script: birthday,
+    script: function () {
+      document.querySelector('#input .reset').style.background = 'lightblue';
+    },
   },
   {
     name: 'ana',
@@ -33,11 +35,11 @@ export const userscripts = [
     ids: ['661a93e4-acec-4268-b5d2-d4884178771e'],
   },
   {
-    name: 'filip_l', // LOCALHOST
+    name: 'filip', // LOCALHOST
     ids: [
       '51d24fa8-ab6e-4342-8e2a-4fc689d57124', // mac safari localhost
       'f5078f7c-fcdf-4a1c-9a8a-7c4e969d8024', // iphone localhost (pwa?)
     ],
-    script: birthday,
+    // script: birthday,
   },
 ];

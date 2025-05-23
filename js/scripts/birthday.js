@@ -4,30 +4,47 @@ export default function () {
     return today.getDate() === day && today.getMonth() + 1 === month;
   }
 
-  if (!(isDate(23, 5) || isDate(24, 5) || isDate(25, 5) || isDate(26, 5) || isDate(27, 5))) return;
+  if (!(isDate(24, 5) || isDate(25, 5) || isDate(26, 5) || isDate(27, 5))) return;
 
-  // document.querySelector('#input .reset').style.background = 'pink';
+  document.querySelector('#input .reset').style.background = 'pink';
   document.querySelector('#bg').style.background = 'url("public/img/bg/birthday-3.jpg")';
-  document.querySelector('#bg').style.backgroundSize = '300px';
+  document.querySelector('#bg').style.backgroundSize = '250px';
+
+  // confetti on msg open
+  document.addEventListener('click', (e) => {
+    if (e.target.matches('#paketek')) {
+      if (!window.confetti) return;
+
+      confetti({
+        particleCount: 30,
+        angle: 60 * (1 + dir),
+        spread: 55,
+        origin: { x: dir, y: 0.6 },
+      });
+    }
+  });
 
   // confetti
   (function () {
     // load script
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
-    document.body.appendChild(script);
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
+    document.body.appendChild(s);
 
     // confetti on click
-    document.addEventListener('click', () => {
+    document.addEventListener('touchstart', fireCannon);
+    document.addEventListener('keydown', fireCannon);
+    document.addEventListener('mousedown', fireCannon);
+
+    function fireCannon() {
       const dir = Math.round(Math.random());
       confetti({
-        particleCount: 20,
+        particleCount: 30,
         angle: 60 * (1 + dir),
         spread: 55,
-        origin: { x: dir },
-        // colors: colors,
+        origin: { x: dir, y: 0.6 },
       });
-    });
+    }
 
     // start animation
     const duration = 5 * 1000;
