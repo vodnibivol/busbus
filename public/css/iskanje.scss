@@ -294,11 +294,19 @@ button {
 #paketek {
   @include button;
   box-shadow: none !important;
-  // background: red;
   display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 5px;
 
-  animation: shake 13s ease-in-out infinite 3s;
+  // animation: shake 13s ease-in-out infinite 3s;
+
+  &::after {
+    content: "nov paketek!";
+    margin-left: 10px;
+    font-size: 11px;
+    // font-style: italic;
+  }
 }
 
 @keyframes blink {
