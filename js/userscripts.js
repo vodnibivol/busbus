@@ -1,12 +1,10 @@
 // NOTE: skripti, ki se injectajo uporabnikom + njihova imena
-import birthday from './scripts/birthday.js';
 
 export const userscripts = [
   // actual data on strojcek.ftp.sh
   {
     name: 'jakob',
     ids: ['3b049f92-a2c7-48e4-ab21-b6d5f9d4cafe'],
-    // script: birthday,
   },
   {
     name: 'lara',

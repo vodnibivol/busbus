@@ -19,9 +19,7 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.all('/busbus/*', editLocalhost);
-app.use('/public/', express.static('public', {
-  maxAge: '30d',
-}));
+app.use('/public/', express.static('public'));
 
 // --- ROUTES
 
