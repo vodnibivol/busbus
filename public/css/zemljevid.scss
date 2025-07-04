@@ -111,10 +111,13 @@ button {
       flex-grow: 1;
     }
 
-    #editData {
-      color: #eee;
-      align-self: flex-end;
-      text-decoration: underline;
+    .links {
+      justify-content: space-between;
+
+      a {
+        color: #eee;
+        text-decoration: underline;
+      }
     }
   }
 }

@@ -8,10 +8,6 @@
           <span class="title">Linija:</span>
           <span class="content"></span>
         </li>
-        <!-- <li class="direction">
-          <span class="title">Smer:</span>
-          <span class="content">center</span>
-        </li> -->
         <li class="bus">
           <span class="title" data-bus-id="" onclick="alert('BUS: '+this.dataset.busId)">Avtobus:</span>
           <ul>
@@ -48,7 +44,10 @@
       </ul>
     </div>
     <spacer></spacer>
-    <a id="editData" href="#">[oceni]</a>
+    <div class="links flex-center">
+      <a id="shareBus" href="#">[deli]</a>
+      <a id="editData" href="#">[oceni]</a>
+    </div>
   </div>
 </div>
 
@@ -79,5 +78,16 @@
 
     // prettier-ignore
     $('#editData').href = `objavi?bus_id=${bus_data.bus_unit_id}&driver_id=${bus_data.driver_id}&from_url=${encodeURIComponent(location.href)}`;
+
+    $('#shareBus').onclick = async () => {
+      try {
+        await navigator.share({
+          title: 'Sledi busku',
+          url: '/busbus/zemljevid?bus_name=' + bus_data.bus_name,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
   }
 </script>
