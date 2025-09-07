@@ -19,6 +19,7 @@ export const userscripts = [
       '020f66c0-8a02-419e-9ba1-3e3bfdfc74c2', // iphone safari/pwa
       '5290aa95-43cb-43ca-8fbc-ec6e5e2b0c98', // iphone pwa
       'a756086e-53c6-446a-a595-ed53e5328cb1', // mac safari
+      'e09c962a-6419-4057-bc31-da5001fae8ff', // iphone pwa 2
     ],
     script: function () {
       document.querySelector('#input .reset').style.background = 'lightblue';
