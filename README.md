@@ -8,10 +8,17 @@ Demo: [Here](https://strojcek.ftp.sh/busbus/)
 
 ## Functionality
 
-* Allows quick displaying bus arrivals with search history.
-* On click on line number (i. e. "3G") displays a map of Ljubljana with live buse updates.
-* On click on bus icon displays additional information and bus ratings
-* Users can rate buses and drivers and their reviews are published live on the map.
+- Allows quick displaying bus arrivals with search history.
+- Clicking the line number (i. e. "3G") displays a map of Ljubljana with live buse updates.
+- Click on the bus icon displays additional information and bus ratings
+- Users can rate buses and drivers and their reviews are published live on the map.
+
+## Usage
+
+1. Enter the station name into the search field (e.g. 'Drama')
+2. Choose one of the directions (TO CENTER / OUT OF CENTER)
+3. On the arrivals timetable, you can click on bus numbers to display the map of the buses
+4. Clicking on the bus icon opens the bus details with links to \[share\] or \[rate\] the bus and driver.
 
 ## Disclaimer
 
